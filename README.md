@@ -6,17 +6,17 @@ MapPacker is a web application that can be used to send a request for an offline
 
 To get started, copy `.env.example` to `.env` and add your database and table information, authentication, and a Mapbox access token.
 
-**Database:** Provide your database information in the relevant variables. To use SQLite instead of Postgres, set `SQLITE` to `YES` and provide a path value for `SQLITE_DB_PATH` (you can ignore `DATABASE` and the `DB_` ones).
+**Database:** Provide your database information in the relevant variables, including the table where offline map data is stored.
 
-**Authentication strategy:** GuardianConnector Views supports three different authentication strategies: auth0, password (from an environmental var) with JWT key, or none. Set your authentication strategy in `NUXT_ENV_AUTH_STRATEGY`.
+**Authentication strategy:** MapPacker supports three different authentication strategies: auth0, password (from an environmental var) with JWT key, or none. Set your authentication strategy in `NUXT_ENV_AUTH_STRATEGY`.
 
 * If you are using an auth0 strategy, then you need to provide a domain, client ID, client secret, audience, and base URL.
 * If you are using a password strategy, then you need to provide a password, and secret JWT key.
 
 **Vue API key:** Generate an API key to add to request headers made by the Nuxt front end.
 
-**Mapbox access token:** Provide an access token to be used across the application for authenticating with Mabpox maps. (As of this moment, we are assuming that one token is sufficient for all maps views used, but we can revisit this if needed.)
-
+**Mapbox access token:** Provide an access token to be used across the application for authenticating with Mapbox maps.
+ 
 ## Build Setup
 
 ```bash
