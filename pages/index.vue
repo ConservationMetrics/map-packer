@@ -1,6 +1,7 @@
 <template>
   <div class="container">
     <h1>Available Offline Maps</h1>
+    <MapDashboard />
     <div v-for="item in data" :key="item.id" class="table-item">
       <h2>{{ item }}</h2>
     </div>
@@ -8,10 +9,12 @@
 </template>
 
 <script>
+import MapDashboard from "~/components/MapDashboard.vue";
+
 export default {
   head() {
     return {
-      title: "MapPacker",
+      title: "MapPacker: Available Offline Maps",
     };
   },
   data() {
@@ -20,7 +23,6 @@ export default {
     };
   },
   async asyncData({ $axios, app }) {
-    
     // Set up the headers for the request
     let headers = {
       'x-api-key': app.$config.apiKey.replace(/['"]+/g, ''),

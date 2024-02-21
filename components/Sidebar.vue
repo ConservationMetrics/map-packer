@@ -1,5 +1,7 @@
 <template>
     <div class="sidebar">
+      <h1>MapPacker: Generate Offline Map</h1>
+      <p><em>Use this tool to send a request to generate an offline map.</em></em></p>
     </div>
   </template>
   
