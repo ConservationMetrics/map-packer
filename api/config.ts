@@ -26,7 +26,7 @@ const env = process.env as unknown as EnvVars;
 const getEnvVar = (
   key: keyof EnvVars,
   defaultValue?: string,
-  transform?: (val: string) => any
+  transform?: (val: string) => any,
 ) => {
   const value = env[key];
   let result = value !== undefined ? value.replace(/['"]+/g, "") : defaultValue;

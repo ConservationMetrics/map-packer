@@ -1,4 +1,7 @@
-const checkTableExists = (db: any, table: string | undefined): Promise<boolean> => {
+const checkTableExists = (
+  db: any,
+  table: string | undefined,
+): Promise<boolean> => {
   return new Promise((resolve, reject) => {
     let query: string;
     query = `SELECT to_regclass('${table}')`;
@@ -9,7 +12,10 @@ const checkTableExists = (db: any, table: string | undefined): Promise<boolean> 
   });
 };
 
-const fetchDataFromTable = async (db: any, table: string | undefined): Promise<any[]> => {
+const fetchDataFromTable = async (
+  db: any,
+  table: string | undefined,
+): Promise<any[]> => {
   let query: string;
   query = `SELECT * FROM ${table}`;
   return new Promise((resolve, reject) => {
@@ -20,7 +26,10 @@ const fetchDataFromTable = async (db: any, table: string | undefined): Promise<a
   });
 };
 
-const fetchData = async (db: any, table: string | undefined): Promise<{ data: any[] | null }> => {
+const fetchData = async (
+  db: any,
+  table: string | undefined,
+): Promise<{ data: any[] | null }> => {
   console.log("Fetching data from", table, "...");
   // Fetch data
   const dataExists = await checkTableExists(db, table);

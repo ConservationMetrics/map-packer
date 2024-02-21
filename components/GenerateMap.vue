@@ -26,7 +26,7 @@ export default {
       style: this.mapboxStyle || "mapbox://styles/mapbox/satellite-streets-v12",
       projection: "mercator",
       center: [this.mapboxLongitude || 0, this.mapboxLatitude || -15],
-      zoom: this.mapboxZoom || 2.5
+      zoom: this.mapboxZoom || 2.5,
     });
 
     map.on("load", () => {

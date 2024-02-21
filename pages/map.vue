@@ -1,6 +1,6 @@
 <template>
   <div>
-    <GenerateMap 
+    <GenerateMap
       v-if="dataFetched"
       :mapbox-access-token="mapboxAccessToken"
       :mapbox-style="mapboxStyle"
@@ -24,14 +24,14 @@ export default {
   async asyncData({ $axios, app }) {
     // Set up the headers for the request
     let headers = {
-      'x-api-key': app.$config.apiKey.replace(/['"]+/g, ''),
-      'x-auth-strategy': app.$auth.strategy.name
+      "x-api-key": app.$config.apiKey.replace(/['"]+/g, ""),
+      "x-auth-strategy": app.$auth.strategy.name,
     };
 
     try {
       // Use the table name in the API request
       const response = await $axios.$get(`/api/map`, { headers });
-      return { 
+      return {
         dataFetched: true,
         mapboxAccessToken: response.mapboxAccessToken,
         mapboxStyle: response.mapboxStyle,
@@ -41,9 +41,9 @@ export default {
       };
     } catch (error) {
       // Handle errors as appropriate
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
       return {
-        dataFetched: false
+        dataFetched: false,
       };
     }
   },
