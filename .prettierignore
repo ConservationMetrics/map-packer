@@ -1,6 +1,3 @@
 node_modules
 .github
-*.md
-.husky
-.nuxt
 dist
