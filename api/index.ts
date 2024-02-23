@@ -48,8 +48,8 @@ app.get("/data", async (_req: Request, res: Response) => {
     if (data === null) {
       res.json([]);
     } else {
-      // Sort offline maps in descending order by work_ended field
-      const sortedData = sortByDate(data, 'workended');
+      // Sort offline maps in descending order by created_at field
+      const sortedData = sortByDate(data, 'created_at');
       res.json(sortedData);
     }
   } catch (error: any) {
