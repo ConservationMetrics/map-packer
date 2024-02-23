@@ -1,12 +1,96 @@
 <template>
   <div class="sidebar">
-    <h1>MapPacker: Generate Offline Map</h1>
-    <p><em>Use this tool to send a request to generate an offline map.</em></p>
+    <h1 class="text-xl font-bold text-gray-800 mb-2">MapPacker: Generate Offline Map</h1>
+    <p class="mb-2"><em>Use this tool to send a request to generate an offline map.</em></p>
+    <form @submit.prevent="submitForm">
+      <div class="form-group">
+        <label for="title">Title <span class="text-red-600">*</span></label>
+        <input type="text" id="title" v-model="form.title" required class="input-field" />
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" v-model="form.description" class="input-field"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Zoom Level (0 - 22) <span class="text-red-600">*</span></label>
+        <vue-slider v-model="form.localZoom" :min="0" :max="22" :dot-size="14" :tooltip="'always'" :height="6"
+          class="slider"></vue-slider>
+      </div>
+
+      <div class="form-group flex">
+        <div class="flex-grow mr-2">
+          <label for="centerLat">Center Latitude</label>
+          <input type="number" step="0.000001" id="localLatitude" v-model.number="form.localLatitude" required :min="-90"
+            :max="90" class="input-field" />
+        </div>
+        <div class="flex-grow">
+          <label for="centerLng">Center Longitude</label>
+          <input type="number" step="0.000001" id="localLongitude" v-model.number="form.localLongitude" required :min="-180"
+            :max="180" class="input-field" />
+        </div>
+      </div>
+
+      <button type="submit" class="submit-button">Submit Request</button>
+    </form>
   </div>
 </template>
 
 <script>
-export default {};
+import VueSlider from 'vue-slider-component';
+import "vue-slider-component/dist-css/vue-slider-component.css";
+import "vue-slider-component/theme/default.css";
+
+export default {
+  components: { VueSlider },
+  props: [
+    "mapboxAccessToken",
+    "mapboxLatitude",
+    "mapboxLongitude",
+    "mapboxStyle",
+    "mapboxZoom",
+  ],
+  data() {
+    return {
+      form: {
+        title: '',
+        description: '',
+        localZoom: this.mapboxZoom,
+        localLatitude: this.mapboxLatitude,
+        localLongitude: this.mapboxLongitude,
+      },
+    };
+  },
+  watch: {
+    mapboxLatitude(newVal) {
+      this.form.localLatitude = newVal;
+    },
+    mapboxLongitude(newVal) {
+      this.form.localLongitude = newVal;
+    },
+    mapboxZoom(newVal) {
+      this.form.localZoom = newVal;
+    },
+    'form.localZoom': {
+      handler(newVal) {
+        this.$emit('update:params', {param: 'Zoom', value: newVal});
+      },
+      deep: true
+    },
+    'form.localLatitude': function (newVal) {
+      this.$emit('update:params', {param: 'Latitude', value: newVal});
+    },
+    'form.localLongitude': function (newVal) {
+      this.$emit('update:params', {param: 'Longitude', value: newVal});
+    }
+  },
+  methods: {
+    submitForm() {
+      this.$emit('formSubmitted', this.form);
+    }
+  },
+};
 </script>
 
 <style scoped>
@@ -30,5 +114,68 @@ export default {};
     bottom: 0;
     top: auto;
   }
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group.flex {
+  display: flex;
+}
+
+.input-field {
+  flex-grow: 1;
+  /* Ensure inputs take up available space */
+}
+
+.flex-grow {
+  flex: 1;
+  /* Allow children to grow to fill space */
+}
+
+.flex-grow.mr-2 {
+  margin-right: 0.5rem;
+  /* Add some spacing between the latitude and longitude fields */
+}
+
+.input-field {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin-top: 6px;
+}
+
+.slider-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.slider {
+  width: calc(50% - 8px);
+  margin: 10px 0;
+}
+
+.inline-fields>div {
+  display: inline-block;
+  width: calc(50% - 10px);
+  margin-right: 10px;
+}
+
+.submit-button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.submit-button:hover {
+  background-color: #45a049;
 }
 </style>
