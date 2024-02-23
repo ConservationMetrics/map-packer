@@ -1,6 +1,6 @@
 <template>
   <div class="mt-4 mx-auto w-full max-w-6xl px-4"> 
-    <nuxt-link to="/map/" class="generate-map-btn">+ Generate Map</nuxt-link>
+    <nuxt-link to="/map/" class="absolute top-4 right-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer transition-colors duration-200">+ Generate Map</nuxt-link>   
     <h1 class="text-4xl font-bold text-gray-800 mb-8 text-center">Available Offline Maps</h1>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"> 
       <div v-for="map in data" :key="map.id" class="card bg-white border border-gray-300 rounded-lg shadow-lg p-6 flex flex-col">
@@ -72,15 +72,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-.generate-map-btn {
-  @apply absolute top-0 right-0 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out;
-  margin-top: 10px;
-  margin-right: 10px; 
-}
-
-.generate-map-btn:hover {
-  @apply bg-blue-700;
-}
-</style>
