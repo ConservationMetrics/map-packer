@@ -2,22 +2,22 @@
   <div class="flex flex-col items-center mt-4 relative"> <!-- Add relative class here for positioning -->
     <nuxt-link to="/map/" class="generate-map-btn">+ Generate Map</nuxt-link> <!-- Use nuxt-link with the desired route -->
     <h1 class="text-4xl font-bold text-gray-800 mb-4">Available Offline Maps</h1>
-    <div v-for="item in data" :key="item.id" class="bg-gray-100 rounded-lg p-4 mb-4 w-1/2">
-      <h2 class="text-xl font-semibold text-gray-800 mb-2" v-if="item.filename">{{ item.filename }}</h2>
-      <p class="text-gray-600 mb-1" v-if="item.status">
+    <div v-for="map in data" :key="map.id" class="bg-gray-100 rounded-lg p-4 mb-4 w-1/2">
+      <h2 class="text-xl font-semibold text-gray-800 mb-2" v-if="map.filename">{{ map.filename }}</h2>
+      <p class="text-gray-600 mb-1" v-if="map.status">
         <strong>Status:</strong> 
-        <span :class="formatStatusColor(item.status)">{{ item.status }}</span>
+        <span :class="formatStatusColor(map.status)">{{ map.status }}</span>
       </p>
-      <p class="text-gray-600 mb-1" v-if="item.errormessage"><strong>Error Message:</strong> {{ item.errormessage }}</p>
-      <p class="text-gray-600 mb-1" v-if="item.created_at"><strong>Request submitted at:</strong> {{ formatDate(item.created_at) }}</p>
-      <p class="text-gray-600 mb-1" v-if="item.style"><strong>Map style:</strong> {{ item.style }}</p>
-      <p class="text-gray-600 mb-1" v-if="item.bounds"><strong>Bounds:</strong> [{{ formatBounds(item.bounds) }}]</p>
-      <p class="text-gray-600 mb-1" v-if="item.maxzoom"><strong>Zoom level:</strong> {{ item.minzoom }}-{{ item.maxzoom }}</p>
-      <p class="text-gray-600 mb-1" v-if="item.filelocation"><strong>File Location:</strong> <a :href="item.filelocation" class="text-blue-500 hover:text-blue-700">link</a></p>
-      <p class="text-gray-600 mb-1" v-if="item.filesize"><strong>File Size:</strong> {{ formatNumber(item.filesize) }} bytes</p>
-      <p class="text-gray-600 mb-1" v-if="item.numberoftiles"><strong>Number of tiles:</strong> {{ formatNumber(item.numberoftiles) }}</p>
-      <p class="text-gray-600 mb-1" v-if="item.workbegun"><strong>Work begun at:</strong> {{ formatDate(item.workbegun) }}</p>
-      <p class="text-gray-600 mb-1" v-if="item.workended"><strong>Work ended at:</strong> {{ formatDate(item.workended) }}</p>
+      <p class="text-gray-600 mb-1" v-if="map.errormessage"><strong>Error Message:</strong> {{ map.errormessage }}</p>
+      <p class="text-gray-600 mb-1" v-if="map.created_at"><strong>Request submitted at:</strong> {{ formatDate(map.created_at) }}</p>
+      <p class="text-gray-600 mb-1" v-if="map.style"><strong>Map style:</strong> {{ map.style }}</p>
+      <p class="text-gray-600 mb-1" v-if="map.bounds"><strong>Bounds:</strong> [{{ formatBounds(map.bounds) }}]</p>
+      <p class="text-gray-600 mb-1" v-if="map.maxzoom"><strong>Zoom level:</strong> {{ map.minzoom }}-{{ map.maxzoom }}</p>
+      <p class="text-gray-600 mb-1" v-if="map.filelocation"><strong>File Location:</strong> <a :href="map.filelocation" class="text-blue-500 hover:text-blue-700">link</a></p>
+      <p class="text-gray-600 mb-1" v-if="map.filesize"><strong>File Size:</strong> {{ formatNumber(map.filesize) }} bytes</p>
+      <p class="text-gray-600 mb-1" v-if="map.numberoftiles"><strong>Number of tiles:</strong> {{ formatNumber(map.numberoftiles) }}</p>
+      <p class="text-gray-600 mb-1" v-if="map.workbegun"><strong>Work begun at:</strong> {{ formatDate(map.workbegun) }}</p>
+      <p class="text-gray-600 mb-1" v-if="map.workended"><strong>Work ended at:</strong> {{ formatDate(map.workended) }}</p>
 
     </div>
   </div>

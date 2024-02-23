@@ -4,6 +4,7 @@ import setupDatabaseConnection from "./database/dbConnection";
 import fetchData from "./database/dbOperations";
 import { checkAuthStrategy } from "./middleware";
 import { getLogin, postLogin } from "./loginController";
+import { sortByDate } from "./dataProcessing/filterData";
 
 import {
   DATABASE,
@@ -43,7 +44,14 @@ app.get("/data", async (_req: Request, res: Response) => {
   try {
     // Fetch data
     const { data } = await fetchData(db, DB_TABLE);
-    res.json(data);
+
+    if (data === null) {
+      res.json([]);
+    } else {
+      // Sort offline maps in descending order by work_ended field
+      const sortedData = sortByDate(data, 'workended');
+      res.json(sortedData);
+    }
   } catch (error: any) {
     console.error("Error fetching data on API side:", error.message);
     res.status(500).json({ error: error.message });

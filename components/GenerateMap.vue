@@ -7,6 +7,8 @@
 
 <script>
 import mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
+
 import Sidebar from "@/components/Sidebar.vue";
 
 export default {
