@@ -1,5 +1,6 @@
 <template>
-  <div class="flex flex-col items-center mt-8">
+  <div class="flex flex-col items-center mt-4 relative"> <!-- Add relative class here for positioning -->
+    <nuxt-link to="/map/" class="generate-map-btn">+ Generate Map</nuxt-link> <!-- Use nuxt-link with the desired route -->
     <h1 class="text-4xl font-bold text-gray-800 mb-4">Available Offline Maps</h1>
     <div v-for="item in data" :key="item.id" class="bg-gray-100 rounded-lg p-4 mb-4 w-1/2">
       <h2 class="text-xl font-semibold text-gray-800 mb-2" v-if="item.filename">{{ item.filename }}</h2>
@@ -68,6 +69,24 @@ export default {
   margin-bottom: 1em;
   font-size: 2em;
   font-weight: 900;
+}
+
+.generate-map-btn {
+  position: absolute; /* Position relative to the nearest positioned ancestor (`.container` with `relative`) */
+  top: 0; /* Align to the top edge of the container */
+  right: 0; /* Align to the right edge of the container */
+  background-color: #0056b3;
+  color: white; /* White text color */
+  padding: 10px 20px; /* Padding around the text */
+  border: none; /* No border */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Mouse cursor changes to pointer when hovered */
+  margin-top: 10px; /* Adjust as needed */
+  margin-right: 10px; /* Adjust as needed */
+}
+
+.generate-map-btn:hover {
+  background-color: #45a049; /* Darker green on hover */
 }
 
 .table-item {
