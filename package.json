@@ -24,6 +24,7 @@
     "pg": "^8.11.3",
     "vue": "^2.7.10",
     "vue-server-renderer": "^2.7.10",
+    "vue-slider-component": "^3.2.24",
     "vue-template-compiler": "^2.7.10"
   },
   "devDependencies": {

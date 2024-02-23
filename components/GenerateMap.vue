@@ -1,18 +1,30 @@
 <template>
   <div>
-    <div id="map"></div>
-    <Sidebar />
+    <Sidebar 
+      @formSubmitted="handleFormSubmit" 
+      @update:params="updateMapParams"
+      :mapboxLatitude="localLatitude" 
+      :mapboxLongitude="localLongitude"
+      :mapboxStyle="mapboxStyle" 
+      :mapboxZoom="localZoom" 
+    />
+    <Map 
+      @update:params="updateMapParams"
+      :mapboxAccessToken="mapboxAccessToken"
+      :mapboxLatitude="localLatitude"
+      :mapboxLongitude="localLongitude"
+      :mapboxStyle="mapboxStyle"
+      :mapboxZoom="localZoom" 
+    />
   </div>
 </template>
 
 <script>
-import mapboxgl from "mapbox-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
-
 import Sidebar from "@/components/Sidebar.vue";
+import Map from "@/components/Map.vue";
 
 export default {
-  components: { Sidebar },
+  components: { Sidebar, Map },
   props: [
     "mapboxAccessToken",
     "mapboxLatitude",
@@ -20,37 +32,22 @@ export default {
     "mapboxStyle",
     "mapboxZoom",
   ],
-  mounted() {
-    mapboxgl.accessToken = this.mapboxAccessToken;
-
-    const map = new mapboxgl.Map({
-      container: "map",
-      style: this.mapboxStyle || "mapbox://styles/mapbox/satellite-streets-v12",
-      projection: "mercator",
-      center: [this.mapboxLongitude || 0, this.mapboxLatitude || -15],
-      zoom: this.mapboxZoom || 2.5,
-    });
-
-    map.on("load", () => {
-      // Navigation Control (zoom buttons and compass)
-      const nav = new mapboxgl.NavigationControl();
-      map.addControl(nav, "top-right");
-
-      // Scale Control
-      const scale = new mapboxgl.ScaleControl({
-        maxWidth: 80,
-        unit: "metric",
-      });
-      map.addControl(scale, "bottom-left");
-
-      // Fullscreen Control
-      const fullscreenControl = new mapboxgl.FullscreenControl();
-      map.addControl(fullscreenControl, "top-right");
-    });
+  data() {
+    return {
+      localLatitude: this.mapboxLatitude,
+      localLongitude: this.mapboxLongitude,
+      localZoom: this.mapboxZoom,
+    };
   },
-  beforeDestroy() {
-    if (this.map) {
-      this.map.remove();
+  methods: {
+    handleFormSubmit(formData) {
+      console.log('Received form data:', formData);
+    },
+    updateMapParams(updateObj) {
+      let { param, value } = updateObj;
+      value = parseFloat(value.toFixed(6));
+
+      this[`local${param}`] = value;
     }
   },
 };
@@ -60,12 +57,5 @@ export default {
 body {
   margin: 0;
   padding: 0;
-}
-
-#map {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 100%;
 }
 </style>
