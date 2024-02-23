@@ -1,23 +1,31 @@
 <template>
-  <div class="flex flex-col items-center mt-8">
-    <h1 class="text-4xl font-bold text-gray-800 mb-4">Available Offline Maps</h1>
-    <div v-for="item in data" :key="item.id" class="bg-gray-100 rounded-lg p-4 mb-4 w-1/2">
-      <h2 class="text-xl font-semibold text-gray-800 mb-2" v-if="item.filename">{{ item.filename }}</h2>
-      <p class="text-gray-600 mb-1" v-if="item.status">
-        <strong>Status:</strong> 
-        <span :class="formatStatusColor(item.status)">{{ item.status }}</span>
-      </p>
-      <p class="text-gray-600 mb-1" v-if="item.errormessage"><strong>Error Message:</strong> {{ item.errormessage }}</p>
-      <p class="text-gray-600 mb-1" v-if="item.created_at"><strong>Request submitted at:</strong> {{ formatDate(item.created_at) }}</p>
-      <p class="text-gray-600 mb-1" v-if="item.style"><strong>Map style:</strong> {{ item.style }}</p>
-      <p class="text-gray-600 mb-1" v-if="item.bounds"><strong>Bounds:</strong> [{{ formatBounds(item.bounds) }}]</p>
-      <p class="text-gray-600 mb-1" v-if="item.maxzoom"><strong>Zoom level:</strong> {{ item.minzoom }}-{{ item.maxzoom }}</p>
-      <p class="text-gray-600 mb-1" v-if="item.filelocation"><strong>File Location:</strong> <a :href="item.filelocation" class="text-blue-500 hover:text-blue-700">link</a></p>
-      <p class="text-gray-600 mb-1" v-if="item.filesize"><strong>File Size:</strong> {{ formatNumber(item.filesize) }} bytes</p>
-      <p class="text-gray-600 mb-1" v-if="item.numberoftiles"><strong>Number of tiles:</strong> {{ formatNumber(item.numberoftiles) }}</p>
-      <p class="text-gray-600 mb-1" v-if="item.workbegun"><strong>Work begun at:</strong> {{ formatDate(item.workbegun) }}</p>
-      <p class="text-gray-600 mb-1" v-if="item.workended"><strong>Work ended at:</strong> {{ formatDate(item.workended) }}</p>
-
+  <div class="mt-4 mx-auto w-full max-w-6xl px-4"> 
+    <nuxt-link to="/map/" class="generate-map-btn">+ Generate Map</nuxt-link>
+    <h1 class="text-4xl font-bold text-gray-800 mb-8 text-center">Available Offline Maps</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"> 
+      <div v-for="map in data" :key="map.id" class="card bg-white border border-gray-300 rounded-lg shadow-lg p-6 flex flex-col">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4" v-if="map.filename">{{ map.filename }}</h2>
+        <div class="flex justify-between items-center mb-4">
+          <p v-if="map.status">
+            <span class="font-bold">Status:</span>
+            <span :class="formatStatusColor(map.status)">{{ map.status }}</span>
+          </p>
+          <a v-if="map.filelocation" :href="map.filelocation" class="download-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out">Download</a>
+        </div>
+        <div class="space-y-2 flex-grow">
+          <p class="text-red-600" v-if="map.errormessage">{{ map.errormessage }}</p>
+          <p v-if="map.created_at"><span class="font-bold">Requested on:</span> {{ formatDate(map.created_at) }}</p>
+          <p v-if="map.style"><span class="font-bold">Map Style:</span> {{ map.style }}<span v-if="map.planet_monthly_visual"> ({{ map.planet_monthly_visual }})</span><span v-if="map.openstreetmap === true">, with OSM labels </span></p> 
+          <p v-if="map.bounds"><span class="font-bold">Bounds:</span> [{{ formatBounds(map.bounds) }}]</p>
+          <p v-if="map.maxzoom"><span class="font-bold">Zoom Level:</span> {{ map.minzoom }}-{{ map.maxzoom }}</p>
+          <div class="space-y-2 flex-grow" v-if="map.status !== 'PENDING'">
+            <h3 class="italic text-lg text-gray-600">Metadata</h3>
+            <p v-if="map.workbegun && map.workended"><span class="font-bold">Task Duration:</span> {{ calculateDuration(map.workbegun, map.workended) }}</p>
+            <p v-if="map.filesize"><span class="font-bold">File Size:</span> {{ formatNumber(map.filesize) }} bytes</p>
+            <p v-if="map.numberoftiles"><span class="font-bold">Number of Tiles:</span> {{ formatNumber(map.numberoftiles) }}</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -35,10 +43,11 @@ export default {
       return bounds.split(',').join(', ');
     },
     formatDate(dateString) {
-      const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-GB', options).replace(/,/, '');
-    },
+  const options = { year: 'numeric', month: 'long', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false };
+  const date = new Date(dateString);
+  const formattedDate = date.toLocaleDateString('en-GB', options);
+  return `${formattedDate}`;
+},
     formatStatusColor(status) {
       switch (status) {
         case 'FAILED':
@@ -50,55 +59,28 @@ export default {
         default:
           return 'font-semibold text-gray-600';
       }
-    }
+    },
+      calculateDuration(start, end) {
+      const startDate = new Date(start);
+      const endDate = new Date(end);
+      const duration = endDate - startDate;
+      const hours = Math.floor(duration / (1000 * 60 * 60));
+      const minutes = Math.floor((duration / (1000 * 60)) % 60);
+      const seconds = Math.floor((duration / 1000) % 60);
+      return `${hours}h ${minutes}m ${seconds}s`;
+    }    
   }
 };
 </script>
 
 <style scoped>
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 2em;
+.generate-map-btn {
+  @apply absolute top-0 right-0 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out;
+  margin-top: 10px;
+  margin-right: 10px; 
 }
 
-.container h1 {
-  color: #333;
-  margin-bottom: 1em;
-  font-size: 2em;
-  font-weight: 900;
-}
-
-.table-item {
-  background-color: #f9f9f9;
-  border-radius: 5px;
-  padding: 1em;
-  margin-bottom: 1em;
-  width: 50%;
-}
-
-.table-item h2 {
-  color: #333;
-  margin-bottom: 0.5em;
-}
-
-.table-item ul {
-  list-style: none;
-  padding: 0;
-}
-
-.table-item ul li {
-  margin-bottom: 0.5em;
-}
-
-.table-item ul li a {
-  color: #007bff;
-  text-decoration: none;
-}
-
-.table-item ul li a:hover {
-  color: #0056b3;
-  text-decoration: underline;
+.generate-map-btn:hover {
+  @apply bg-blue-700;
 }
 </style>
