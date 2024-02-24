@@ -15,10 +15,10 @@ import {
   DB_SSL,
   DB_TABLE,
   MAPBOX_ACCESS_TOKEN,
-  MAPBOX_STYLE,
-  MAPBOX_ZOOM,
-  MAPBOX_LATITUDE,
-  MAPBOX_LONGITUDE,
+  MAP_STYLE,
+  MAP_ZOOM,
+  MAP_LATITUDE,
+  MAP_LONGITUDE,
 } from "./config";
 
 const app = express();
@@ -61,10 +61,10 @@ app.get("/data", async (_req: Request, res: Response) => {
 app.get("/map", async (_req: Request, res: Response) => {
   const response = {
     mapboxAccessToken: MAPBOX_ACCESS_TOKEN,
-    mapboxStyle: MAPBOX_STYLE,
-    mapboxZoom: MAPBOX_ZOOM,
-    mapboxLatitude: MAPBOX_LATITUDE,
-    mapboxLongitude: MAPBOX_LONGITUDE,
+    mapStyle: MAP_STYLE,
+    mapZoom: MAP_ZOOM,
+    mapLatitude: MAP_LATITUDE,
+    mapLongitude: MAP_LONGITUDE,
   };
   res.json(response);
 });

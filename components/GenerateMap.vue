@@ -3,18 +3,19 @@
     <Sidebar 
       @formSubmitted="handleFormSubmit" 
       @update:params="updateMapParams"
-      :mapboxLatitude="localLatitude" 
-      :mapboxLongitude="localLongitude"
-      :mapboxStyle="mapboxStyle" 
-      :mapboxZoom="localZoom" 
+      :mapLatitude="localLatitude" 
+      :mapLongitude="localLongitude"
+      :customMapStyle="mapStyle"
+      :mapStyle="localStyle" 
+      :mapZoom="localZoom" 
     />
     <Map 
       @update:params="updateMapParams"
       :mapboxAccessToken="mapboxAccessToken"
-      :mapboxLatitude="localLatitude"
-      :mapboxLongitude="localLongitude"
-      :mapboxStyle="mapboxStyle"
-      :mapboxZoom="localZoom" 
+      :mapLatitude="localLatitude"
+      :mapLongitude="localLongitude"
+      :mapStyle="localStyle"
+      :mapZoom="localZoom" 
     />
   </div>
 </template>
@@ -27,16 +28,17 @@ export default {
   components: { Sidebar, Map },
   props: [
     "mapboxAccessToken",
-    "mapboxLatitude",
-    "mapboxLongitude",
-    "mapboxStyle",
-    "mapboxZoom",
+    "mapLatitude",
+    "mapLongitude",
+    "mapStyle",
+    "mapZoom",
   ],
   data() {
     return {
-      localLatitude: this.mapboxLatitude,
-      localLongitude: this.mapboxLongitude,
-      localZoom: this.mapboxZoom,
+      localLatitude: this.mapLatitude,
+      localLongitude: this.mapLongitude,
+      localZoom: this.mapZoom,
+      localStyle: this.mapStyle,
     };
   },
   methods: {
@@ -45,7 +47,10 @@ export default {
     },
     updateMapParams(updateObj) {
       let { param, value } = updateObj;
-      value = parseFloat(value.toFixed(6));
+
+      if (typeof value === 'number') {
+        value = parseFloat(value.toFixed(6));
+      }
 
       this[`local${param}`] = value;
     }

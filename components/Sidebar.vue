@@ -14,6 +14,16 @@
       </div>
 
       <div class="form-group">
+        <label for="mapStyle">Map Style</label>
+        <select id="mapStyle" v-model="form.localStyle" class="input-field">
+          <option value="mapbox://styles/mapbox/streets-v12">Mapbox Streets</option>
+          <option value="mapbox://styles/mapbox/satellite-v9">Mapbox Satellite</option>
+          <option value="mapbox://styles/mapbox/satellite-streets-v12">Mapbox Satellite Streets</option>
+          <option :value="customMapStyle">Mapbox - custom style</option>
+        </select>
+      </div>
+
+      <div class="form-group">
         <label>Zoom Level (0 - 22) <span class="text-red-600">*</span></label>
         <vue-slider v-model="form.localZoom" :min="0" :max="22" :dot-size="14" :tooltip="'always'" :height="6"
           class="slider"></vue-slider>
@@ -46,31 +56,35 @@ export default {
   components: { VueSlider },
   props: [
     "mapboxAccessToken",
-    "mapboxLatitude",
-    "mapboxLongitude",
-    "mapboxStyle",
-    "mapboxZoom",
+    "mapLatitude",
+    "mapLongitude",
+    "customMapStyle",
+    "mapStyle",
+    "mapZoom",
   ],
   data() {
     return {
       form: {
         title: '',
         description: '',
-        localZoom: this.mapboxZoom,
-        localLatitude: this.mapboxLatitude,
-        localLongitude: this.mapboxLongitude,
+        localZoom: this.mapZoom,
+        localLatitude: this.mapLatitude,
+        localLongitude: this.mapLongitude,
       },
     };
   },
   watch: {
-    mapboxLatitude(newVal) {
+    mapLatitude(newVal) {
       this.form.localLatitude = newVal;
     },
-    mapboxLongitude(newVal) {
+    mapLongitude(newVal) {
       this.form.localLongitude = newVal;
     },
-    mapboxZoom(newVal) {
+    mapZoom(newVal) {
       this.form.localZoom = newVal;
+    },
+    mapStyle(newVal) {
+      this.form.localStyle = newVal;
     },
     'form.localZoom': {
       handler(newVal) {
@@ -83,6 +97,9 @@ export default {
     },
     'form.localLongitude': function (newVal) {
       this.$emit('update:params', {param: 'Longitude', value: newVal});
+    },
+    'form.localStyle': function (newVal) {
+      this.$emit('update:params', {param: 'Style', value: newVal});
     }
   },
   methods: {

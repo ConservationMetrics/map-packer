@@ -9,32 +9,38 @@
   export default {
     props: [
       "mapboxAccessToken",
-      "mapboxLatitude",
-      "mapboxLongitude",
-      "mapboxStyle",
-      "mapboxZoom",
+      "mapLatitude",
+      "mapLongitude",
+      "mapStyle",
+      "mapZoom",
     ],
     data() {
       return {
-        localLatitude: this.mapboxLatitude,
-        localLongitude: this.mapboxLongitude,
-        localZoom: this.mapboxZoom,
+        localLatitude: this.mapLatitude,
+        localLongitude: this.mapLongitude,
+        localZoom: this.mapZoom,
+        localStyle: this.mapStyle,
       };
     },
     watch: {
-      mapboxLatitude(newVal) {
+      mapLatitude(newVal) {
         if (this.$map) {
           this.$map.setCenter([this.localLongitude, newVal]);
         }
       },
-      mapboxLongitude(newVal) {
+      mapLongitude(newVal) {
         if (this.$map) {
           this.$map.setCenter([newVal, this.localLatitude]);
         }
       },
-      mapboxZoom(newVal) {
+      mapZoom(newVal) {
         if (this.$map) {
           this.$map.setZoom(newVal);
+        }
+      },
+      mapStyle(newVal) {
+        if (this.$map) {
+          this.$map.setStyle(newVal);
         }
       },
     },
@@ -43,10 +49,10 @@
   
       this.$map = new mapboxgl.Map({
         container: "map",
-        style: this.mapboxStyle || "mapbox://styles/mapbox/satellite-streets-v12",
+        style: this.mapStyle || "mapbox://styles/mapbox/satellite-streets-v12",
         projection: "mercator",
-        center: [this.mapboxLongitude || 0, this.mapboxLatitude || -15],
-        zoom: this.mapboxZoom || 2.5,
+        center: [this.mapLongitude || 0, this.mapLatitude || -15],
+        zoom: this.mapZoom || 2.5,
       });
   
       this.$map.on("load", () => {

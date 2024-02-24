@@ -3,10 +3,10 @@
     <GenerateMap
       v-if="dataFetched"
       :mapbox-access-token="mapboxAccessToken"
-      :mapbox-style="mapboxStyle"
-      :mapbox-zoom="mapboxZoom"
-      :mapbox-latitude="mapboxLatitude"
-      :mapbox-longitude="mapboxLongitude"
+      :map-style="mapStyle"
+      :map-zoom="mapZoom"
+      :map-latitude="mapLatitude"
+      :map-longitude="mapLongitude"
     />
   </div>
 </template>
@@ -34,10 +34,10 @@ export default {
       return {
         dataFetched: true,
         mapboxAccessToken: response.mapboxAccessToken,
-        mapboxStyle: response.mapboxStyle,
-        mapboxZoom: response.mapboxZoom,
-        mapboxLatitude: response.mapboxLatitude,
-        mapboxLongitude: response.mapboxLongitude,
+        mapStyle: response.mapStyle,
+        mapZoom: response.mapZoom,
+        mapLatitude: response.mapLatitude,
+        mapLongitude: response.mapLongitude,
       };
     } catch (error) {
       // Handle errors as appropriate
