@@ -63,7 +63,6 @@ export default {
   data() {
     return {
       mapStyles: [
-        { name: "Mapbox Streets", value: "mapbox://styles/mapbox/streets-v12" },
         { name: "Mapbox Satellite", value: "mapbox://styles/mapbox/satellite-v9" },
         { name: "Mapbox Satellite Streets", value: "mapbox://styles/mapbox/satellite-streets-v12" },
         { name: "Mapbox Custom Style", value: this.customMapStyle }

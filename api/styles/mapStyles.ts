@@ -6,15 +6,14 @@ interface MapStyle {
 }
 
 const calculatePlanetMonthYear = () => {
-    // Let's calculate a format like this: YYYY-MM but for two months earlier than today
-    // So if it's February 25, 2024, we want to get 2023-12
+    // Let's calculate a format like this: YYYY-MM but for two months earlier than this month
+    // So if it's ANY day in February, 2024, we want to get 2023-12
     const date = new Date();
-    const month = date.getMonth();
+    date.setMonth(date.getMonth() - 2);
+    const month = date.getMonth() + 1; // JavaScript months are 0-indexed, add 1 to normalize  
     const year = date.getFullYear();
-    const newMonth = month - 2;
-    const newYear = newMonth < 0 ? year - 1 : year;
-    const newMonthFormatted = newMonth < 0 ? newMonth + 12 : newMonth;
-    return `${newYear}-${newMonthFormatted < 10 ? `0${newMonthFormatted}` : newMonthFormatted}`;
+    const monthYear = `${year}-${month < 10 ? `0${month}` : month}`;
+    return monthYear;
 };
 
 export const mapStyles: Record<MapStyleKey, MapStyle> = {
@@ -109,7 +108,7 @@ export const mapStyles: Record<MapStyleKey, MapStyle> = {
     },
   },
   planet: {
-    name: "Planet Monthly Visual Basemap",
+    name: `Planet Monthly Visual Basemap (${calculatePlanetMonthYear()})`,
     style: {
       version: 8,
       sources: {
