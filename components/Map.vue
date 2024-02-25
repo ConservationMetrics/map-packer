@@ -53,6 +53,7 @@
         projection: "mercator",
         center: [this.mapLongitude || 0, this.mapLatitude || -15],
         zoom: this.mapZoom || 2.5,
+        maxZoom: 16
       });
   
       this.$map.on("load", () => {

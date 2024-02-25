@@ -21,8 +21,8 @@
       </div>
 
       <div class="form-group">
-        <label>Zoom Level (0 - 22) <span class="text-red-600">*</span></label>
-        <vue-slider v-model="form.localZoom" :min="0" :max="22" :dot-size="14" :tooltip="'always'" :height="6"
+        <label>Zoom Level (0 - 16) <span class="text-red-600">*</span></label>
+        <vue-slider v-model="form.localZoom" :min="0" :max="16" :dot-size="14" :tooltip="'always'" :height="6"
           class="slider"></vue-slider>
       </div>
 
