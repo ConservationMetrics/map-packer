@@ -66,7 +66,7 @@ export default {
         { name: "Mapbox Streets", value: "mapbox://styles/mapbox/streets-v12" },
         { name: "Mapbox Satellite", value: "mapbox://styles/mapbox/satellite-v9" },
         { name: "Mapbox Satellite Streets", value: "mapbox://styles/mapbox/satellite-streets-v12" },
-        { name: "Mapbox - custom style", value: this.customMapStyle }
+        { name: "Mapbox Custom Style", value: this.customMapStyle }
       ],
       form: {
         title: '',
@@ -108,12 +108,15 @@ export default {
   },
   methods: {
     fetchMapStyles() {
+      // Add available map styles to the mapStyles array
       this.mapStyles = this.mapStyles.concat(this.availableMapStyles.map(style => {
         return {
           name: style.name,
           value: style.url
         };
       }));
+      // Sort map styles by name
+      this.mapStyles.sort((a, b) => a.name.localeCompare(b.name));
     },
     submitForm() {
       this.$emit('formSubmitted', this.form);

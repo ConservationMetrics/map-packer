@@ -1,9 +1,21 @@
-export type MapStyleKey = "bing" | "google";
+export type MapStyleKey = "bing" | "google" | "esri" | "planet";
 
 interface MapStyle {
-    name: string;  // Human-readable name
-    style: unknown;  // Can be a URL string or an object representing the style
-  }
+  name: string;
+  style: unknown;
+}
+
+const calculatePlanetMonthYear = () => {
+    // Let's calculate a format like this: YYYY-MM but for two months earlier than today
+    // So if it's February 25, 2024, we want to get 2023-12
+    const date = new Date();
+    const month = date.getMonth();
+    const year = date.getFullYear();
+    const newMonth = month - 2;
+    const newYear = newMonth < 0 ? year - 1 : year;
+    const newMonthFormatted = newMonth < 0 ? newMonth + 12 : newMonth;
+    return `${newYear}-${newMonthFormatted < 10 ? `0${newMonthFormatted}` : newMonthFormatted}`;
+};
 
 export const mapStyles: Record<MapStyleKey, MapStyle> = {
   bing: {
@@ -12,13 +24,13 @@ export const mapStyles: Record<MapStyleKey, MapStyle> = {
       version: 8,
       sources: {
         bing: {
-            type: 'raster',
-            tiles: [
-                'https://ecn.t0.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=587&mkt=en-gb&n=z',
-                'https://ecn.t1.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=587&mkt=en-gb&n=z',
-                'https://ecn.t2.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=587&mkt=en-gb&n=z',
-                'https://ecn.t3.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=587&mkt=en-gb&n=z',
-            ],
+          type: "raster",
+          tiles: [
+            "https://ecn.t0.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=587&mkt=en-gb&n=z",
+            "https://ecn.t1.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=587&mkt=en-gb&n=z",
+            "https://ecn.t2.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=587&mkt=en-gb&n=z",
+            "https://ecn.t3.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=587&mkt=en-gb&n=z",
+          ],
         },
       },
       layers: [
@@ -33,6 +45,36 @@ export const mapStyles: Record<MapStyleKey, MapStyle> = {
           id: "bing",
           type: "raster",
           source: "bing",
+          paint: {},
+        },
+      ],
+    },
+  },
+  esri: {
+    name: "ESRI Satellite",
+    style: {
+      version: 8,
+      sources: {
+        esri: {
+          type: "raster",
+          tiles: [
+            "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+          ],
+          tileSize: 256,
+        },
+      },
+      layers: [
+        {
+          id: "background",
+          type: "background",
+          paint: {
+            "background-color": "#f9f9f9",
+          },
+        },
+        {
+          id: "esri",
+          type: "raster",
+          source: "esri",
           paint: {},
         },
       ],
@@ -61,6 +103,36 @@ export const mapStyles: Record<MapStyleKey, MapStyle> = {
           id: "google",
           type: "raster",
           source: "google",
+          paint: {},
+        },
+      ],
+    },
+  },
+  planet: {
+    name: "Planet Monthly Visual Basemap",
+    style: {
+      version: 8,
+      sources: {
+        planet: {
+          type: "raster",
+          tiles: [
+            `https://tiles.planet.com/basemaps/v1/planet-tiles/planet_medres_visual_${calculatePlanetMonthYear()}_mosaic/gmap/{z}/{x}/{y}?api_key=${process.env.VUE_APP_PLANET_API_KEY}`,
+          ],
+          tileSize: 256,
+        },
+      },
+      layers: [
+        {
+          id: "background",
+          type: "background",
+          paint: {
+            "background-color": "#f9f9f9",
+          },
+        },
+        {
+          id: "planet",
+          type: "raster",
+          source: "planet",
           paint: {},
         },
       ],
