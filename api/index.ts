@@ -95,6 +95,29 @@ app.get("/mapstyle/:styleKey", (req: Request, res: Response) => {
   }
 });
 
+// API endpoint to retrieve a specific map style with a custom date
+app.get("/mapstyle/planet/:year/:month", (req: Request, res: Response) => {
+  const { year, month } = req.params;
+  const styleKey = 'planet';
+  console.log(year, month)
+  
+  // Validate that styleKey is a key of mapStyles
+  if (styleKey in mapStyles) {
+    const mapStyleEntry = mapStyles[styleKey as keyof typeof mapStyles];
+
+    // Replace the date in the tile URL
+    // Replace regex of the form YYYY-MM with the new year and month
+    const newTileUrl = (mapStyleEntry.style as any).sources.planet.tiles[0].replace(/\d{4}-\d{2}/, `${year}-${month}`);
+    (mapStyleEntry.style as any).sources.planet.tiles[0] = newTileUrl;
+
+    console.log(newTileUrl)
+
+    res.json(mapStyleEntry.style);
+  } else {
+    res.status(404).json({ error: "Map style not found" });
+  }
+});
+
 export default {
   path: "/api",
   handler: app,

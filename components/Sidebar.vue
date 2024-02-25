@@ -16,8 +16,15 @@
       <div class="form-group">
         <label for="mapStyle">Map Style</label>
         <select id="mapStyle" v-model="form.localStyle" class="input-field">
-          <option v-for="style in mapStyles" :key="style.value" :value="style.value">{{ style.name }}</option>
+          <option v-for="style in dynamicMapStyles" :key="style.value" :value="style.value">{{ style.name }}</option>
         </select>
+      </div>
+
+      <div v-if="form.localStyle.includes('/api/mapstyle/planet/')">
+        <div class="form-group">
+          <label for="planetMonthYear">Planet Visual Basemap: Month & Year</label>
+          <input type="month" id="planetMonthYear" v-model="form.planetMonthYear" :max="maxPlanetMonthYear" class="input-field" />
+        </div>
       </div>
 
       <div class="form-group">
@@ -45,6 +52,8 @@
 </template>
 
 <script>
+import { calculatePlanetMonthYear } from "@/src/utils";
+
 import VueSlider from 'vue-slider-component';
 import "vue-slider-component/dist-css/vue-slider-component.css";
 import "vue-slider-component/theme/default.css";
@@ -73,6 +82,8 @@ export default {
         localZoom: this.mapZoom,
         localLatitude: this.mapLatitude,
         localLongitude: this.mapLongitude,
+        localStyle: this.mapStyle,
+        planetMonthYear: calculatePlanetMonthYear(),
       },
     };
   },
@@ -103,7 +114,15 @@ export default {
     },
     'form.localStyle': function (newVal) {
       this.$emit('update:params', {param: 'Style', value: newVal});
-    }
+    },
+    'form.planetMonthYear': function(newVal) {
+      if (this.form.localStyle.includes('/api/mapstyle/planet/')) {
+        const [year, month] = newVal.split('-');
+        if (year && month) {
+          this.form.localStyle = `/api/mapstyle/planet/${year}/${month}`;
+        }
+      }
+    },
   },
   methods: {
     fetchMapStyles() {
@@ -119,6 +138,19 @@ export default {
     },
     submitForm() {
       this.$emit('formSubmitted', this.form);
+    }
+  },
+  computed: {
+    dynamicMapStyles() {
+      let styles = [...this.mapStyles];
+      if (this.form.localStyle.includes('/api/mapstyle/planet/') && this.form.localStyle.length > '/api/mapstyle/planet/'.length) {
+        styles = styles.filter(style => style.value !== '/api/mapstyle/planet/');
+        styles.push({ name: "Planet Monthly Visual Basemap", value: this.form.localStyle });
+      }
+      return styles;
+    },
+    maxPlanetMonthYear() {
+      return calculatePlanetMonthYear();
     }
   },
   mounted() {
