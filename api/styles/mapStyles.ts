@@ -12,11 +12,13 @@ export const mapStyles: Record<MapStyleKey, MapStyle> = {
       version: 8,
       sources: {
         bing: {
-          type: "raster",
-          scheme: "xyz",
-          tilejson: "2.2.0",
-          tiles: ["sources/{z}/{x}/{y}.jpg"],
-          tileSize: 256,
+            type: 'raster',
+            tiles: [
+                'https://ecn.t0.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=587&mkt=en-gb&n=z',
+                'https://ecn.t1.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=587&mkt=en-gb&n=z',
+                'https://ecn.t2.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=587&mkt=en-gb&n=z',
+                'https://ecn.t3.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=587&mkt=en-gb&n=z',
+            ],
         },
       },
       layers: [
