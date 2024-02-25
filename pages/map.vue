@@ -7,6 +7,7 @@
       :map-zoom="mapZoom"
       :map-latitude="mapLatitude"
       :map-longitude="mapLongitude"
+      :available-map-styles="availableMapStyles"
     />
   </div>
 </template>
@@ -31,6 +32,7 @@ export default {
     try {
       // Use the table name in the API request
       const response = await $axios.$get(`/api/map`, { headers });
+      const availableMapStyles = await $axios.$get(`/api/mapstyles`, { headers });
       return {
         dataFetched: true,
         mapboxAccessToken: response.mapboxAccessToken,
@@ -38,6 +40,7 @@ export default {
         mapZoom: response.mapZoom,
         mapLatitude: response.mapLatitude,
         mapLongitude: response.mapLongitude,
+        availableMapStyles: availableMapStyles,
       };
     } catch (error) {
       // Handle errors as appropriate

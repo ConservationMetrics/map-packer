@@ -8,6 +8,7 @@
       :customMapStyle="mapStyle"
       :mapStyle="localStyle" 
       :mapZoom="localZoom" 
+      :availableMapStyles="availableMapStyles"
     />
     <Map 
       @update:params="updateMapParams"
@@ -32,6 +33,7 @@ export default {
     "mapLongitude",
     "mapStyle",
     "mapZoom",
+    "availableMapStyles"
   ],
   data() {
     return {

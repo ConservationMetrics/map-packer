@@ -5,6 +5,7 @@ import fetchData from "./database/dbOperations";
 import { checkAuthStrategy } from "./middleware";
 import { getLogin, postLogin } from "./loginController";
 import { sortByDate } from "./dataProcessing/filterData";
+import { mapStyles } from "./styles/mapStyles";
 
 import {
   DATABASE,
@@ -40,6 +41,7 @@ const db = setupDatabaseConnection(
   DB_SSL,
 );
 
+// API endpoint to retrieve offline maps from db
 app.get("/data", async (_req: Request, res: Response) => {
   try {
     // Fetch data
@@ -58,6 +60,7 @@ app.get("/data", async (_req: Request, res: Response) => {
   }
 });
 
+// API endpoint to retrieve map configuration
 app.get("/map", async (_req: Request, res: Response) => {
   const response = {
     mapboxAccessToken: MAPBOX_ACCESS_TOKEN,
@@ -67,6 +70,29 @@ app.get("/map", async (_req: Request, res: Response) => {
     mapLongitude: MAP_LONGITUDE,
   };
   res.json(response);
+});
+
+// API endpoint to retrieve all available map styles
+app.get("/mapstyles", (_req: Request, res: Response) => {
+  const styles = Object.entries(mapStyles).map(([key, value]) => ({
+    name: value.name,
+    url: `/api/mapstyle/${key}/` // Use the key to generate the URL
+  }));
+
+  res.json(styles);
+});
+
+// API endpoint to retrieve a specific map style
+app.get("/mapstyle/:styleKey", (req: Request, res: Response) => {
+  const styleKey = req.params.styleKey;
+  
+  // Validate that styleKey is a key of mapStyles
+  if (styleKey in mapStyles) {
+    const mapStyleEntry = mapStyles[styleKey as keyof typeof mapStyles];
+    res.json(mapStyleEntry.style);
+  } else {
+    res.status(404).json({ error: "Map style not found" });
+  }
 });
 
 export default {

@@ -16,10 +16,7 @@
       <div class="form-group">
         <label for="mapStyle">Map Style</label>
         <select id="mapStyle" v-model="form.localStyle" class="input-field">
-          <option value="mapbox://styles/mapbox/streets-v12">Mapbox Streets</option>
-          <option value="mapbox://styles/mapbox/satellite-v9">Mapbox Satellite</option>
-          <option value="mapbox://styles/mapbox/satellite-streets-v12">Mapbox Satellite Streets</option>
-          <option :value="customMapStyle">Mapbox - custom style</option>
+          <option v-for="style in mapStyles" :key="style.value" :value="style.value">{{ style.name }}</option>
         </select>
       </div>
 
@@ -61,9 +58,16 @@ export default {
     "customMapStyle",
     "mapStyle",
     "mapZoom",
+    "availableMapStyles"
   ],
   data() {
     return {
+      mapStyles: [
+        { name: "Mapbox Streets", value: "mapbox://styles/mapbox/streets-v12" },
+        { name: "Mapbox Satellite", value: "mapbox://styles/mapbox/satellite-v9" },
+        { name: "Mapbox Satellite Streets", value: "mapbox://styles/mapbox/satellite-streets-v12" },
+        { name: "Mapbox - custom style", value: this.customMapStyle }
+      ],
       form: {
         title: '',
         description: '',
@@ -103,10 +107,21 @@ export default {
     }
   },
   methods: {
+    fetchMapStyles() {
+      this.mapStyles = this.mapStyles.concat(this.availableMapStyles.map(style => {
+        return {
+          name: style.name,
+          value: style.url
+        };
+      }));
+    },
     submitForm() {
       this.$emit('formSubmitted', this.form);
     }
   },
+  mounted() {
+    this.fetchMapStyles();
+  }
 };
 </script>
 
