@@ -27,6 +27,11 @@
         </div>
       </div>
 
+      <div v-if="form.localStyle === 'mapbox://styles/mapbox/satellite-v9' || !form.localStyle.includes('mapbox')" class="form-group flex items-center">
+        <input type="checkbox" id="osmLabels" v-model="form.openstreetmap" class="input-field osm-checkbox" />
+        <label for="osmLabels" class="ml-2">Include OSM Labels</label>
+      </div>
+
       <div class="form-group">
         <label>Zoom Level (0 - 16) <span class="text-red-600">*</span></label>
         <vue-slider v-model="form.localZoom" :min="0" :max="16" :dot-size="14" :tooltip="'always'" :height="6"
@@ -192,17 +197,14 @@ export default {
 
 .input-field {
   flex-grow: 1;
-  /* Ensure inputs take up available space */
 }
 
 .flex-grow {
   flex: 1;
-  /* Allow children to grow to fill space */
 }
 
 .flex-grow.mr-2 {
   margin-right: 0.5rem;
-  /* Add some spacing between the latitude and longitude fields */
 }
 
 .input-field {
@@ -212,6 +214,12 @@ export default {
   border-radius: 4px;
   box-sizing: border-box;
   margin-top: 6px;
+}
+
+.osm-checkbox {
+  width: 20px!important;
+  margin: 0;
+  flex-grow: 0;
 }
 
 .slider-container {
