@@ -8,6 +8,7 @@
       :customMapStyle="mapStyle"
       :mapStyle="localStyle" 
       :mapZoom="localZoom" 
+      :mapBounds="localBounds"
       :availableMapStyles="availableMapStyles"
     />
     <Map 
@@ -16,14 +17,14 @@
       :mapLatitude="localLatitude"
       :mapLongitude="localLongitude"
       :mapStyle="localStyle"
-      :mapZoom="localZoom" 
+      :mapZoom="localZoom"
     />
   </div>
 </template>
 
 <script>
-import Panels from "@/components/Panels.vue";
-import Map from "@/components/Map.vue";
+import Panels from "@/components/GenerateMap/Panels.vue";
+import Map from "@/components/GenerateMap/Map.vue";
 
 export default {
   components: { Panels, Map },
@@ -41,6 +42,7 @@ export default {
       localLongitude: this.mapLongitude,
       localZoom: this.mapZoom,
       localStyle: this.mapStyle,
+      localBounds: '',
     };
   },
   methods: {

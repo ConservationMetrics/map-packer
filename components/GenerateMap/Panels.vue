@@ -41,7 +41,7 @@
 
       <div class="form-group">
         <label for="bbox">Offline Map Bounding Box (draw on map)</label>
-        <input type="text" id="bbox" v-model="form.bounds" disabled class="input-field" />
+        <textarea type="text" v-model="form.localBounds" id="bbox" disabled class="code-block" />
       </div>
 
       <button type="submit" class="submit-button">Submit Request</button>
@@ -87,6 +87,7 @@ export default {
     "customMapStyle",
     "mapStyle",
     "mapZoom",
+    "mapBounds",
     "availableMapStyles"
   ],
   data() {
@@ -103,9 +104,9 @@ export default {
         localLatitude: this.mapLatitude,
         localLongitude: this.mapLongitude,
         localStyle: this.mapStyle,
+        localBounds: this.mapBounds,
         planetMonthYear: calculatePlanetMonthYear(),
         maxZoom: 8,
-        bounds: ''
       },
     };
   },
@@ -121,6 +122,9 @@ export default {
     },
     mapStyle(newVal) {
       this.form.localStyle = newVal;
+    },
+    mapBounds(newVal) {
+      this.form.localBounds = newVal;
     },
     'form.localZoom': {
       handler(newVal) {
@@ -144,7 +148,7 @@ export default {
           this.form.localStyle = `/api/mapstyle/planet/${year}/${month}`;
         }
       }
-    },
+    }
   },
   methods: {
     fetchMapStyles() {
@@ -278,6 +282,20 @@ export default {
   display: inline-block;
   width: calc(50% - 10px);
   margin-right: 10px;
+}
+
+.code-block {
+    width: 100%;
+    padding: 12px 20px; 
+    box-sizing: border-box; 
+    background-color: #f5f5f5; 
+    border: 1px solid #ccc; 
+    border-radius: 4px; 
+    font-family: monospace; 
+    resize: none; 
+    overflow: auto;
+    min-height: 50px;
+    line-height: 1.5;
 }
 
 .submit-button {

@@ -48,6 +48,29 @@
         if (this.$map) {
           this.$map.setStyle(newVal);
         }
+      }
+    },
+    methods: {
+      getWSENstring(bounds) {
+        if (bounds.length === 0) {
+            return 'No coordinates provided';
+        }
+
+        let minLat = bounds[0].lat;
+        let maxLat = bounds[0].lat;
+        let minLng = bounds[0].lng;
+        let maxLng = bounds[0].lng;
+
+        bounds.forEach(coord => {
+            if (coord.lat < minLat) minLat = coord.lat;
+            if (coord.lat > maxLat) maxLat = coord.lat;
+            if (coord.lng < minLng) minLng = coord.lng;
+            if (coord.lng > maxLng) maxLng = coord.lng;
+        });
+
+        const wsen = `${minLng},${minLat},${maxLng},${maxLat}`;
+
+        return wsen;
       },
     },
     mounted() {
@@ -68,7 +91,6 @@
         this.$map.addControl(nav, "top-right");
 
         // Mapbox Draw for adding bounding box
-        // TODO: Find a way to erase an existing bbox if a new one is drawn
         this.draw = new MapboxDraw({
           displayControlsDefault: false,
           controls: {
@@ -82,6 +104,14 @@
 
         this.$map.addControl(this.draw);
 
+        // Clear existing drawings when creating a new rectangle
+        this.$map.on('draw.create', (e) => {
+          if (this.draw.getAll().features.length > 1) {
+            this.draw.delete(this.draw.getAll().features[0].id);
+          }
+        });
+
+        // Emit WSEN string derived from bounding box ofd drawn rectangle
         this.$map.on('draw.create', (e) => {
           const bbox = e.features[0].geometry.coordinates[0];
           const bounds = bbox.map((coord) => {
@@ -90,8 +120,8 @@
               lng: coord[0]
             }
           });
-          this.$emit('update:params', {param: 'Bounds', value: bounds});
-          console.log('Bounds:', bounds);
+          const wsen = this.getWSENstring(bounds);
+          this.$emit('update:params', {param: 'Bounds', value: wsen});
         });
         
         // Scale Control
