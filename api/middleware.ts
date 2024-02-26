@@ -10,7 +10,7 @@ export const checkAuthStrategy = (
   next: NextFunction,
 ) => {
   // Bypass middleware for specific paths
-  if (req.path.startsWith('/mapstyle/')) {
+  if (req.path.startsWith("/mapstyle/")) {
     next();
     return;
   }

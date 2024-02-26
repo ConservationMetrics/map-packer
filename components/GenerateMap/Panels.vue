@@ -1,56 +1,117 @@
 <template>
   <div>
     <div class="sidebar">
-      <h1 class="text-xl font-bold text-gray-800 mb-2">MapPacker: Generate Offline Map</h1>
-      <p class="mb-2"><em>Use this tool to send a request to generate an offline map.</em></p>
+      <h1 class="text-xl font-bold text-gray-800 mb-2">
+        MapPacker: Generate Offline Map
+      </h1>
+      <p class="mb-2">
+        <em>Use this tool to send a request to generate an offline map.</em>
+      </p>
       <form @submit.prevent="submitForm">
         <div class="form-group">
           <label for="title">Title <span class="text-red-600">*</span></label>
-          <input type="text" id="title" v-model="form.title" required class="input-field" />
+          <input
+            type="text"
+            id="title"
+            v-model="form.title"
+            required
+            class="input-field"
+          />
         </div>
 
         <div class="form-group">
           <label for="description">Description</label>
-          <textarea id="description" v-model="form.description" class="input-field"></textarea>
+          <textarea
+            id="description"
+            v-model="form.description"
+            class="input-field"
+          ></textarea>
         </div>
 
         <div class="form-group">
           <label for="mapStyle">Map Style</label>
-          <select id="mapStyle" v-model="form.editableStyle" class="input-field">
-            <option v-for="style in dynamicMapStyles" :key="style.value" :value="style.value">{{ style.name }}</option>
+          <select
+            id="mapStyle"
+            v-model="form.selectedStyle"
+            class="input-field"
+          >
+            <option
+              v-for="style in dynamicMapStyles"
+              :key="style.value"
+              :value="style.value"
+            >
+              {{ style.name }}
+            </option>
           </select>
         </div>
 
-        <div v-if="form.editableStyle.includes('/api/mapstyle/planet/')">
+        <div v-if="form.selectedStyle.includes('/api/mapstyle/planet/')">
           <div class="form-group">
-            <label for="planetMonthYear">Planet Visual Basemap: Month & Year</label>
-            <input type="month" id="planetMonthYear" v-model="form.planetMonthYear" :max="maxPlanetMonthYear"
-              class="input-field" />
+            <label for="planetMonthYear"
+              >Planet Visual Basemap: Month & Year</label
+            >
+            <input
+              type="month"
+              id="planetMonthYear"
+              v-model="form.planetMonthYear"
+              :max="maxPlanetMonthYear"
+              class="input-field"
+            />
           </div>
         </div>
 
-        <div v-if="form.editableStyle === 'mapbox://styles/mapbox/satellite-v9' || !form.editableStyle.includes('mapbox')"
-          class="form-group flex items-center">
-          <input type="checkbox" id="osmLabels" v-model="form.openstreetmap" class="input-field osm-checkbox" />
-          <label for="osmLabels" class="ml-2">Include OSM Data (not shown on map)</label>
+        <div
+          v-if="
+            form.selectedStyle === 'mapbox://styles/mapbox/satellite-v9' ||
+            !form.selectedStyle.includes('mapbox')
+          "
+          class="form-group flex items-center"
+        >
+          <input
+            type="checkbox"
+            id="osmLabels"
+            v-model="form.openstreetmap"
+            class="input-field osm-checkbox"
+          />
+          <label for="osmLabels" class="ml-2"
+            >Include OSM Data (not shown on map)</label
+          >
         </div>
 
         <div class="form-group">
-          <label>Maximum Zoom Level (0 - 16) <span class="text-red-600">*</span></label>
-          <vue-slider v-model="form.maxZoom" :min="0" :max="16" :dot-size="14" :tooltip="'always'" :height="6"
-            class="slider"></vue-slider>
+          <label
+            >Maximum Zoom Level (0 - 16)
+            <span class="text-red-600">*</span></label
+          >
+          <vue-slider
+            v-model="form.maxZoom"
+            :min="0"
+            :max="16"
+            :dot-size="14"
+            :tooltip="'always'"
+            :height="6"
+            class="slider"
+          ></vue-slider>
         </div>
 
         <div class="form-group">
           <label for="bbox">Offline Map Bounding Box (draw on map)</label>
-          <textarea type="text" v-model="form.editableBounds" id="bbox" disabled class="code-block" />
+          <textarea
+            type="text"
+            v-model="form.selectedBounds"
+            id="bbox"
+            disabled
+            class="code-block"
+          />
         </div>
 
         <!-- Show estimated number of tiles -->
         <!-- Note that filesize of each tile varies and it's quite tricky to correctly approximate -->
         <!-- See https://github.com/mapbox/mapbox-gl-native/issues/4258 -->
-        <p v-if="form.maxZoom && form.editableBounds" class="italic">Estimated number of tiles: {{
-          estimateNumberOfTiles(form.maxZoom, form.editableBounds) }}</p>
+        <p v-if="form.maxZoom && form.selectedBounds" class="italic">
+          Estimated number of tiles:
+          {{ estimateNumberOfTiles(form.maxZoom, form.selectedBounds) }}
+        </p>
 
         <button type="submit" class="submit-button">Submit Request</button>
       </form>
@@ -59,20 +120,43 @@
       <h2 class="text-xl font-bold text-gray-800 mb-2">Map controls</h2>
       <div class="form-group">
         <label>Zoom level (0 - 16) <span class="text-red-600">*</span></label>
-        <vue-slider v-model="form.editableZoom" :min="0" :max="16" :dot-size="14" :tooltip="'always'" :height="6"
-          class="slider"></vue-slider>
+        <vue-slider
+          v-model="form.selectedZoom"
+          :min="0"
+          :max="16"
+          :dot-size="14"
+          :tooltip="'always'"
+          :height="6"
+          class="slider"
+        ></vue-slider>
       </div>
 
       <div class="form-group flex">
         <div class="flex-grow mr-2">
           <label for="centerLat">Center lat</label>
-          <input type="number" step="0.000001" id="editableLatitude" v-model.number="form.editableLatitude" required
-            :min="-90" :max="90" class="input-field" />
+          <input
+            type="number"
+            step="0.000001"
+            id="selectedLatitude"
+            v-model.number="form.selectedLatitude"
+            required
+            :min="-90"
+            :max="90"
+            class="input-field"
+          />
         </div>
         <div class="flex-grow">
           <label for="centerLng">Center long</label>
-          <input type="number" step="0.000001" id="editableLongitude" v-model.number="form.editableLongitude" required
-            :min="-180" :max="180" class="input-field" />
+          <input
+            type="number"
+            step="0.000001"
+            id="selectedLongitude"
+            v-model.number="form.selectedLongitude"
+            required
+            :min="-180"
+            :max="180"
+            class="input-field"
+          />
         </div>
       </div>
     </div>
@@ -82,7 +166,7 @@
 <script>
 import { calculatePlanetMonthYear } from "@/src/utils";
 
-import VueSlider from 'vue-slider-component';
+import VueSlider from "vue-slider-component";
 import "vue-slider-component/dist-css/vue-slider-component.css";
 import "vue-slider-component/theme/default.css";
 
@@ -101,18 +185,24 @@ export default {
   data() {
     return {
       mapStyles: [
-        { name: "Mapbox Satellite", value: "mapbox://styles/mapbox/satellite-v9" },
-        { name: "Mapbox Satellite Streets", value: "mapbox://styles/mapbox/satellite-streets-v12" },
-        { name: "Mapbox Custom Style", value: this.customMapboxStyle }
+        {
+          name: "Mapbox Satellite",
+          value: "mapbox://styles/mapbox/satellite-v9",
+        },
+        {
+          name: "Mapbox Satellite Streets",
+          value: "mapbox://styles/mapbox/satellite-streets-v12",
+        },
+        { name: "Mapbox Custom Style", value: this.customMapboxStyle },
       ],
       form: {
-        title: '',
-        description: '',
-        editableBounds: this.mapBounds,
-        editableLatitude: this.mapLatitude,
-        editableLongitude: this.mapLongitude,
-        editableStyle: this.customMapboxStyle,
-        editableZoom: this.mapZoom,
+        title: "",
+        description: "",
+        selectedBounds: this.mapBounds,
+        selectedLatitude: this.mapLatitude,
+        selectedLongitude: this.mapLongitude,
+        selectedStyle: this.customMapboxStyle,
+        selectedZoom: this.mapZoom,
         planetMonthYear: calculatePlanetMonthYear(),
         maxZoom: 8,
       },
@@ -121,70 +211,78 @@ export default {
   watch: {
     // Watch for changes to the map's latitude, longitude, zoom, and style props
     mapBounds(newVal) {
-      this.form.editableBounds = newVal;
+      this.form.selectedBounds = newVal;
     },
     mapLatitude(newVal) {
-      this.form.editableLatitude = newVal;
+      this.form.selectedLatitude = newVal;
     },
     mapLongitude(newVal) {
-      this.form.editableLongitude = newVal;
+      this.form.selectedLongitude = newVal;
     },
     mapStyle(newVal) {
-      this.form.editableStyle = newVal;
+      this.form.selectedStyle = newVal;
     },
     mapZoom(newVal) {
-      this.form.editableZoom = newVal;
+      this.form.selectedZoom = newVal;
     },
 
-    // Track and emit changes to map parameters in the sidebar form, 
+    // Track and emit changes to map parameters in the sidebar form,
     // So that the parent component can update the map
-    'form.editableLatitude': function (newVal) {
-      this.$emit('updateMapParams', { param: 'Latitude', value: newVal });
+    "form.selectedLatitude": function (newVal) {
+      this.$emit("updateMapParams", { param: "Latitude", value: newVal });
     },
-    'form.editableLongitude': function (newVal) {
-      this.$emit('updateMapParams', { param: 'Longitude', value: newVal });
+    "form.selectedLongitude": function (newVal) {
+      this.$emit("updateMapParams", { param: "Longitude", value: newVal });
     },
-    'form.editableStyle': function (newVal) {
-      this.$emit('updateMapParams', { param: 'Style', value: newVal });
+    "form.selectedStyle": function (newVal) {
+      this.$emit("updateMapParams", { param: "Style", value: newVal });
     },
-    'form.editableZoom': {
+    "form.selectedZoom": {
       handler(newVal) {
-        this.$emit('updateMapParams', { param: 'Zoom', value: newVal });
+        this.$emit("updateMapParams", { param: "Zoom", value: newVal });
       },
-      deep: true
+      deep: true,
     },
-    'form.planetMonthYear': function (newVal) {
-      if (this.form.editableStyle.includes('/api/mapstyle/planet/')) {
-        const [year, month] = newVal.split('-');
+    "form.planetMonthYear": function (newVal) {
+      if (this.form.selectedStyle.includes("/api/mapstyle/planet/")) {
+        const [year, month] = newVal.split("-");
         if (year && month) {
-          this.form.editableStyle = `/api/mapstyle/planet/${year}/${month}`;
+          this.form.selectedStyle = `/api/mapstyle/planet/${year}/${month}`;
         }
       }
-    }
+    },
   },
   methods: {
     fetchMapStyles() {
       // Add available map styles to the mapStyles array
-      this.mapStyles = this.mapStyles.concat(this.availableMapStyles.map(style => {
-        return {
-          name: style.name,
-          value: style.url
-        };
-      }));
+      this.mapStyles = this.mapStyles.concat(
+        this.availableMapStyles.map((style) => {
+          return {
+            name: style.name,
+            value: style.url,
+          };
+        }),
+      );
       // Sort map styles by name
       this.mapStyles.sort((a, b) => a.name.localeCompare(b.name));
     },
     estimateNumberOfTiles(maxZoom, boundsStr) {
-      const bounds = boundsStr.split(',').map(Number);
+      const bounds = boundsStr.split(",").map(Number);
 
       // Convert degrees to radians
-      const degToRad = degrees => degrees * (Math.PI / 180);
+      const degToRad = (degrees) => degrees * (Math.PI / 180);
 
       // Calculate the number of tiles for a given zoom level and bounds
       const tilesAtZoom = (zoom, [west, south, east, north]) => {
         const tileCount = (lat, lon, zoom) => {
-          const x = Math.floor((lon + 180) / 360 * Math.pow(2, zoom));
-          const y = Math.floor((1 - Math.log(Math.tan(degToRad(lat)) + 1 / Math.cos(degToRad(lat))) / Math.PI) / 2 * Math.pow(2, zoom));
+          const x = Math.floor(((lon + 180) / 360) * Math.pow(2, zoom));
+          const y = Math.floor(
+            ((1 -
+              Math.log(Math.tan(degToRad(lat)) + 1 / Math.cos(degToRad(lat))) /
+                Math.PI) /
+              2) *
+              Math.pow(2, zoom),
+          );
           return { x, y };
         };
 
@@ -206,25 +304,33 @@ export default {
       return totalTiles;
     },
     submitForm() {
-      this.$emit('formSubmitted', this.form);
-    }
+      this.$emit("formSubmitted", this.form);
+    },
   },
   computed: {
     dynamicMapStyles() {
       let styles = [...this.mapStyles];
-      if (this.form.editableStyle.includes('/api/mapstyle/planet/') && this.form.editableStyle.length > '/api/mapstyle/planet/'.length) {
-        styles = styles.filter(style => style.value !== '/api/mapstyle/planet/');
-        styles.push({ name: "Planet Monthly Visual Basemap", value: this.form.editableStyle });
+      if (
+        this.form.selectedStyle.includes("/api/mapstyle/planet/") &&
+        this.form.selectedStyle.length > "/api/mapstyle/planet/".length
+      ) {
+        styles = styles.filter(
+          (style) => style.value !== "/api/mapstyle/planet/",
+        );
+        styles.push({
+          name: "Planet Monthly Visual Basemap",
+          value: this.form.selectedStyle,
+        });
       }
       return styles;
     },
     maxPlanetMonthYear() {
       return calculatePlanetMonthYear();
-    }
+    },
   },
   mounted() {
     this.fetchMapStyles();
-  }
+  },
 };
 </script>
 
@@ -321,7 +427,7 @@ export default {
   margin: 10px 0;
 }
 
-.inline-fields>div {
+.inline-fields > div {
   display: inline-block;
   width: calc(50% - 10px);
   margin-right: 10px;
@@ -342,7 +448,7 @@ export default {
 }
 
 .submit-button {
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   padding: 14px 20px;
   margin: 10px 0;

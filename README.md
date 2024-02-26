@@ -10,13 +10,13 @@ To get started, copy `.env.example` to `.env` and add your database and table in
 
 **Authentication strategy:** MapPacker supports three different authentication strategies: auth0, password (from an environmental var) with JWT key, or none. Set your authentication strategy in `NUXT_ENV_AUTH_STRATEGY`.
 
-* If you are using an auth0 strategy, then you need to provide a domain, client ID, client secret, audience, and base URL.
-* If you are using a password strategy, then you need to provide a password, and secret JWT key.
+- If you are using an auth0 strategy, then you need to provide a domain, client ID, client secret, audience, and base URL.
+- If you are using a password strategy, then you need to provide a password, and secret JWT key.
 
 **Vue API key:** Generate an API key to add to request headers made by the Nuxt front end.
 
 **Mapbox access token:** Provide an access token to be used across the application for authenticating with Mapbox maps.
- 
+
 ## Build Setup
 
 ```bash

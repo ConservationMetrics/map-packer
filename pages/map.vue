@@ -32,7 +32,9 @@ export default {
     try {
       // Use the table name in the API request
       const response = await $axios.$get(`/api/map`, { headers });
-      const availableMapStyles = await $axios.$get(`/api/mapstyles`, { headers });
+      const availableMapStyles = await $axios.$get(`/api/mapstyles`, {
+        headers,
+      });
       return {
         dataFetched: true,
         availableMapStyles: availableMapStyles,

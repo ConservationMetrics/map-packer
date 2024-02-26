@@ -1,11 +1,11 @@
 <template>
   <div id="map" />
 </template>
-  
+
 <script>
 import mapboxgl from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
-import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
+import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
@@ -21,22 +21,22 @@ export default {
   data() {
     return {
       draw: null,
-      editableLatitude: this.mapLatitude,
-      editableLongitude: this.mapLongitude,
-      editableStyle: this.mapStyle,
-      editableZoom: this.mapZoom,
+      selectedLatitude: this.mapLatitude,
+      selectedLongitude: this.mapLongitude,
+      selectedStyle: this.mapStyle,
+      selectedZoom: this.mapZoom,
     };
   },
   watch: {
     // Watch for changes to the map's latitude, longitude, zoom, and style props
     mapLatitude(newVal) {
       if (this.$map) {
-        this.$map.setCenter([this.editableLongitude, newVal]);
+        this.$map.setCenter([this.selectedLongitude, newVal]);
       }
     },
     mapLongitude(newVal) {
       if (this.$map) {
-        this.$map.setCenter([newVal, this.editableLatitude]);
+        this.$map.setCenter([newVal, this.selectedLatitude]);
       }
     },
     mapStyle(newVal) {
@@ -53,7 +53,7 @@ export default {
   methods: {
     getWSENstring(bounds) {
       if (bounds.length === 0) {
-        return 'No coordinates provided';
+        return "No coordinates provided";
       }
 
       let minLat = bounds[0].lat;
@@ -61,7 +61,7 @@ export default {
       let minLng = bounds[0].lng;
       let maxLng = bounds[0].lng;
 
-      bounds.forEach(coord => {
+      bounds.forEach((coord) => {
         if (coord.lat < minLat) minLat = coord.lat;
         if (coord.lat > maxLat) maxLat = coord.lat;
         if (coord.lng < minLng) minLng = coord.lng;
@@ -82,7 +82,7 @@ export default {
       projection: "mercator",
       center: [this.mapLongitude || 0, this.mapLatitude || -15],
       zoom: this.mapZoom || 2.5,
-      maxZoom: 16
+      maxZoom: 16,
     });
 
     this.$map.on("load", () => {
@@ -94,34 +94,34 @@ export default {
       this.draw = new MapboxDraw({
         displayControlsDefault: false,
         controls: {
-          trash: true
+          trash: true,
         },
         modes: {
           ...MapboxDraw.modes,
-          draw_rectangle: DrawRectangle
-        }
+          draw_rectangle: DrawRectangle,
+        },
       });
 
       this.$map.addControl(this.draw);
 
       // Clear existing drawings when creating a new rectangle
-      this.$map.on('draw.create', (e) => {
+      this.$map.on("draw.create", (e) => {
         if (this.draw.getAll().features.length > 1) {
           this.draw.delete(this.draw.getAll().features[0].id);
         }
       });
 
       // Emit WSEN string derived from bounding box ofd drawn rectangle
-      this.$map.on('draw.create', (e) => {
+      this.$map.on("draw.create", (e) => {
         const bbox = e.features[0].geometry.coordinates[0];
         const bounds = bbox.map((coord) => {
           return {
             lat: coord[1],
-            lng: coord[0]
-          }
+            lng: coord[0],
+          };
         });
         const wsen = this.getWSENstring(bounds);
-        this.$emit('updateMapParams', { param: 'Bounds', value: wsen });
+        this.$emit("updateMapParams", { param: "Bounds", value: wsen });
       });
 
       // Scale Control
@@ -131,35 +131,38 @@ export default {
       });
       this.$map.addControl(scale, "bottom-left");
 
-      // Track and emit map center and zoom level, 
+      // Track and emit map center and zoom level,
       // So that the parent component can update the panels
       this.$map.on("moveend", () => {
         const center = this.$map.getCenter();
-        this.editableLatitude = center.lat;
-        this.editableLongitude = center.lng;
-        this.$emit('updateMapParams', { param: 'Latitude', value: center.lat });
-        this.$emit('updateMapParams', { param: 'Longitude', value: center.lng });
+        this.selectedLatitude = center.lat;
+        this.selectedLongitude = center.lng;
+        this.$emit("updateMapParams", { param: "Latitude", value: center.lat });
+        this.$emit("updateMapParams", {
+          param: "Longitude",
+          value: center.lng,
+        });
       });
 
       this.$map.on("zoomend", () => {
         const zoom = this.$map.getZoom();
-        this.editableZoom = zoom;
-        this.$emit('updateMapParams', { param: 'Zoom', value: zoom });
+        this.selectedZoom = zoom;
+        this.$emit("updateMapParams", { param: "Zoom", value: zoom });
       });
 
       // Create a custom bbox-draw button since mapbox-gl-draw-rectangle-mode doesn't provide one
-      const button = document.createElement('button');
-      button.className = 'mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_polygon';
-      button.id = 'bbox-draw';
-      button.title = 'Draw Rectangle';
+      const button = document.createElement("button");
+      button.className = "mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_polygon";
+      button.id = "bbox-draw";
+      button.title = "Draw Rectangle";
 
       // Add event listener for bbox-draw button
-      button.addEventListener('click', () => {
-        this.draw.changeMode('draw_rectangle');
+      button.addEventListener("click", () => {
+        this.draw.changeMode("draw_rectangle");
       });
 
       // Add the button to the map draw control group
-      const controlGroups = document.querySelectorAll('.mapboxgl-ctrl-group');
+      const controlGroups = document.querySelectorAll(".mapboxgl-ctrl-group");
       // Unfortunately Mapbox doesn't differentate between the control groups
       // So we have to assume that the first control group is zoom controls,
       // and the second is the draw controls.
@@ -168,7 +171,7 @@ export default {
         // And place it on top so it precedes the draw trash icon.
         controlGroups[1].insertBefore(button, controlGroups[1].firstChild);
       } else if (controlGroups.length === 1) {
-        // Fallback to the first control group if there's only one 
+        // Fallback to the first control group if there's only one
         // (add at the end of the group if so)
         controlGroups[0].appendChild(button);
       }
@@ -181,7 +184,7 @@ export default {
   },
 };
 </script>
-  
+
 <style scoped>
 #map {
   position: absolute;
@@ -197,4 +200,3 @@ export default {
   z-index: 1000;
 }
 </style>
-  

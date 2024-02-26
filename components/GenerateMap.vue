@@ -1,10 +1,24 @@
 <template>
   <div>
-    <Panels @formSubmitted="handleFormSubmit" @updateMapParams="updateMapParams" :availableMapStyles="availableMapStyles"
-      :customMapboxStyle="customMapboxStyle" :mapBounds="editableBounds" :mapLatitude="editableLatitude"
-      :mapLongitude="editableLongitude" :mapStyle="editableStyle" :mapZoom="editableZoom" />
-    <Map @updateMapParams="updateMapParams" :mapboxAccessToken="mapboxAccessToken" :mapLatitude="editableLatitude"
-      :mapLongitude="editableLongitude" :mapStyle="editableStyle" :mapZoom="editableZoom" />
+    <Panels
+      @formSubmitted="handleFormSubmit"
+      @updateMapParams="updateMapParams"
+      :availableMapStyles="availableMapStyles"
+      :customMapboxStyle="customMapboxStyle"
+      :mapBounds="selectedBounds"
+      :mapLatitude="selectedLatitude"
+      :mapLongitude="selectedLongitude"
+      :mapStyle="selectedStyle"
+      :mapZoom="selectedZoom"
+    />
+    <Map
+      @updateMapParams="updateMapParams"
+      :mapboxAccessToken="mapboxAccessToken"
+      :mapLatitude="selectedLatitude"
+      :mapLongitude="selectedLongitude"
+      :mapStyle="selectedStyle"
+      :mapZoom="selectedZoom"
+    />
   </div>
 </template>
 
@@ -24,27 +38,28 @@ export default {
   ],
   data() {
     return {
-      editableBounds: '',
-      editableLatitude: this.mapLatitude,
-      editableLongitude: this.mapLongitude,
-      editableStyle: this.mapStyle,
-      editableZoom: this.mapZoom,
+      selectedBounds: "",
+      selectedLatitude: this.mapLatitude,
+      selectedLongitude: this.mapLongitude,
+      selectedStyle: this.customMapboxStyle,
+      selectedZoom: this.mapZoom,
     };
   },
   methods: {
     handleFormSubmit(formData) {
       // TODO: Send as a POST request to the API
-      console.log('Received form data:', formData);
+      // TODO: Add modal to show success and redirect to MapDashboard
+      console.log("Received form data:", formData);
     },
     updateMapParams(updateObj) {
       let { param, value } = updateObj;
 
-      if (typeof value === 'number') {
+      if (typeof value === "number") {
         value = parseFloat(value.toFixed(6));
       }
 
-      this[`editable${param}`] = value;
-    }
+      this[`selected${param}`] = value;
+    },
   },
 };
 </script>

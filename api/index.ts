@@ -51,7 +51,7 @@ app.get("/data", async (_req: Request, res: Response) => {
       res.json([]);
     } else {
       // Sort offline maps in descending order by created_at field
-      const sortedData = sortByDate(data, 'created_at');
+      const sortedData = sortByDate(data, "created_at");
       res.json(sortedData);
     }
   } catch (error: any) {
@@ -76,7 +76,7 @@ app.get("/map", async (_req: Request, res: Response) => {
 app.get("/mapstyles", (_req: Request, res: Response) => {
   const styles = Object.entries(mapStyles).map(([key, value]) => ({
     name: value.name,
-    url: `/api/mapstyle/${key}/` // Use the key to generate the URL
+    url: `/api/mapstyle/${key}/`, // Use the key to generate the URL
   }));
 
   res.json(styles);
@@ -85,7 +85,7 @@ app.get("/mapstyles", (_req: Request, res: Response) => {
 // API endpoint to retrieve a specific map style
 app.get("/mapstyle/:styleKey", (req: Request, res: Response) => {
   const styleKey = req.params.styleKey;
-  
+
   // Validate that styleKey is a key of mapStyles
   if (styleKey in mapStyles) {
     const mapStyleEntry = mapStyles[styleKey as keyof typeof mapStyles];
@@ -98,19 +98,21 @@ app.get("/mapstyle/:styleKey", (req: Request, res: Response) => {
 // API endpoint to retrieve a specific map style with a custom date
 app.get("/mapstyle/planet/:year/:month", (req: Request, res: Response) => {
   const { year, month } = req.params;
-  const styleKey = 'planet';
-  console.log(year, month)
-  
+  const styleKey = "planet";
+  console.log(year, month);
+
   // Validate that styleKey is a key of mapStyles
   if (styleKey in mapStyles) {
     const mapStyleEntry = mapStyles[styleKey as keyof typeof mapStyles];
 
     // Replace the date in the tile URL
     // Replace regex of the form YYYY-MM with the new year and month
-    const newTileUrl = (mapStyleEntry.style as any).sources.planet.tiles[0].replace(/\d{4}-\d{2}/, `${year}-${month}`);
+    const newTileUrl = (
+      mapStyleEntry.style as any
+    ).sources.planet.tiles[0].replace(/\d{4}-\d{2}/, `${year}-${month}`);
     (mapStyleEntry.style as any).sources.planet.tiles[0] = newTileUrl;
 
-    console.log(newTileUrl)
+    console.log(newTileUrl);
 
     res.json(mapStyleEntry.style);
   } else {
