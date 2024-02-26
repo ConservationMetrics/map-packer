@@ -1,54 +1,65 @@
 <template>
   <div>
-    <Sidebar 
-      @formSubmitted="handleFormSubmit" 
-      @update:params="updateMapParams"
-      :mapboxLatitude="localLatitude" 
-      :mapboxLongitude="localLongitude"
-      :mapboxStyle="mapboxStyle" 
-      :mapboxZoom="localZoom" 
+    <Panels
+      @formSubmitted="handleFormSubmit"
+      @updateMapParams="updateMapParams"
+      :availableMapStyles="availableMapStyles"
+      :customMapboxStyle="customMapboxStyle"
+      :mapBounds="selectedBounds"
+      :mapLatitude="selectedLatitude"
+      :mapLongitude="selectedLongitude"
+      :mapStyle="selectedStyle"
+      :mapZoom="selectedZoom"
     />
-    <Map 
-      @update:params="updateMapParams"
+    <Map
+      @updateMapParams="updateMapParams"
       :mapboxAccessToken="mapboxAccessToken"
-      :mapboxLatitude="localLatitude"
-      :mapboxLongitude="localLongitude"
-      :mapboxStyle="mapboxStyle"
-      :mapboxZoom="localZoom" 
+      :mapLatitude="selectedLatitude"
+      :mapLongitude="selectedLongitude"
+      :mapStyle="selectedStyle"
+      :mapZoom="selectedZoom"
     />
   </div>
 </template>
 
 <script>
-import Sidebar from "@/components/Sidebar.vue";
-import Map from "@/components/Map.vue";
+import Panels from "@/components/GenerateMap/Panels.vue";
+import Map from "@/components/GenerateMap/Map.vue";
 
 export default {
-  components: { Sidebar, Map },
+  components: { Panels, Map },
   props: [
+    "availableMapStyles",
+    "customMapboxStyle",
     "mapboxAccessToken",
-    "mapboxLatitude",
-    "mapboxLongitude",
-    "mapboxStyle",
-    "mapboxZoom",
+    "mapLatitude",
+    "mapLongitude",
+    "mapZoom",
   ],
   data() {
     return {
-      localLatitude: this.mapboxLatitude,
-      localLongitude: this.mapboxLongitude,
-      localZoom: this.mapboxZoom,
+      selectedBounds: "",
+      selectedLatitude: this.mapLatitude,
+      selectedLongitude: this.mapLongitude,
+      selectedStyle: this.customMapboxStyle,
+      selectedZoom: this.mapZoom,
     };
   },
   methods: {
     handleFormSubmit(formData) {
-      console.log('Received form data:', formData);
+      // TODO: Send as a POST request to the API
+      // TODO: Add modal to show success and redirect to MapDashboard
+      console.log("Received form data:", formData);
     },
     updateMapParams(updateObj) {
       let { param, value } = updateObj;
-      value = parseFloat(value.toFixed(6));
 
-      this[`local${param}`] = value;
-    }
+      if (typeof value === "number") {
+        value = parseFloat(value.toFixed(6));
+      }
+
+      this[`selected${param}`] = value;
+    },
   },
 };
 </script>

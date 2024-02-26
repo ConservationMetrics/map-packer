@@ -2,11 +2,12 @@
   <div>
     <GenerateMap
       v-if="dataFetched"
-      :mapbox-access-token="mapboxAccessToken"
-      :mapbox-style="mapboxStyle"
-      :mapbox-zoom="mapboxZoom"
-      :mapbox-latitude="mapboxLatitude"
-      :mapbox-longitude="mapboxLongitude"
+      :availableMapStyles="availableMapStyles"
+      :customMapboxStyle="customMapboxStyle"
+      :mapboxAccessToken="mapboxAccessToken"
+      :mapLatitude="mapLatitude"
+      :mapLongitude="mapLongitude"
+      :mapZoom="mapZoom"
     />
   </div>
 </template>
@@ -31,13 +32,17 @@ export default {
     try {
       // Use the table name in the API request
       const response = await $axios.$get(`/api/map`, { headers });
+      const availableMapStyles = await $axios.$get(`/api/mapstyles`, {
+        headers,
+      });
       return {
         dataFetched: true,
+        availableMapStyles: availableMapStyles,
+        customMapboxStyle: response.mapStyle,
         mapboxAccessToken: response.mapboxAccessToken,
-        mapboxStyle: response.mapboxStyle,
-        mapboxZoom: response.mapboxZoom,
-        mapboxLatitude: response.mapboxLatitude,
-        mapboxLongitude: response.mapboxLongitude,
+        mapLatitude: response.mapLatitude,
+        mapLongitude: response.mapLongitude,
+        mapZoom: response.mapZoom,
       };
     } catch (error) {
       // Handle errors as appropriate

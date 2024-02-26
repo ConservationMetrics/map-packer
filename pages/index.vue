@@ -1,8 +1,6 @@
 <template>
   <div>
-    <MapDashboard
-      v-if="dataFetched"
-      :data="data" />
+    <MapDashboard v-if="dataFetched" :data="data" />
   </div>
 </template>
 
@@ -26,16 +24,16 @@ export default {
     try {
       // Use the table name in the API request
       const response = await $axios.$get(`/api/data`, { headers });
-      return { 
+      return {
         dataFetched: true,
-        data: response 
+        data: response,
       };
     } catch (error) {
       // Handle errors as appropriate
       console.error("Error fetching data:", error);
       return {
         dataFetched: false,
-      };    
+      };
     }
   },
 };

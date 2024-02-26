@@ -25,3 +25,14 @@ export function copyLink(link: string): Promise<void> {
     }
   });
 }
+
+export const calculatePlanetMonthYear = () => {
+  // Let's calculate a format like this: YYYY-MM but for two months earlier than this month
+  // So if it's ANY day in February, 2024, we want to get 2023-12
+  const date = new Date();
+  date.setMonth(date.getMonth() - 2);
+  const month = date.getMonth() + 1; // JavaScript months are 0-indexed, add 1 to normalize
+  const year = date.getFullYear();
+  const monthYear = `${year}-${month < 10 ? `0${month}` : month}`;
+  return monthYear;
+};

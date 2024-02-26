@@ -13,6 +13,7 @@ We use GitHub to host code, track issues, and accept pull requests.
 **We build and release from the `main` branch, so code merged here should always be stable.**
 
 Prefer short-lived feature branches.
+
 - Piecemeal progress towards broad code changes should merge to long-running branches until
   everything there is stable and deployable, at which point the long-running branch gets merged
   to `main`.
@@ -24,7 +25,8 @@ Prefer short-lived feature branches.
 
 Multiple commits or PRs can be created for an Issue. e.g. each implementation step might get its own PR.
 
-Code review is not required, but is encouraged as a powerful tool for learning.  Benefits include:
+Code review is not required, but is encouraged as a powerful tool for learning. Benefits include:
+
 - Spread knowledge of the code base throughout the team.
 - Expose everyone to different approaches.
 - Ensure code is readable (and therefore maintainable).
@@ -32,10 +34,11 @@ Code review is not required, but is encouraged as a powerful tool for learning. 
   for bug-free code is on the code author, not the reviewer).
 
 Code review is not limited to approval/rejection of PRs. Also consider involving a collaborator
-earlier in the process, before the code is finished.  Ask them for a narrower review—e.g., a
+earlier in the process, before the code is finished. Ask them for a narrower review—e.g., a
 design review or to focus on a specific part of the code change.
 
 Merging branches and PRs to `main`:
+
 - Code should be merged by the branch author, unless a merge is urgently needed.
 - Merge PRs via 'Squash and Merge' option in GitHub.
 - Delete a branch when you are done with it.

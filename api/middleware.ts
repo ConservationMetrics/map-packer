@@ -9,6 +9,12 @@ export const checkAuthStrategy = (
   res: Response,
   next: NextFunction,
 ) => {
+  // Bypass middleware for specific paths
+  if (req.path.startsWith("/mapstyle/")) {
+    next();
+    return;
+  }
+
   const apiKey = req.headers["x-api-key"];
   if (apiKey !== API_KEY) {
     res.status(403).send("Forbidden");
