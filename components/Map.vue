@@ -68,6 +68,7 @@
         this.$map.addControl(nav, "top-right");
 
         // Mapbox Draw for adding bounding box
+        // TODO: Find a way to erase an existing bbox if a new one is drawn
         this.draw = new MapboxDraw({
           displayControlsDefault: false,
           controls: {
@@ -115,7 +116,7 @@
           this.$emit('update:params', {param: 'Zoom', value: zoom});
         });
 
-        // Create a custom bbox-draw button
+        // Create a custom bbox-draw button since mapbox-gl-draw-rectangle-mode doesn't provide one
         const button = document.createElement('button');
         button.className = 'mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_polygon';
         button.id = 'bbox-draw';
@@ -128,11 +129,16 @@
 
         // Add the button to the map draw control group
         const controlGroups = document.querySelectorAll('.mapboxgl-ctrl-group');
+        // Unfortunately Mapbox doesn't differentate between the control groups
+        // So we have to assume that the first control group is zoom controls,
+        // and the second is the draw controls.
         if (controlGroups && controlGroups.length > 1) {
-          // Append the button to the second control group if it exists
+          // Append the button to the second control group if it exists,
+          // And place it on top so it precedes the draw trash icon.
           controlGroups[1].insertBefore(button, controlGroups[1].firstChild);
         } else if (controlGroups.length === 1) {
-          // Fallback to the first control group if there's only one
+          // Fallback to the first control group if there's only one 
+          // (add at the end of the group if so)
           controlGroups[0].appendChild(button);
         }
       });
