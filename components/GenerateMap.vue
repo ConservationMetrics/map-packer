@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Sidebar 
+    <Panels 
       @formSubmitted="handleFormSubmit" 
       @update:params="updateMapParams"
       :mapLatitude="localLatitude" 
@@ -22,11 +22,11 @@
 </template>
 
 <script>
-import Sidebar from "@/components/Sidebar.vue";
+import Panels from "@/components/Panels.vue";
 import Map from "@/components/Map.vue";
 
 export default {
-  components: { Sidebar, Map },
+  components: { Panels, Map },
   props: [
     "mapboxAccessToken",
     "mapLatitude",

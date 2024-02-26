@@ -1,4 +1,5 @@
 <template>
+  <div>
   <div class="sidebar">
     <h1 class="text-xl font-bold text-gray-800 mb-2">MapPacker: Generate Offline Map</h1>
     <p class="mb-2"><em>Use this tool to send a request to generate an offline map.</em></p>
@@ -29,30 +30,44 @@
 
       <div v-if="form.localStyle === 'mapbox://styles/mapbox/satellite-v9' || !form.localStyle.includes('mapbox')" class="form-group flex items-center">
         <input type="checkbox" id="osmLabels" v-model="form.openstreetmap" class="input-field osm-checkbox" />
-        <label for="osmLabels" class="ml-2">Include OSM Labels</label>
+        <label for="osmLabels" class="ml-2">Include OSM Data (not shown on map)</label>
       </div>
 
       <div class="form-group">
-        <label>Zoom Level (0 - 16) <span class="text-red-600">*</span></label>
+        <label>Maximum Zoom Level (0 - 16) <span class="text-red-600">*</span></label>
+        <vue-slider v-model="form.maxZoom" :min="0" :max="16" :dot-size="14" :tooltip="'always'" :height="6"
+          class="slider"></vue-slider>
+      </div>
+
+      <div class="form-group">
+        <label for="bbox">Offline Map Bounding Box (draw on map)</label>
+        <input type="text" id="bbox" v-model="form.bounds" disabled class="input-field" />
+      </div>
+
+      <button type="submit" class="submit-button">Submit Request</button>
+    </form>
+  </div>
+  <div class="map-navigation">
+    <h2 class="text-xl font-bold text-gray-800 mb-2">Map controls</h2>
+    <div class="form-group">
+        <label>Zoom level (0 - 16) <span class="text-red-600">*</span></label>
         <vue-slider v-model="form.localZoom" :min="0" :max="16" :dot-size="14" :tooltip="'always'" :height="6"
           class="slider"></vue-slider>
       </div>
 
       <div class="form-group flex">
         <div class="flex-grow mr-2">
-          <label for="centerLat">Center Latitude</label>
+          <label for="centerLat">Center lat</label>
           <input type="number" step="0.000001" id="localLatitude" v-model.number="form.localLatitude" required :min="-90"
             :max="90" class="input-field" />
         </div>
         <div class="flex-grow">
-          <label for="centerLng">Center Longitude</label>
+          <label for="centerLng">Center long</label>
           <input type="number" step="0.000001" id="localLongitude" v-model.number="form.localLongitude" required :min="-180"
             :max="180" class="input-field" />
         </div>
       </div>
-
-      <button type="submit" class="submit-button">Submit Request</button>
-    </form>
+  </div>
   </div>
 </template>
 
@@ -89,6 +104,8 @@ export default {
         localLongitude: this.mapLongitude,
         localStyle: this.mapStyle,
         planetMonthYear: calculatePlanetMonthYear(),
+        maxZoom: 8,
+        bounds: ''
       },
     };
   },
@@ -178,12 +195,37 @@ export default {
   z-index: 1000;
 }
 
+.map-navigation {
+  position: fixed;
+  bottom: 30px;
+  right: 10px;
+  width: 250px;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 10px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  overflow-y: none;
+  z-index: 1000;
+  border-radius: 6px;
+
+  .input-field {
+    padding: 5px!important;
+  }
+
+  .form-group {
+    margin-bottom: 0px;
+  }
+}
+
 @media (max-width: 768px) {
   .sidebar {
     height: 50%;
     width: 100%;
     bottom: 0;
     top: auto;
+  }
+
+  .map-navigation {
+    display: none;
   }
 }
 
