@@ -1,24 +1,10 @@
 <template>
   <div>
-    <Panels 
-      @formSubmitted="handleFormSubmit" 
-      @update:params="updateMapParams"
-      :mapLatitude="localLatitude" 
-      :mapLongitude="localLongitude"
-      :customMapStyle="mapStyle"
-      :mapStyle="localStyle" 
-      :mapZoom="localZoom" 
-      :mapBounds="localBounds"
-      :availableMapStyles="availableMapStyles"
-    />
-    <Map 
-      @update:params="updateMapParams"
-      :mapboxAccessToken="mapboxAccessToken"
-      :mapLatitude="localLatitude"
-      :mapLongitude="localLongitude"
-      :mapStyle="localStyle"
-      :mapZoom="localZoom"
-    />
+    <Panels @formSubmitted="handleFormSubmit" @updateMapParams="updateMapParams" :availableMapStyles="availableMapStyles"
+      :customMapboxStyle="customMapboxStyle" :mapBounds="editableBounds" :mapLatitude="editableLatitude"
+      :mapLongitude="editableLongitude" :mapStyle="editableStyle" :mapZoom="editableZoom" />
+    <Map @updateMapParams="updateMapParams" :mapboxAccessToken="mapboxAccessToken" :mapLatitude="editableLatitude"
+      :mapLongitude="editableLongitude" :mapStyle="editableStyle" :mapZoom="editableZoom" />
   </div>
 </template>
 
@@ -29,24 +15,25 @@ import Map from "@/components/GenerateMap/Map.vue";
 export default {
   components: { Panels, Map },
   props: [
+    "availableMapStyles",
+    "customMapboxStyle",
     "mapboxAccessToken",
     "mapLatitude",
     "mapLongitude",
-    "mapStyle",
     "mapZoom",
-    "availableMapStyles"
   ],
   data() {
     return {
-      localLatitude: this.mapLatitude,
-      localLongitude: this.mapLongitude,
-      localZoom: this.mapZoom,
-      localStyle: this.mapStyle,
-      localBounds: '',
+      editableBounds: '',
+      editableLatitude: this.mapLatitude,
+      editableLongitude: this.mapLongitude,
+      editableStyle: this.mapStyle,
+      editableZoom: this.mapZoom,
     };
   },
   methods: {
     handleFormSubmit(formData) {
+      // TODO: Send as a POST request to the API
       console.log('Received form data:', formData);
     },
     updateMapParams(updateObj) {
@@ -56,7 +43,7 @@ export default {
         value = parseFloat(value.toFixed(6));
       }
 
-      this[`local${param}`] = value;
+      this[`editable${param}`] = value;
     }
   },
 };

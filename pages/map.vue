@@ -2,12 +2,12 @@
   <div>
     <GenerateMap
       v-if="dataFetched"
-      :mapbox-access-token="mapboxAccessToken"
-      :map-style="mapStyle"
-      :map-zoom="mapZoom"
-      :map-latitude="mapLatitude"
-      :map-longitude="mapLongitude"
-      :available-map-styles="availableMapStyles"
+      :availableMapStyles="availableMapStyles"
+      :customMapboxStyle="customMapboxStyle"
+      :mapboxAccessToken="mapboxAccessToken"
+      :mapLatitude="mapLatitude"
+      :mapLongitude="mapLongitude"
+      :mapZoom="mapZoom"
     />
   </div>
 </template>
@@ -35,12 +35,12 @@ export default {
       const availableMapStyles = await $axios.$get(`/api/mapstyles`, { headers });
       return {
         dataFetched: true,
+        availableMapStyles: availableMapStyles,
+        customMapboxStyle: response.mapStyle,
         mapboxAccessToken: response.mapboxAccessToken,
-        mapStyle: response.mapStyle,
-        mapZoom: response.mapZoom,
         mapLatitude: response.mapLatitude,
         mapLongitude: response.mapLongitude,
-        availableMapStyles: availableMapStyles,
+        mapZoom: response.mapZoom,
       };
     } catch (error) {
       // Handle errors as appropriate
