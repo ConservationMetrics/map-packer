@@ -1,14 +1,17 @@
 <template>
   <div>
-    <Panels
+    <Sidebar
       @formSubmitted="handleFormSubmit"
       @updateMapParams="updateMapParams"
       :availableMapStyles="availableMapStyles"
       :customMapboxStyle="customMapboxStyle"
       :mapBounds="selectedBounds"
+      :mapStyle="selectedStyle"
+    />
+    <MapNavigation
+      @updateMapParams="updateMapParams"
       :mapLatitude="selectedLatitude"
       :mapLongitude="selectedLongitude"
-      :mapStyle="selectedStyle"
       :mapZoom="selectedZoom"
     />
     <Map
@@ -19,15 +22,21 @@
       :mapStyle="selectedStyle"
       :mapZoom="selectedZoom"
     />
+    <div v-if="showModal" class="overlay"></div>
+    <div v-if="showModal" class="modal">
+      Offline map request successfully submitted!
+    </div>
   </div>
 </template>
 
 <script>
-import Panels from "@/components/GenerateMap/Panels.vue";
+import Sidebar from "@/components/GenerateMap/Sidebar.vue";
+import MapNavigation from "@/components/GenerateMap/MapNavigation.vue";
 import Map from "@/components/GenerateMap/Map.vue";
+import style from '@/components/GenerateMap/style.css';
 
 export default {
-  components: { Panels, Map },
+  components: { Map, Sidebar, MapNavigation },
   props: [
     "availableMapStyles",
     "customMapboxStyle",
@@ -43,13 +52,17 @@ export default {
       selectedLongitude: this.mapLongitude,
       selectedStyle: this.customMapboxStyle,
       selectedZoom: this.mapZoom,
+      showModal: false,
     };
   },
   methods: {
     handleFormSubmit(formData) {
       // TODO: Send as a POST request to the API
-      // TODO: Add modal to show success and redirect to MapDashboard
       console.log("Received form data:", formData);
+      this.showModal = true; //
+      setTimeout(() => {
+        this.$router.push('/');
+      }, 3000);
     },
     updateMapParams(updateObj) {
       let { param, value } = updateObj;
@@ -61,6 +74,11 @@ export default {
       this[`selected${param}`] = value;
     },
   },
+  computed: {
+    style() {
+      return style;
+    },
+  }
 };
 </script>
 
