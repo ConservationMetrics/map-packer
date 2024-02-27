@@ -108,10 +108,17 @@
         <!-- Show estimated number of tiles -->
         <!-- Note that filesize of each tile varies and it's quite tricky to correctly approximate -->
         <!-- See https://github.com/mapbox/mapbox-gl-native/issues/4258 -->
-        <p v-if="form.maxZoom && form.selectedBounds" class="italic">
+        <div v-if="form.maxZoom && form.selectedBounds">
+        <p class="italic">
           Estimated number of tiles:
-          {{ estimateNumberOfTiles(form.maxZoom, form.selectedBounds) }}
+          {{ estimatedTiles.toLocaleString() }}
         </p>
+        <p v-if="estimatedTiles > 100000" class="text-red-600 mt-2">
+          <span class="font-bold">Warning:</span> You are requesting over 100,000 tiles.
+          Note that this will generate a very large offline map file.
+          Please also make sure you will not exceed your tile quota for the map style API, or run into unexpected costs.
+        </p>
+        </div>
 
         <button type="submit" class="submit-button">Submit Request</button>
       </form>
@@ -256,6 +263,9 @@ export default {
     maxPlanetMonthYear() {
       return calculatePlanetMonthYear();
     },
+    estimatedTiles() {
+      return this.estimateNumberOfTiles(this.form.maxZoom, this.form.selectedBounds);
+    }
   },
   mounted() {
     this.fetchMapStyles();
