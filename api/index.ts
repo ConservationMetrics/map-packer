@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 
 import setupDatabaseConnection from "./database/dbConnection";
-import fetchData from "./database/dbOperations";
+import { fetchData, insertDataIntoTable } from "./database/dbOperations";
 import { checkAuthStrategy } from "./middleware";
 import { getLogin, postLogin } from "./loginController";
 import { sortByDate } from "./dataProcessing/filterData";
@@ -117,6 +117,19 @@ app.get("/mapstyle/planet/:year/:month", (req: Request, res: Response) => {
     res.json(mapStyleEntry.style);
   } else {
     res.status(404).json({ error: "Map style not found" });
+  }
+});
+
+// API endpoint to insert data into the database
+app.post("/newmaprequest", async (req: Request, res: Response) => {
+  try {
+    console.log("Inserting data into database...")
+    console.log(req.body)
+    await insertDataIntoTable(db, DB_TABLE, req.body);
+    res.status(200).json({ message: "Data successfully inserted" });
+  } catch (error: any) {
+    console.error("Error inserting data on API side:", error.message);
+    res.status(500).json({ error: error.message });
   }
 });
 

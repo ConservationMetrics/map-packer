@@ -162,6 +162,7 @@ export default {
         selectedStyle: this.customMapboxStyle,
         planetMonthYear: calculatePlanetMonthYear(),
         maxZoom: 8,
+        estimatedTiles: 0
       },
     };
   },
@@ -172,6 +173,9 @@ export default {
     },
     mapStyle(newVal) {
       this.form.selectedStyle = newVal;
+    },
+    estimatedTiles(newVal) {
+      this.form.estimatedTiles = newVal;
     },
 
     // Track and emit changes to map parameters in the sidebar form,

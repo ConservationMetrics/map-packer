@@ -26,7 +26,7 @@ const fetchDataFromTable = async (
   });
 };
 
-const fetchData = async (
+export const fetchData = async (
   db: any,
   table: string | undefined,
 ): Promise<{ data: any[] | null }> => {
@@ -43,4 +43,19 @@ const fetchData = async (
   return { data };
 };
 
-export default fetchData;
+export const insertDataIntoTable = async (
+  db: any,
+  table: string | undefined,
+  data: any
+): Promise<void> => {
+  const columns = Object.keys(data).join(", ");
+  const placeholders = Object.keys(data).map((_, i) => `$${i + 1}`).join(", ");
+  const values = Object.values(data);
+  const query = `INSERT INTO ${table} (${columns}) VALUES (${placeholders})`;
+  return new Promise((resolve, reject) => {
+    db.query(query, values, (err: Error) => {
+      if (err) reject(err);
+      resolve();
+    });
+  });
+};

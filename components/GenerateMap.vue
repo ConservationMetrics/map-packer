@@ -57,9 +57,9 @@ export default {
   },
   methods: {
     handleFormSubmit(formData) {
-      // TODO: Send as a POST request to the API
-      console.log("Received form data:", formData);
-      this.showModal = true; //
+      console.log(formData)
+      this.$emit("formSubmitted", formData);
+      this.showModal = true;
       setTimeout(() => {
         this.$router.push('/');
       }, 3000);

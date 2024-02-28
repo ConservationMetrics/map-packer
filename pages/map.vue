@@ -2,6 +2,7 @@
   <div>
     <GenerateMap
       v-if="dataFetched"
+      @formSubmitted="handleFormSubmit"
       :availableMapStyles="availableMapStyles"
       :customMapboxStyle="customMapboxStyle"
       :mapboxAccessToken="mapboxAccessToken"
@@ -22,6 +23,39 @@ export default {
     };
   },
   components: { GenerateMap },
+  data() {
+    return {
+      headers: {
+        "x-api-key": this.$config.apiKey.replace(/['"]+/g, ""),
+        "x-auth-strategy": this.$auth.strategy.name,
+      },
+    };
+  },
+  methods: {
+    async handleFormSubmit(formData) {
+        // Transform formData to match the expected database table schema
+        const transformedData = {
+          title: formData.title,
+          filename: formData.title.replace(/\W+/g, '_'),
+          status: "PENDING",
+          description: formData.description,
+          minzoom: 0,
+          maxzoom: formData.maxZoom,
+          planet_monthly_visual: formData.planetMonthYear,
+          bounds: formData.selectedBounds,
+          style: formData.selectedStyle,
+          openstreetmap: formData.openstreetmap,
+          numberoftiles: formData.estimatedTiles,
+          created_at: new Date(),
+        };
+      
+        try {
+        await this.$axios.$post('/api/newmaprequest', transformedData, { headers: this.headers });
+      } catch (error) {
+        console.error("Error submitting form data:", error);
+      }
+    },
+  },
   async asyncData({ $axios, app }) {
     // Set up the headers for the request
     let headers = {
