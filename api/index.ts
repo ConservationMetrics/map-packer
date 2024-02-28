@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 
 import setupDatabaseConnection from "./database/dbConnection";
-import fetchData from "./database/dbOperations";
+import { fetchData, insertDataIntoTable } from "./database/dbOperations";
 import { checkAuthStrategy } from "./middleware";
 import { getLogin, postLogin } from "./loginController";
 import { sortByDate } from "./dataProcessing/filterData";
@@ -76,7 +76,9 @@ app.get("/map", async (_req: Request, res: Response) => {
 app.get("/mapstyles", (_req: Request, res: Response) => {
   const styles = Object.entries(mapStyles).map(([key, value]) => ({
     name: value.name,
-    url: `/api/mapstyle/${key}/`, // Use the key to generate the URL
+    key: key,
+    // if no URL is set then provide an API endpoint to retrieve the style by key
+    url: value.url || `/api/mapstyle/${key}/`,
   }));
 
   res.json(styles);
@@ -95,11 +97,10 @@ app.get("/mapstyle/:styleKey", (req: Request, res: Response) => {
   }
 });
 
-// API endpoint to retrieve a specific map style with a custom date
+// API endpoint to retrieve Planet style with a custom date
 app.get("/mapstyle/planet/:year/:month", (req: Request, res: Response) => {
   const { year, month } = req.params;
   const styleKey = "planet";
-  console.log(year, month);
 
   // Validate that styleKey is a key of mapStyles
   if (styleKey in mapStyles) {
@@ -111,12 +112,22 @@ app.get("/mapstyle/planet/:year/:month", (req: Request, res: Response) => {
       mapStyleEntry.style as any
     ).sources.planet.tiles[0].replace(/\d{4}-\d{2}/, `${year}-${month}`);
     (mapStyleEntry.style as any).sources.planet.tiles[0] = newTileUrl;
-
-    console.log(newTileUrl);
-
     res.json(mapStyleEntry.style);
   } else {
     res.status(404).json({ error: "Map style not found" });
+  }
+});
+
+// API endpoint to insert data into the database
+app.post("/newmaprequest", async (req: Request, res: Response) => {
+  try {
+    console.log("Inserting data into database...")
+    console.log(req.body)
+    await insertDataIntoTable(db, DB_TABLE, req.body);
+    res.status(200).json({ message: "Data successfully inserted" });
+  } catch (error: any) {
+    console.error("Error inserting data on API side:", error.message);
+    res.status(500).json({ error: error.message });
   }
 });
 
