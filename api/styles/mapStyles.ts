@@ -1,10 +1,11 @@
 import { calculatePlanetMonthYear } from "../../src/utils";
 
-export type MapStyleKey = "bing" | "google" | "esri" | "planet";
+export type MapStyleKey = "bing" | "google" | "esri" | "mapbox-satellite" | "planet" ;
 
 interface MapStyle {
   name: string;
-  style: unknown;
+  style?: unknown;
+  url?: string;
 }
 
 export const mapStyles: Record<MapStyleKey, MapStyle> = {
@@ -97,6 +98,10 @@ export const mapStyles: Record<MapStyleKey, MapStyle> = {
         },
       ],
     },
+  },
+  'mapbox-satellite': {
+    name: "Mapbox Satellite",
+    url: "mapbox://styles/mapbox/satellite-v9",
   },
   planet: {
     name: `Planet Monthly Visual Basemap`,

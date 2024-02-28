@@ -31,13 +31,13 @@
           <label for="mapStyle">Map Style <span class="text-red-600">*</span></label>
           <select
             id="mapStyle"
-            v-model="form.selectedStyle"
+            v-model="selectedStyleKey"
             class="input-field"
           >
             <option
               v-for="style in dynamicMapStyles"
-              :key="style.value"
-              :value="style.value"
+              :key="style.key"
+              :value="style.key"
             >
               {{ style.name }}
             </option>
@@ -144,17 +144,7 @@ export default {
   ],
   data() {
     return {
-      mapStyles: [
-        {
-          name: "Mapbox Satellite",
-          value: "mapbox://styles/mapbox/satellite-v9",
-        },
-        {
-          name: "Mapbox Satellite Streets",
-          value: "mapbox://styles/mapbox/satellite-streets-v12",
-        },
-        { name: "Mapbox Custom Style", value: this.customMapboxStyle },
-      ],
+      mapStyles: [],
       form: {
         title: "",
         description: "",
@@ -199,10 +189,19 @@ export default {
         this.availableMapStyles.map((style) => {
           return {
             name: style.name,
+            key: style.key,
             value: style.url,
           };
         }),
       );
+      // Add custom map style url if available
+      if (this.customMapboxStyle) {
+        this.mapStyles.push({
+          name: "Mapbox - Custom Style",
+          key: 'mapbox',
+          value: this.customMapboxStyle,
+        });
+      } 
       // Sort map styles by name
       this.mapStyles.sort((a, b) => a.name.localeCompare(b.name));
     },
@@ -244,10 +243,34 @@ export default {
       return totalTiles;
     },
     submitForm() {
-      this.$emit("formSubmitted", this.form);
+      let formToSubmit = { ...this.form, selectedStyle: this.selectedStyleKey };
+
+      // Remove planetMonthYear if the selected style is not planet
+      if (this.selectedStyleKey !== "planet") {
+        delete formToSubmit.planetMonthYear;
+      }
+
+      // If the selected style is mapbox, include the selected style url
+      if (this.selectedStyleKey === "mapbox") {
+        formToSubmit.mapboxStyle = this.form.selectedStyle;
+      }
+
+      this.$emit("formSubmitted", formToSubmit);
     },
   },
   computed: {
+    selectedStyleKey: {
+      get() {
+        const selectedStyle = this.mapStyles.find(style => style.value === this.form.selectedStyle);
+        return selectedStyle ? selectedStyle.key : null;
+      },
+      set(key) {
+        const selectedStyle = this.mapStyles.find(style => style.key === key);
+        if (selectedStyle) {
+          this.form.selectedStyle = selectedStyle.value;
+        }
+      }
+    },
     dynamicMapStyles() {
       let styles = [...this.mapStyles];
       if (

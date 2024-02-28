@@ -57,7 +57,6 @@ export default {
   },
   methods: {
     handleFormSubmit(formData) {
-      console.log(formData)
       this.$emit("formSubmitted", formData);
       this.showModal = true;
       setTimeout(() => {

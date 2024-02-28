@@ -41,6 +41,7 @@ export default {
           description: formData.description,
           minzoom: 0,
           maxzoom: formData.maxZoom,
+          mapboxstyle: formData.mapboxStyle,
           planet_monthly_visual: formData.planetMonthYear,
           bounds: formData.selectedBounds,
           style: formData.selectedStyle,
@@ -50,10 +51,10 @@ export default {
         };
       
         try {
-        await this.$axios.$post('/api/newmaprequest', transformedData, { headers: this.headers });
-      } catch (error) {
-        console.error("Error submitting form data:", error);
-      }
+          await this.$axios.$post('/api/newmaprequest', transformedData, { headers: this.headers });
+        } catch (error) {
+          console.error("Error submitting form data:", error);
+        }
     },
   },
   async asyncData({ $axios, app }) {
