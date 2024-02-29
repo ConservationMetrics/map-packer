@@ -35,7 +35,7 @@
             class="input-field"
           >
             <option
-              v-for="style in dynamicMapStyles"
+              v-for="style in this.mapStyles"
               :key="style.key"
               :value="style.key"
             >
@@ -178,6 +178,17 @@ export default {
         const [year, month] = newVal.split("-");
         if (year && month) {
           this.form.selectedStyle = `/api/mapstyle/planet/${year}/${month}`;
+
+          // remove planet from existing mapstyles
+          this.mapStyles = this.mapStyles.filter(
+            (style) => style.key !== "planet"
+          );
+
+          this.mapStyles.push({
+            name: "Planet Monthly Visual Basemap",
+            key: "planet",
+            value: this.form.selectedStyle,
+          });
         }
       }
     },
@@ -270,22 +281,6 @@ export default {
           this.form.selectedStyle = selectedStyle.value;
         }
       }
-    },
-    dynamicMapStyles() {
-      let styles = [...this.mapStyles];
-      if (
-        this.form.selectedStyle.includes("/api/mapstyle/planet/") &&
-        this.form.selectedStyle.length > "/api/mapstyle/planet/".length
-      ) {
-        styles = styles.filter(
-          (style) => style.value !== "/api/mapstyle/planet/",
-        );
-        styles.push({
-          name: "Planet Monthly Visual Basemap",
-          value: this.form.selectedStyle,
-        });
-      }
-      return styles;
     },
     maxPlanetMonthYear() {
       return calculatePlanetMonthYear();
