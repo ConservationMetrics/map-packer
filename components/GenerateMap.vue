@@ -14,7 +14,7 @@
       :mapLongitude="selectedLongitude"
       :mapZoom="selectedZoom"
     />
-    <Map
+    <MapCanvas
       @updateMapParams="updateMapParams"
       :mapboxAccessToken="mapboxAccessToken"
       :mapLatitude="selectedLatitude"
@@ -32,11 +32,11 @@
 <script>
 import Sidebar from "@/components/GenerateMap/Sidebar.vue";
 import MapNavigation from "@/components/GenerateMap/MapNavigation.vue";
-import Map from "@/components/GenerateMap/Map.vue";
+import MapCanvas from "@/components/GenerateMap/MapCanvas.vue";
 import style from '@/components/GenerateMap/style.css';
 
 export default {
-  components: { Map, Sidebar, MapNavigation },
+  components: { MapCanvas, Sidebar, MapNavigation },
   props: [
     "availableMapStyles",
     "customMapboxStyle",
