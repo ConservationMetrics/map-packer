@@ -12,6 +12,44 @@ const checkTableExists = (
   });
 };
 
+const createMapRequestTable = async (db: any, table: string | undefined): Promise<void> => {
+  console.log(`Table ${table} does not exist. Creating...`);
+  const query = `
+    CREATE TABLE ${table} (
+      id SERIAL PRIMARY KEY,
+      created_at TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+      title TEXT,
+      description TEXT,
+      style TEXT,
+      overlay TEXT,
+      apikey TEXT,
+      openstreetmap BOOLEAN,
+      mapboxstyle TEXT,
+      planet_monthly_visual TEXT,
+      bounds TEXT,
+      minzoom INT,
+      maxzoom INT,
+      ratio INT,
+      tiletype TEXT,
+      numberoftiles INT,
+      filename TEXT,
+      filelocation TEXT,
+      filesize TEXT,
+      status TEXT,
+      errormessage TEXT,
+      workbegun TIMESTAMP(6),
+      workended TIMESTAMP(6)
+    )
+  `;  
+  return new Promise((resolve, reject) => {
+    db.query(query, (err: Error) => {
+      if (err) reject(err);
+      console.log(`Table ${table} created successfully`);
+      resolve();
+    });
+  });
+}
+
 const fetchDataFromTable = async (
   db: any,
   table: string | undefined,
@@ -30,15 +68,12 @@ export const fetchData = async (
   db: any,
   table: string | undefined,
 ): Promise<{ data: any[] | null }> => {
-  console.log("Fetching data from", table, "...");
-  // Fetch data
-  const dataExists = await checkTableExists(db, table);
-  let data = null;
-  if (dataExists) {
-    data = await fetchDataFromTable(db, table);
-  } else {
-    throw new Error("Table does not exist");
+  console.log(`Fetching data from ${table}...`);
+  const databaseExists = await checkTableExists(db, table);
+  if (!databaseExists) {
+    await createMapRequestTable(db, table);
   }
+  let data = await fetchDataFromTable(db, table);;
 
   return { data };
 };
@@ -48,6 +83,10 @@ export const insertDataIntoTable = async (
   table: string | undefined,
   data: any
 ): Promise<void> => {
+  const databaseExists = await checkTableExists(db, table);
+  if (!databaseExists) {
+    await createMapRequestTable(db, table);
+  }
   const columns = Object.keys(data).join(", ");
   const placeholders = Object.keys(data).map((_, i) => `$${i + 1}`).join(", ");
   const values = Object.values(data);

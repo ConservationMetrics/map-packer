@@ -122,7 +122,6 @@ app.get("/mapstyle/planet/:year/:month", (req: Request, res: Response) => {
 app.post("/newmaprequest", async (req: Request, res: Response) => {
   try {
     console.log("Inserting data into database...")
-    console.log(req.body)
     await insertDataIntoTable(db, DB_TABLE, req.body);
     res.status(200).json({ message: "Data successfully inserted" });
   } catch (error: any) {
