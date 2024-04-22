@@ -1,5 +1,5 @@
 {
-  "name": "mappacker",
+  "name": "map-packer",
   "version": "1.0.0",
   "type": "module",
   "description": "A Nuxt app to allow users to generate and manage offline map requests",
