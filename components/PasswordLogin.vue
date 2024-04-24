@@ -40,7 +40,26 @@ export default {
     return {
       password: "",
       error: null,
+      redirectPath: "/",
     };
+  },
+  async created() {
+    if (this.$route.query.secret_key) {
+      try {
+        const response = await this.$axios.$get("/api/login", {
+          params: {
+            secret_key: this.$route.query.secret_key,
+          },
+        });
+        // If the request is successful, log in the user
+        if (response.token) {
+          this.$auth.strategy.token.set(`Bearer ${response.token}`);
+          location.reload();
+        }
+      } catch (error) {
+        this.error = "An error occurred while trying to log in.";
+      }
+    }
   },
   methods: {
     async login() {
@@ -52,7 +71,7 @@ export default {
               password: this.password,
             },
           });
-          this.$router.push("/");
+          this.$router.push(this.redirectPath);
         } catch (error) {
           if (error.response) {
             if (error.response.status === 403) {
@@ -73,32 +92,9 @@ export default {
   watch: {
     "$auth.loggedIn"(loggedIn) {
       if (loggedIn) {
-        this.$router.push("/");
+        this.$router.push(this.redirectPath);
       }
     },
-  },
-  async created() {
-    if (this.$route.query.secret_key) {
-      try {
-        const response = await this.$axios.$get("/api/login", {
-          params: {
-            secret_key: this.$route.query.secret_key,
-          },
-        });
-        // If the request is successful, log in the user
-        if (response.token) {
-          this.$auth.strategy.token.set(`Bearer ${response.token}`);
-          location.reload();
-        }
-      } catch (error) {
-        this.error = "An error occurred while trying to log in.";
-      }
-    }
-  },
-  beforeMount() {
-    if (this.$auth.loggedIn) {
-      this.$router.push("/");
-    }
   },
 };
 </script>

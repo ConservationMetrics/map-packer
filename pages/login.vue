@@ -34,12 +34,5 @@ export default {
       return this.authStrategy === "auth0" ? Auth0Login : PasswordLogin;
     },
   },
-  watch: {
-    "$auth.loggedIn"(loggedIn) {
-      if (loggedIn) {
-        this.$router.push("/");
-      }
-    },
-  },
 };
 </script>

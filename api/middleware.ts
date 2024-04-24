@@ -21,7 +21,7 @@ export const checkAuthStrategy = (
     return;
   }
 
-  // Only check for the JWT token if the authentication strategy is 'local'
+  // Only check for the JWT token if the authentication strategy is 'password'
   if (AUTH_STRATEGY === "password") {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
