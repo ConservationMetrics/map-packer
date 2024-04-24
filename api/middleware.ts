@@ -1,4 +1,3 @@
-// middleware.ts
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { API_KEY, AUTH_STRATEGY, SECRET_JWT_KEY } from "./config";
@@ -21,7 +20,7 @@ export const checkAuthStrategy = (
     return;
   }
 
-  // Only check for the JWT token if the authentication strategy is 'local'
+  // Only check for the JWT token if the authentication strategy is 'password'
   if (AUTH_STRATEGY === "password") {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
