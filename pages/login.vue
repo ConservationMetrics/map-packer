@@ -12,12 +12,9 @@ export default {
       authStrategy: "none",
     };
   },
-  async created() {
+  created() {
     try {
       this.authStrategy = this.$config.authStrategy;
-      if (this.$auth.loggedIn || this.authStrategy === "none") {
-        this.$router.push("/");
-      }
     } catch (error) {
       console.error(
         "Error fetching authStrategy config on client side:",

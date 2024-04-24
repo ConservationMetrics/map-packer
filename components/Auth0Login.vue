@@ -20,6 +20,9 @@ export default {
       redirectPath: "/",
     };
   },
+  created() {
+    this.redirectPath = this.$route.query.redirect || "/";
+  },
   mounted() {
     const hashParams = new URLSearchParams(window.location.hash.substring(1));
     const error = hashParams.get("error");

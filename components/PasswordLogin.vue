@@ -44,6 +44,8 @@ export default {
     };
   },
   async created() {
+    this.redirectPath = this.$route.query.redirect || "/";
+
     if (this.$route.query.secret_key) {
       try {
         const response = await this.$axios.$get("/api/login", {
