@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 
 import setupDatabaseConnection from "./database/dbConnection";
-import { fetchData, insertDataIntoTable } from "./database/dbOperations";
+import { fetchData, insertDataIntoTable, updateDatabaseWithError } from "./database/dbOperations";
 import { publishToAzureStorageQueue } from "./messageQueue/azure";
 
 import { checkAuthStrategy } from "./middleware";
@@ -124,22 +124,29 @@ app.get("/mapstyle/planet/:year/:month", (req: Request, res: Response) => {
 
 // API endpoint to POST data to the db and publish message to queue
 app.post("/newmaprequest", async (req: Request, res: Response) => {
+  let requestId: number | void | null = null;
+
   try {
-    // Check if ASQ_QUEUE_NAME is set; if so, publish to message queue
+    // First, let's publish the request to the db
+    console.log("Inserting data into database...")
+    requestId = await insertDataIntoTable(db, DB_TABLE, req.body);
+
+    // Next, let's check if ASQ_QUEUE_NAME is set; if so, publish to message queue
     if (ASQ_QUEUE_NAME) {
       console.log(`Publishing message to queue: ${ASQ_QUEUE_NAME}`);
       await publishToAzureStorageQueue(ASQ_QUEUE_NAME, JSON.stringify(req.body));
       console.log("Message succesfully published to message queue.");
     } else {
-      throw new Error("Error publishing to message queue.");
+      // If ASQ_QUEUE_NAME is not set, update the request status and error message in the db
+      console.error("ASQ_QUEUE_NAME is not set.");
+      await updateDatabaseWithError(db, DB_TABLE, requestId, "ASQ_QUEUE_NAME is not set");
     }
-
-    console.log("Inserting data into database...")
-    await insertDataIntoTable(db, DB_TABLE, req.body);
 
     res.status(200).json({ message: "Request successfully published!" });
   } catch (error: any) {
-    console.error("Error inserting data on API side:", error.message);
+    console.error("Error on API side:", error.message);
+    // If error is thrown, update the request status and error message in the db
+    await updateDatabaseWithError(db, DB_TABLE, requestId, error.message);
     res.status(500).json({ error: error.message });
   }
 });

@@ -90,11 +90,40 @@ export const insertDataIntoTable = async (
   const columns = Object.keys(data).join(", ");
   const placeholders = Object.keys(data).map((_, i) => `$${i + 1}`).join(", ");
   const values = Object.values(data);
-  const query = `INSERT INTO ${table} (${columns}) VALUES (${placeholders})`;
+  // Return id so it can be used if needed for error handling
+  const query = `INSERT INTO ${table} (${columns}) VALUES (${placeholders}) RETURNING id`;
   return new Promise((resolve, reject) => {
-    db.query(query, values, (err: Error) => {
+    db.query(query, values, (err: Error, result: { rows: any[] }) => {
       if (err) reject(err);
-      resolve();
+      if (result.rows.length > 0) {
+        resolve(result.rows[0].id);
+      } else {
+        reject(new Error('No rows returned after insert.'));
+      }
     });
   });
 };
+
+export async function updateDatabaseWithError(db: any, tableName: string, id: number | void | null, errorMessage: string) {
+  if (id === null || id === undefined || !Number.isInteger(id)) {
+    throw new Error('Invalid ID provided for updating error message.');
+  }
+
+  const query = `
+    UPDATE ${tableName}
+    SET status = 'ERROR', errormessage = $1
+    WHERE id = $2
+  `;
+
+  return new Promise<void>((resolve, reject) => {
+    db.query(query, [errorMessage, id], (err: Error) => {
+      if (err) {
+        console.error(`Error updating record ${id} in table ${tableName}: ${err.message}`);
+        reject(err);
+      } else {
+        console.log(`Record ${id} in table ${tableName} updated with error message.`);
+        resolve();
+      }
+    });
+  });
+}
