@@ -16,5 +16,12 @@ export async function publishToAzureStorageQueue(
   const queueServiceClient =
     QueueServiceClient.fromConnectionString(connectionString);
   const queueClient = queueServiceClient.getQueueClient(queueName);
-  await queueClient.sendMessage(Buffer.from(message).toString("base64"));
+  const response = await queueClient.sendMessage(Buffer.from(message).toString("base64"));
+
+  if (response.messageId) {
+    console.log(`Message successfully published with ID: ${response.messageId}`);
+    return response.messageId;
+  } else {
+    throw new Error("Failed to publish the message");
+  }
 }
