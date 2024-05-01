@@ -4,13 +4,13 @@ export async function publishToAzureStorageQueue(
   queueName: string,
   message: { 
     bounds: any; 
+    filename: any;
     mapboxstyle: any;
     minzoom: any; 
     maxzoom: any; 
     openstreetmap: any;
     planet_monthly_visual: any;
     style: any; 
-    title: any; 
   },
 ) {
   const accountName = process.env.AZURE_STORAGE_CONNECTION_ACCOUNT_NAME;
@@ -28,7 +28,6 @@ export async function publishToAzureStorageQueue(
 
   // Transform the message object to match the inputs expected by mapgl-tile-renderer
   const transformedMessage = {
-    ...(process.env.MAPBOX_ACCESS_TOKEN && { apiKey: process.env.MAPBOX_ACCESS_TOKEN }),
     ...(message.bounds && { bounds: message.bounds }),
     ...(message.style && { style: message.style }),
     ...(message.mapboxstyle && { mapboxStyle: message.mapboxstyle }),
@@ -36,13 +35,18 @@ export async function publishToAzureStorageQueue(
     ...(message.minzoom && { minZoom: message.minzoom }),
     ...(message.planet_monthly_visual && { monthYear: message.planet_monthly_visual }),
     ...(message.openstreetmap && { openStreetMap: message.openstreetmap }),
-    ...(message.title && { outputFilename: message.title }),
+    ...(message.filename && { outputFilename: message.filename}),
   };
+
+  if (transformedMessage.style.includes("mapbox")) {
+    transformedMessage.apiKey = process.env.MAPBOX_ACCESS_TOKEN;
+  } else if (transformedMessage.style === "planet") {
+    transformedMessage.apiKey = process.env.VUE_APP_PLANET_API_KEY;
+  }
 
   const messageString = JSON.stringify(transformedMessage);
 
   const response = await queueClient.sendMessage(Buffer.from(messageString).toString("base64"));
-
   if (response.messageId) {
     console.log(`Message successfully published with ID: ${response.messageId}`);
     return response.messageId;

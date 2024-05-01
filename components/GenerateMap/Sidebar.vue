@@ -263,7 +263,7 @@ export default {
 
       // If the selected style is mapbox, include the selected style url
       if (this.selectedStyleKey === "mapbox") {
-        formToSubmit.mapboxStyle = this.form.selectedStyle;
+        formToSubmit.mapboxStyle = this.form.selectedStyle.replace('mapbox://styles/', '');
       }
 
       this.$emit("formSubmitted", formToSubmit);
