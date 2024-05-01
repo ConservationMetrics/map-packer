@@ -1,6 +1,5 @@
 import { QueueServiceClient } from "@azure/storage-queue";
 
-// Helper function to publish message to Azure Storage Queue
 export async function publishToAzureStorageQueue(
   queueName: string,
   message: string,

@@ -125,16 +125,19 @@ app.get("/mapstyle/planet/:year/:month", (req: Request, res: Response) => {
 // API endpoint to POST data to the db and publish message to queue
 app.post("/newmaprequest", async (req: Request, res: Response) => {
   try {
-    console.log("Inserting data into database...")
-    await insertDataIntoTable(db, DB_TABLE, req.body);
-
-    // Check if ASQ_QUEUE_NAME is set and publish to message queue
+    // Check if ASQ_QUEUE_NAME is set; if so, publish to message queue
     if (ASQ_QUEUE_NAME) {
       console.log(`Publishing message to queue: ${ASQ_QUEUE_NAME}`);
       await publishToAzureStorageQueue(ASQ_QUEUE_NAME, JSON.stringify(req.body));
+      console.log("Message succesfully published to message queue.");
+    } else {
+      throw new Error("Error publishing to message queue.");
     }
 
-    res.status(200).json({ message: "Data successfully posted!" });
+    console.log("Inserting data into database...")
+    await insertDataIntoTable(db, DB_TABLE, req.body);
+
+    res.status(200).json({ message: "Request successfully published!" });
   } catch (error: any) {
     console.error("Error inserting data on API side:", error.message);
     res.status(500).json({ error: error.message });
