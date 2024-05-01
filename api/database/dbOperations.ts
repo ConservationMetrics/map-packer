@@ -111,7 +111,7 @@ export async function updateDatabaseWithError(db: any, tableName: string, id: nu
 
   const query = `
     UPDATE ${tableName}
-    SET status = 'ERROR', errormessage = $1
+    SET status = 'FAILED', errormessage = $1
     WHERE id = $2
   `;
 
