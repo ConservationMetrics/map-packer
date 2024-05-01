@@ -1,4 +1,5 @@
 interface EnvVars {
+  ASQ_QUEUE_NAME: string;
   DATABASE: string;
   DB_HOST: string;
   DB_USER: string;
@@ -37,6 +38,7 @@ const getEnvVar = (
 };
 
 const API_KEY = getEnvVar("VUE_APP_API_KEY");
+const ASQ_QUEUE_NAME = getEnvVar("ASQ_QUEUE_NAME");
 const AUTH_STRATEGY = getEnvVar("NUXT_ENV_AUTH_STRATEGY", "none");
 const DATABASE = getEnvVar("DATABASE");
 const DB_HOST = getEnvVar("DB_HOST");
@@ -55,6 +57,7 @@ const SECRET_JWT_KEY = getEnvVar("SECRET_JWT_KEY", "secret-jwt-key") as string;
 
 export {
   API_KEY,
+  ASQ_QUEUE_NAME,
   AUTH_STRATEGY,
   DATABASE,
   DB_HOST,
