@@ -44,8 +44,8 @@
             <span class="font-bold">Status:</span>
             <span :class="formatStatusColor(map.status)">{{ map.status }}</span>
           </p>
-          <p class="text-red-600" v-if="map.errormessage">
-            {{ map.errormessage }}
+          <p class="text-red-600 break-words" v-if="map.errormessage">
+            <span class="font-bold">Error message:</span> {{ map.errormessage }}
           </p>
           <p v-if="map.created_at">
             <span class="font-bold">Requested on:</span>
