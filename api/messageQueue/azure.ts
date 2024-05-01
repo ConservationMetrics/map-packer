@@ -2,7 +2,16 @@ import { QueueServiceClient } from "@azure/storage-queue";
 
 export async function publishToAzureStorageQueue(
   queueName: string,
-  message: string,
+  message: { 
+    bounds: any; 
+    mapboxstyle: any;
+    minzoom: any; 
+    maxzoom: any; 
+    openstreetmap: any;
+    planet_monthly_visual: any;
+    style: any; 
+    title: any; 
+  },
 ) {
   const accountName = process.env.AZURE_STORAGE_CONNECTION_ACCOUNT_NAME;
   const storageKey = process.env.AZURE_STORAGE_CONNECTION_STORAGE_KEY;
@@ -16,7 +25,23 @@ export async function publishToAzureStorageQueue(
   const queueServiceClient =
     QueueServiceClient.fromConnectionString(connectionString);
   const queueClient = queueServiceClient.getQueueClient(queueName);
-  const response = await queueClient.sendMessage(Buffer.from(message).toString("base64"));
+
+  // Transform the message object to match the inputs expected by mapgl-tile-renderer
+  const transformedMessage = {
+    ...(process.env.MAPBOX_ACCESS_TOKEN && { apiKey: process.env.MAPBOX_ACCESS_TOKEN }),
+    ...(message.bounds && { bounds: message.bounds }),
+    ...(message.style && { style: message.style }),
+    ...(message.mapboxstyle && { mapboxStyle: message.mapboxstyle }),
+    ...(message.maxzoom && { maxZoom: message.maxzoom }),
+    ...(message.minzoom && { minZoom: message.minzoom }),
+    ...(message.planet_monthly_visual && { monthYear: message.planet_monthly_visual }),
+    ...(message.openstreetmap && { openStreetMap: message.openstreetmap }),
+    ...(message.title && { outputFilename: message.title }),
+  };
+
+  const messageString = JSON.stringify(transformedMessage);
+
+  const response = await queueClient.sendMessage(Buffer.from(messageString).toString("base64"));
 
   if (response.messageId) {
     console.log(`Message successfully published with ID: ${response.messageId}`);
