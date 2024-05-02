@@ -13,6 +13,7 @@ interface EnvVars {
   MAP_LATITUDE: string;
   MAP_LONGITUDE: string;
   NUXT_ENV_AUTH_STRATEGY: string;
+  OFFLINE_MAPS_URI: string;
   PASSWORD: string;
   PORT: string;
   SECRET_JWT_KEY: string;
@@ -52,6 +53,7 @@ const MAP_STYLE = getEnvVar("MAP_STYLE") as string;
 const MAP_ZOOM = getEnvVar("MAP_ZOOM") as string;
 const MAP_LATITUDE = getEnvVar("MAP_LATITUDE") as string;
 const MAP_LONGITUDE = getEnvVar("MAP_LONGITUDE") as string;
+const OFFLINE_MAPS_URI = getEnvVar("OFFLINE_MAPS_URI");
 const PASSWORD = getEnvVar("PASSWORD");
 const SECRET_JWT_KEY = getEnvVar("SECRET_JWT_KEY", "secret-jwt-key") as string;
 
@@ -71,6 +73,7 @@ export {
   MAP_ZOOM,
   MAP_LATITUDE,
   MAP_LONGITUDE,
+  OFFLINE_MAPS_URI,
   PASSWORD,
   SECRET_JWT_KEY,
 };
