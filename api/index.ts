@@ -24,6 +24,7 @@ import {
   MAP_ZOOM,
   MAP_LATITUDE,
   MAP_LONGITUDE,
+  OFFLINE_MAPS_URI,
 } from "./config";
 
 const app = express();
@@ -56,7 +57,12 @@ app.get("/data", async (_req: Request, res: Response) => {
     } else {
       // Sort offline maps in descending order by created_at field
       const sortedData = sortByDate(data, "created_at");
-      res.json(sortedData);
+
+      const response = {
+        offlineMaps: sortedData,
+        offlineMapsUri: OFFLINE_MAPS_URI,
+      };
+      res.json(response);
     }
   } catch (error: any) {
     console.error("Error fetching data on API side:", error.message);

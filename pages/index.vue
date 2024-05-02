@@ -1,6 +1,10 @@
 <template>
   <div>
-    <MapDashboard v-if="dataFetched" :data="data" />
+    <MapDashboard 
+      v-if="dataFetched" 
+      :offline-maps="offlineMaps"
+      :offline-maps-uri="offlineMapsUri" 
+    />
   </div>
 </template>
 
@@ -26,7 +30,8 @@ export default {
       const response = await $axios.$get(`/api/data`, { headers });
       return {
         dataFetched: true,
-        data: response,
+        offlineMaps: response.offlineMaps,
+        offlineMapsUri: response.offlineMapsUri,
       };
     } catch (error) {
       // Handle errors as appropriate

@@ -10,7 +10,7 @@
     </h1>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div
-        v-for="map in data"
+        v-for="map in offlineMaps"
         :key="map.id"
         class="card bg-white border border-gray-300 rounded-lg shadow-lg p-6 flex flex-col"
       >
@@ -18,16 +18,16 @@
           {{ map.title }}
         </h2>
         <p class="mb-2 italic" v-if="map.description">{{ map.description }}</p>
-        <div v-if="map.filelocation" class="flex mb-2">
+        <div v-if="map.filelocation && offlineMapsUri" class="flex mb-2">
           <a
-            :href="map.filelocation"
+            :href="`${offlineMapsUri}/${map.filelocation}`"
             class="download-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out mr-4"
             >Download</a
           >
           <div>
             <button
               class="copy-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out"
-              @click="copyLinkToClipboard(map.filelocation, map.id)"
+              @click="copyLinkToClipboard(`${offlineMapsUri}/${map.filelocation}`, map.id)"
             >
               Copy Link
             </button>
@@ -92,7 +92,10 @@
 import { copyLink } from "@/src/utils.ts";
 
 export default {
-  props: ["data"],
+  props: [
+    "offlineMaps",
+    "offlineMapsUri"
+  ],
   data() {
     return {
       tooltipId: null,
