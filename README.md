@@ -4,7 +4,7 @@ Map-packer is a web application that can be used to send a request for an offlin
 
 ## Configure
 
-To get started, copy `.env.example` to `.env` and add your database and table information, authentication, and a Mapbox access token.
+To get started, copy `.env.example` to `.env` and configure your map-packer application.
 
 **Database:** Provide your database information in the relevant variables, including the table where offline map data is stored.
 
@@ -18,6 +18,8 @@ To get started, copy `.env.example` to `.env` and add your database and table in
 **Vue API key:** Generate an API key to add to request headers made by the Nuxt front end.
 
 **Mapbox access token:** Provide an access token to be used across the application for authenticating with Mapbox maps.
+
+**Offline map storage:** Provide a URI where the offline maps can be downloaded, as well as a path pointing to a volume mount for mapgl-tile-renderer to store the files.
 
 ## Build Setup
 

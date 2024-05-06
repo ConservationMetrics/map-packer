@@ -36,6 +36,7 @@ export async function publishToAzureStorageQueue(
     ...(message.planet_monthly_visual && { monthYear: message.planet_monthly_visual }),
     ...(message.openstreetmap && { openStreetMap: message.openstreetmap }),
     ...(message.filename && { outputFilename: message.filename}),
+    ...(process.env.OFFLINE_MAPS_PATH && { outputDir: process.env.OFFLINE_MAPS_PATH })
   };
 
   if (transformedMessage.style.includes("mapbox")) {
@@ -45,6 +46,8 @@ export async function publishToAzureStorageQueue(
   }
 
   const messageString = JSON.stringify(transformedMessage);
+
+  console.log(`Publishing message to Azure Storage Queue: ${messageString}`);
 
   const response = await queueClient.sendMessage(Buffer.from(messageString).toString("base64"));
   if (response.messageId) {
