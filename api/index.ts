@@ -140,7 +140,7 @@ app.post("/newmaprequest", async (req: Request, res: Response) => {
     // Next, let's check if ASQ_QUEUE_NAME is set; if so, publish to message queue
     if (ASQ_QUEUE_NAME) {
       console.log(`Publishing message to queue: ${ASQ_QUEUE_NAME}`);
-      await publishToAzureStorageQueue(ASQ_QUEUE_NAME, req.body);
+      await publishToAzureStorageQueue(ASQ_QUEUE_NAME, req.body, requestId);
     } else {
       // If ASQ_QUEUE_NAME is not set, update the request status and error message in the db
       console.error("ASQ_QUEUE_NAME is not set.");

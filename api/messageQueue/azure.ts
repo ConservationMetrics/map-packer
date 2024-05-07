@@ -12,6 +12,7 @@ export async function publishToAzureStorageQueue(
     planet_monthly_visual: any;
     style: any; 
   },
+  requestId: number | void | null = null
 ) {
   const accountName = process.env.AZURE_STORAGE_CONNECTION_ACCOUNT_NAME;
   const storageKey = process.env.AZURE_STORAGE_CONNECTION_STORAGE_KEY;
@@ -28,6 +29,7 @@ export async function publishToAzureStorageQueue(
 
   // Transform the message object to match the inputs expected by mapgl-tile-renderer
   const transformedMessage = {
+    requestId: requestId,
     ...(message.bounds && { bounds: message.bounds }),
     ...(message.style && { style: message.style }),
     ...(message.mapboxstyle && { mapboxStyle: message.mapboxstyle }),
