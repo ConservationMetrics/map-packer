@@ -17,7 +17,41 @@
         <h2 class="text-2xl font-bold text-gray-800 mb-2" v-if="map.title">
           {{ map.title }}
         </h2>
+        <div class="mb-2" v-if="map.bounds">
+            <MiniMap
+              :bounds=map.bounds
+              :mapbox-access-token="mapboxAccessToken"
+            />
+        </div>
         <p class="mb-2 italic" v-if="map.description">{{ map.description }}</p>
+        <div class="space-y-2 mb-2">
+          <p v-if="map.status">
+            <span class="font-bold">Status:</span>
+            <span :class="formatStatusColor(map.status)">{{ map.status }}</span>
+          </p>
+          <p class="text-red-600 break-words" v-if="map.error_message">
+            <span class="font-bold">Error message:</span> {{ map.error_message }}
+          </p>
+          <p v-if="map.created_at">
+            <span class="font-bold">Requested on:</span>
+            {{ formatDate(map.created_at) }}
+          </p>
+          <p v-if="map.work_ended">
+            <span class="font-bold">Finished on:</span>
+            {{ formatDate(map.work_ended) }}
+          </p>
+          <p v-if="map.style">
+            <span class="font-bold">Map Style:</span> {{ map.style
+            }}<span v-if="map.planet_monthly_visual">
+              ({{ map.planet_monthly_visual }})</span
+            ><span v-if="map.openstreetmap === true">, with OSM labels </span>
+          </p>
+          <p v-if="map.max_zoom">
+            <span class="font-bold">Zoom Level:</span> {{ map.min_zoom }}-{{
+              map.max_zoom
+            }}
+          </p>
+        </div>
         <div v-if="map.file_location && offlineMapsUri" class="flex mb-2">
           <a
             :href="`${offlineMapsUri}/${map.filename}`"
@@ -38,36 +72,8 @@
               Copied!
             </div>
           </div>
-        </div>
-        <div class="space-y-2 flex-grow">
-          <p v-if="map.status">
-            <span class="font-bold">Status:</span>
-            <span :class="formatStatusColor(map.status)">{{ map.status }}</span>
-          </p>
-          <p class="text-red-600 break-words" v-if="map.error_message">
-            <span class="font-bold">Error message:</span> {{ map.error_message }}
-          </p>
-          <p v-if="map.created_at">
-            <span class="font-bold">Requested on:</span>
-            {{ formatDate(map.created_at) }}
-          </p>
-          <p v-if="map.style">
-            <span class="font-bold">Map Style:</span> {{ map.style
-            }}<span v-if="map.planet_monthly_visual">
-              ({{ map.planet_monthly_visual }})</span
-            ><span v-if="map.openstreetmap === true">, with OSM labels </span>
-          </p>
-          <p v-if="map.bounds">
-            <span class="font-bold">Bounds:</span> [{{
-              formatBounds(map.bounds)
-            }}]
-          </p>
-          <p v-if="map.max_zoom">
-            <span class="font-bold">Zoom Level:</span> {{ map.min_zoom }}-{{
-              map.max_zoom
-            }}
-          </p>
-          <div class="space-y-2 flex-grow" v-if="map.status !== 'PENDING'">
+        </div>          
+        <div class="space-y-2 flex-grow" v-if="map.status !== 'PENDING'">
             <h3 class="italic text-lg text-gray-600">Metadata</h3>
             <p v-if="map.work_begun && map.work_ended">
               <span class="font-bold">Task Duration:</span>
@@ -75,13 +81,12 @@
             </p>
             <p v-if="map.file_size">
               <span class="font-bold">File Size:</span>
-              {{ formatNumber(map.file_size) }} bytes
+              {{ formatFilesize(map.file_size) }} mb
             </p>
             <p v-if="map.number_of_tiles">
               <span class="font-bold">Number of Tiles:</span>
               {{ formatNumber(map.number_of_tiles) }}
             </p>
-          </div>
         </div>
       </div>
       <div v-if="offlineMaps.length === 0" class="card bg-white border border-gray-300 rounded-lg shadow-lg p-6 flex flex-col">
@@ -97,24 +102,27 @@
 </template>
 
 <script>
+import MiniMap from "@/components/MapDashboard/MiniMap.vue";
 import { copyLink } from "@/src/utils.ts";
 
 export default {
+  components: { MiniMap },
   props: [
+    "mapboxAccessToken",
     "offlineMaps",
     "offlineMapsUri"
   ],
   data() {
     return {
-      tooltipId: null,
+      refreshKey: 0,
     };
   },
   methods: {
+    formatFilesize(size) {
+      return (size / 1024 / 1024).toFixed(2);
+    },
     formatNumber(value) {
       return parseInt(value).toLocaleString();
-    },
-    formatBounds(bounds) {
-      return bounds.split(",").join(", ");
     },
     formatDate(dateString) {
       const options = {
