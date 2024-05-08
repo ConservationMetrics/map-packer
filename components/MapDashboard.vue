@@ -18,16 +18,16 @@
           {{ map.title }}
         </h2>
         <p class="mb-2 italic" v-if="map.description">{{ map.description }}</p>
-        <div v-if="map.filelocation && offlineMapsUri" class="flex mb-2">
+        <div v-if="map.file_location && offlineMapsUri" class="flex mb-2">
           <a
-            :href="`${offlineMapsUri}/${map.filelocation}`"
+            :href="`${offlineMapsUri}/${map.filename}`"
             class="download-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out mr-4"
             >Download</a
           >
           <div>
             <button
               class="copy-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out"
-              @click="copyLinkToClipboard(`${offlineMapsUri}/${map.filelocation}`, map.id)"
+              @click="copyLinkToClipboard(`${offlineMapsUri}/${map.filename}`, map.id)"
             >
               Copy Link
             </button>
@@ -44,8 +44,8 @@
             <span class="font-bold">Status:</span>
             <span :class="formatStatusColor(map.status)">{{ map.status }}</span>
           </p>
-          <p class="text-red-600 break-words" v-if="map.errormessage">
-            <span class="font-bold">Error message:</span> {{ map.errormessage }}
+          <p class="text-red-600 break-words" v-if="map.error_message">
+            <span class="font-bold">Error message:</span> {{ map.error_message }}
           </p>
           <p v-if="map.created_at">
             <span class="font-bold">Requested on:</span>
@@ -62,27 +62,35 @@
               formatBounds(map.bounds)
             }}]
           </p>
-          <p v-if="map.maxzoom">
-            <span class="font-bold">Zoom Level:</span> {{ map.minzoom }}-{{
-              map.maxzoom
+          <p v-if="map.max_zoom">
+            <span class="font-bold">Zoom Level:</span> {{ map.min_zoom }}-{{
+              map.max_zoom
             }}
           </p>
           <div class="space-y-2 flex-grow" v-if="map.status !== 'PENDING'">
             <h3 class="italic text-lg text-gray-600">Metadata</h3>
-            <p v-if="map.workbegun && map.workended">
+            <p v-if="map.work_begun && map.work_ended">
               <span class="font-bold">Task Duration:</span>
-              {{ calculateDuration(map.workbegun, map.workended) }}
+              {{ calculateDuration(map.work_begun, map.work_ended) }}
             </p>
-            <p v-if="map.filesize">
+            <p v-if="map.file_size">
               <span class="font-bold">File Size:</span>
-              {{ formatNumber(map.filesize) }} bytes
+              {{ formatNumber(map.file_size) }} bytes
             </p>
-            <p v-if="map.numberoftiles">
+            <p v-if="map.number_of_tiles">
               <span class="font-bold">Number of Tiles:</span>
-              {{ formatNumber(map.numberoftiles) }}
+              {{ formatNumber(map.number_of_tiles) }}
             </p>
           </div>
         </div>
+      </div>
+      <div v-if="offlineMaps.length === 0" class="card bg-white border border-gray-300 rounded-lg shadow-lg p-6 flex flex-col">
+        <h2 class="text-2xl font-bold text-gray-800 mb-2">
+          No offline maps found.
+        </h2>
+        <p class="mb-2 italic">
+          Please generate a new map.
+        </p>
       </div>
     </div>
   </div>

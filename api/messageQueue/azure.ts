@@ -5,9 +5,9 @@ export async function publishToAzureStorageQueue(
   message: { 
     bounds: any; 
     filename: any;
-    mapboxstyle: any;
-    minzoom: any; 
-    maxzoom: any; 
+    mapbox_style: any;
+    min_zoom: any; 
+    max_zoom: any; 
     openstreetmap: any;
     planet_monthly_visual: any;
     style: any; 
@@ -32,9 +32,9 @@ export async function publishToAzureStorageQueue(
     requestId: requestId,
     ...(message.bounds && { bounds: message.bounds }),
     ...(message.style && { style: message.style }),
-    ...(message.mapboxstyle && { mapboxStyle: message.mapboxstyle }),
-    ...(message.maxzoom && { maxZoom: message.maxzoom }),
-    ...(message.minzoom && { minZoom: message.minzoom }),
+    ...(message.mapbox_style && { mapboxStyle: message.mapbox_style }),
+    ...(message.max_zoom && { maxZoom: message.max_zoom }),
+    ...(message.min_zoom && { minZoom: message.min_zoom }),
     ...(message.planet_monthly_visual && { monthYear: message.planet_monthly_visual }),
     ...(message.openstreetmap && { openStreetMap: message.openstreetmap }),
     ...(message.filename && { outputFilename: message.filename}),

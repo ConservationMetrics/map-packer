@@ -22,23 +22,22 @@ const createMapRequestTable = async (db: any, table: string | undefined): Promis
       description TEXT,
       style TEXT,
       overlay TEXT,
-      apikey TEXT,
       openstreetmap BOOLEAN,
-      mapboxstyle TEXT,
+      mapbox_style TEXT,
       planet_monthly_visual TEXT,
       bounds TEXT,
-      minzoom INT,
-      maxzoom INT,
+      min_zoom INT,
+      max_zoom INT,
       ratio INT,
-      tiletype TEXT,
-      numberoftiles INT,
+      tile_type TEXT,
+      number_of_tiles INT,
       filename TEXT,
-      filelocation TEXT,
-      filesize TEXT,
+      file_location TEXT,
+      file_size TEXT,
       status TEXT,
-      errormessage TEXT,
-      workbegun TIMESTAMP(6),
-      workended TIMESTAMP(6)
+      error_message TEXT,
+      work_begun TIMESTAMP(6),
+      work_ended TIMESTAMP(6)
     )
   `;  
   return new Promise((resolve, reject) => {

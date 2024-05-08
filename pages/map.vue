@@ -39,14 +39,14 @@ export default {
           filename: formData.title.replace(/\W+/g, '_'),
           status: "PENDING",
           description: formData.description,
-          minzoom: 0,
-          maxzoom: formData.maxZoom,
-          mapboxstyle: formData.mapboxStyle,
+          min_zoom: 0,
+          max_zoom: formData.maxZoom,
+          mapbox_style: formData.mapboxStyle,
           planet_monthly_visual: formData.planetMonthYear,
           bounds: formData.selectedBounds,
           style: formData.selectedStyle,
           openstreetmap: formData.openstreetmap,
-          numberoftiles: formData.estimatedTiles,
+          number_of_tiles: formData.estimatedTiles,
           created_at: new Date(),
         };
       
