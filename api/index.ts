@@ -59,6 +59,7 @@ app.get("/data", async (_req: Request, res: Response) => {
       const sortedData = sortByDate(data, "created_at");
 
       const response = {
+        mapboxAccessToken: MAPBOX_ACCESS_TOKEN,
         offlineMaps: sortedData,
         offlineMapsUri: OFFLINE_MAPS_URI,
       };

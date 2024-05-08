@@ -2,6 +2,7 @@
   <div>
     <MapDashboard 
       v-if="dataFetched" 
+      :mapbox-access-token="mapboxAccessToken"
       :offline-maps="offlineMaps"
       :offline-maps-uri="offlineMapsUri" 
     />
@@ -30,6 +31,7 @@ export default {
       const response = await $axios.$get(`/api/data`, { headers });
       return {
         dataFetched: true,
+        mapboxAccessToken: response.mapboxAccessToken,
         offlineMaps: response.offlineMaps,
         offlineMapsUri: response.offlineMapsUri,
       };
