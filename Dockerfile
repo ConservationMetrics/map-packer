@@ -1,5 +1,5 @@
 # Use the official Node.js image from DockerHub
-FROM node:18.0.0
+FROM node:18.17.0
 
 RUN apt-get update && apt-get install -y iputils-ping
 
