@@ -2,12 +2,16 @@
   <div class="mt-4 mx-auto w-full max-w-6xl px-4">
     <nuxt-link
       to="/map/"
-      class="absolute top-4 right-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer transition-colors duration-200"
+      class="absolute top-4 right-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer transition-colors duration-200 hidden md:block"
       >+ Generate Map</nuxt-link
     >
     <h1 class="text-4xl font-bold text-gray-800 mb-8 text-center">
       Available Offline Maps
     </h1>
+    <nuxt-link
+      to="/map/"
+      class="block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer transition-colors duration-200 text-center mb-8 md:hidden"
+      >+ Generate Map</nuxt-link>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div
         v-for="map in offlineMaps"
