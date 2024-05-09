@@ -115,6 +115,7 @@ export default {
   data() {
     return {
       refreshKey: 0,
+      tooltipId: null,
     };
   },
   methods: {

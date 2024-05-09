@@ -10,9 +10,6 @@ const auth0Audience: string =
   process.env.NUXT_ENV_AUTH0_AUDIENCE?.replace(/['"]+/g, "") || "";
 
 const config: NuxtConfig = {
-  // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
-  ssr: false,
-
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: "MapPacker",
@@ -29,7 +26,7 @@ const config: NuxtConfig = {
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
-  css: [],
+  css: ["mapbox-gl/dist/mapbox-gl.css"],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [],
@@ -108,6 +105,8 @@ const config: NuxtConfig = {
   build: {
     transpile: [(context) => (context.isLegacy ? "axios" : undefined)],
   },
+
+  server: {},
 };
 
 export default config;

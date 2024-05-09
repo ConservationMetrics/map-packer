@@ -111,7 +111,7 @@ export const mapStyles: Record<MapStyleKey, MapStyle> = {
         planet: {
           type: "raster",
           tiles: [
-            `https://tiles.planet.com/basemaps/v1/planet-tiles/planet_medres_visual_${calculatePlanetMonthYear()}_mosaic/gmap/{z}/{x}/{y}?api_key=${process.env.VUE_APP_PLANET_API_KEY}`,
+            `https://tiles.planet.com/basemaps/v1/planet-tiles/planet_medres_visual_${calculatePlanetMonthYear()}_mosaic/gmap/{z}/{x}/{y}?api_key=` + (process.env.VUE_APP_PLANET_API_KEY || '').replace(/"/g, ''),
           ],
           tileSize: 256,
         },

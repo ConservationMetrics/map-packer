@@ -129,7 +129,9 @@
 <script>
 import { calculatePlanetMonthYear } from "@/src/utils";
 
-import VueSlider from "vue-slider-component";
+// This specific pattern of importing vue-slider-component follows the official
+// documentation for server-side rendering: https://nightcatsama.github.io/vue-slider-component/#/
+import VueSlider from "vue-slider-component/dist-css/vue-slider-component.umd.min.js";
 import "vue-slider-component/dist-css/vue-slider-component.css";
 import "vue-slider-component/theme/default.css";
 
