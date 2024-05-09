@@ -139,7 +139,6 @@ export default {
   components: { VueSlider },
   props: [
     "availableMapStyles",
-    "customMapboxStyle",
     "mapboxAccessToken",
     "mapBounds",
     "mapStyle",
@@ -151,7 +150,7 @@ export default {
         title: "",
         description: "",
         selectedBounds: this.mapBounds,
-        selectedStyle: this.customMapboxStyle,
+        selectedStyle: this.mapStyle,
         planetMonthYear: calculatePlanetMonthYear(),
         maxZoom: 8,
         estimatedTiles: 0
@@ -207,14 +206,6 @@ export default {
           };
         }),
       );
-      // Add custom map style url if available
-      if (this.customMapboxStyle) {
-        this.mapStyles.push({
-          name: "Mapbox - Custom Style",
-          key: 'mapbox',
-          value: this.customMapboxStyle,
-        });
-      } 
       // Sort map styles by name
       this.mapStyles.sort((a, b) => a.name.localeCompare(b.name));
     },

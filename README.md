@@ -29,7 +29,7 @@ To get started, configure your MapPacker application environmental variables as 
 
 **Vue API key:** Generate an API key to add to request headers made by the Nuxt front end.
 
-**Map config:** Provide the default settings for the map zoom level and lat/long coordinates. You may also provide a custom Mapbox map style to be used in the application.
+**Map config:** Provide the default settings for the map zoom level and lat/long coordinates. You may also provide a custom Mapbox map style to be used in the application (if not, Mapbox Streets will be used as the default option).
 
 **Mapbox and Planet access token:** Provide access tokens to be used across the application for authenticating with Mapbox and Planet map assets.
 

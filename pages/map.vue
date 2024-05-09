@@ -4,7 +4,6 @@
       v-if="dataFetched"
       @formSubmitted="handleFormSubmit"
       :availableMapStyles="availableMapStyles"
-      :customMapboxStyle="customMapboxStyle"
       :mapboxAccessToken="mapboxAccessToken"
       :mapLatitude="mapLatitude"
       :mapLongitude="mapLongitude"
@@ -73,7 +72,6 @@ export default {
       return {
         dataFetched: true,
         availableMapStyles: availableMapStyles,
-        customMapboxStyle: response.mapStyle,
         mapboxAccessToken: response.mapboxAccessToken,
         mapLatitude: response.mapLatitude,
         mapLongitude: response.mapLongitude,

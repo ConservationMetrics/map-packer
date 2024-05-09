@@ -8,7 +8,8 @@ interface EnvVars {
   DB_SSL: string;
   DB_TABLE: string;
   MAPBOX_ACCESS_TOKEN: string;
-  MAP_STYLE: string;
+  MAPBOX_STYLE: string;
+  MAPBOX_STYLE_NAME: string;
   MAP_ZOOM: string;
   MAP_LATITUDE: string;
   MAP_LONGITUDE: string;
@@ -49,7 +50,8 @@ const DB_PORT = getEnvVar("DB_PORT", "5432") as string;
 const DB_SSL = getEnvVar("DB_SSL", "YES") as string;
 const DB_TABLE = getEnvVar("DB_TABLE") as string;
 const MAPBOX_ACCESS_TOKEN = getEnvVar("MAPBOX_ACCESS_TOKEN", "pk.ey") as string;
-const MAP_STYLE = getEnvVar("MAP_STYLE") as string;
+const MAPBOX_STYLE = getEnvVar("MAPBOX_STYLE") as string;
+const MAPBOX_STYLE_NAME = getEnvVar("MAPBOX_STYLE_NAME") as string;
 const MAP_ZOOM = getEnvVar("MAP_ZOOM") as string;
 const MAP_LATITUDE = getEnvVar("MAP_LATITUDE") as string;
 const MAP_LONGITUDE = getEnvVar("MAP_LONGITUDE") as string;
@@ -69,7 +71,8 @@ export {
   DB_SSL,
   DB_TABLE,
   MAPBOX_ACCESS_TOKEN,
-  MAP_STYLE,
+  MAPBOX_STYLE,
+  MAPBOX_STYLE_NAME,
   MAP_ZOOM,
   MAP_LATITUDE,
   MAP_LONGITUDE,

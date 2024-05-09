@@ -20,7 +20,8 @@ import {
   DB_SSL,
   DB_TABLE,
   MAPBOX_ACCESS_TOKEN,
-  MAP_STYLE,
+  MAPBOX_STYLE,
+  MAPBOX_STYLE_NAME,
   MAP_ZOOM,
   MAP_LATITUDE,
   MAP_LONGITUDE,
@@ -75,7 +76,6 @@ app.get("/data", async (_req: Request, res: Response) => {
 app.get("/map", async (_req: Request, res: Response) => {
   const response = {
     mapboxAccessToken: MAPBOX_ACCESS_TOKEN,
-    mapStyle: MAP_STYLE,
     mapZoom: MAP_ZOOM,
     mapLatitude: MAP_LATITUDE,
     mapLongitude: MAP_LONGITUDE,
@@ -91,6 +91,21 @@ app.get("/mapstyles", (_req: Request, res: Response) => {
     // if no URL is set then provide an API endpoint to retrieve the style by key
     url: value.url || `/api/mapstyle/${key}/`,
   }));
+
+  // append custom mapbox style (or streets fallback) to the top of the list of available styles
+  if (MAPBOX_STYLE) {
+    styles.unshift({
+      name: MAPBOX_STYLE_NAME || "Mapbox Custom Style",
+      key: "mapbox-custom-map",
+      url: MAPBOX_STYLE,
+    });
+  } else {
+    styles.unshift({
+      name: "Mapbox Streets",
+      key: "mapbox-streets",
+      url: "mapbox://styles/mapbox/streets-v12",
+    });
+  }
 
   res.json(styles);
 });

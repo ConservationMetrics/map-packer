@@ -4,7 +4,6 @@
       @formSubmitted="handleFormSubmit"
       @updateMapParams="updateMapParams"
       :availableMapStyles="availableMapStyles"
-      :customMapboxStyle="customMapboxStyle"
       :mapBounds="selectedBounds"
       :mapStyle="selectedStyle"
     />
@@ -39,7 +38,6 @@ export default {
   components: { MapCanvas, Sidebar, MapNavigation },
   props: [
     "availableMapStyles",
-    "customMapboxStyle",
     "mapboxAccessToken",
     "mapLatitude",
     "mapLongitude",
@@ -50,7 +48,7 @@ export default {
       selectedBounds: "",
       selectedLatitude: this.mapLatitude,
       selectedLongitude: this.mapLongitude,
-      selectedStyle: this.customMapboxStyle,
+      selectedStyle: this.availableMapStyles[0].url,
       selectedZoom: this.mapZoom,
       showModal: false,
     };
