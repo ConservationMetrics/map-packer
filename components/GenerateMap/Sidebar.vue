@@ -106,21 +106,34 @@
         </div>
 
         <!-- Show estimated number of tiles -->
-        <!-- Note that filesize of each tile varies and it's quite tricky to correctly approximate -->
-        <!-- See https://github.com/mapbox/mapbox-gl-native/issues/4258 -->
         <div v-if="form.maxZoom && form.selectedBounds">
         <p class="italic">
           Estimated number of tiles:
           {{ estimatedTiles.toLocaleString() }}
         </p>
-        <p v-if="estimatedTiles > 100000" class="text-red-600 mt-2">
+        <p v-if="estimatedTiles > 100000 && estimatedTiles < 275000" class="text-red-600 mt-2">
           <span class="font-bold">Warning:</span> You are requesting over 100,000 tiles.
           Note that this will generate a very large offline map file.
           Please also make sure you will not exceed your tile quota for the map style API, or run into unexpected costs.
         </p>
         </div>
 
-        <button type="submit" class="submit-button">Submit Request</button>
+        <!-- Show warning if estimated tiles exceed limit
+        We want to set a 500 megabytes limit for e.g. optimal functionality in Mapeo Mobile.
+        It's not possible to estimate the exact size of a tile, so we use a reasonable 
+        minimum filesize estimate of 18,137 bytes per tile (512px).
+        500 megabytes = 500,000,000 / 18,137 = 275,679, rounded down to 275,000 -->
+        <div v-if="estimatedTiles > 275000" class="text-red-600 mt-2">
+          <span class="font-bold">Warning:</span> You are requesting over 275,000 tiles.
+          This exceeds the permitted number of tiles. Please reduce the bounding box or zoom level.
+        </div>
+
+        <button 
+          type="submit" 
+          :disabled="estimatedTiles > 275000" 
+          class="submit-button" 
+          :class="{ 'submit-button-disabled': estimatedTiles > 275000 }"
+        >Submit Request</button>
       </form>
 
   </div>
@@ -280,7 +293,7 @@ export default {
     },
     estimatedTiles() {
       return this.estimateNumberOfTiles(this.form.maxZoom, this.form.selectedBounds);
-    }
+    },
   },
   mounted() {
     this.fetchMapStyles();
