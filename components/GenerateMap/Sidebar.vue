@@ -94,7 +94,12 @@
         </div>
 
         <div class="form-group">
-          <label for="bbox">Offline Map Bounding Box (draw on map) <span class="text-red-600">*</span></label>
+          <label for="bbox">Offline Map Bounding Box <span class="text-red-600">*</span></label>
+          <p class="text-gray-400 mb-1">
+            <em>Click or press the 
+            <img src="/polygon.svg" alt="Polygon Icon" style="display: inline-block; vertical-align: middle;">
+            button on the top right of the screen, and draw an area on the map.</em>
+          </p>
           <textarea
             type="text"
             v-model="form.selectedBounds"
