@@ -106,8 +106,6 @@
         </div>
 
         <!-- Show estimated number of tiles -->
-        <!-- Note that filesize of each tile varies and it's quite tricky to correctly approximate -->
-        <!-- See https://github.com/mapbox/mapbox-gl-native/issues/4258 -->
         <div v-if="form.maxZoom && form.selectedBounds">
         <p class="italic">
           Estimated number of tiles:
@@ -120,21 +118,21 @@
         </p>
         </div>
 
-        <!-- Show warning if estimated tiles exceed limit -->
-        <!-- We want to set a 500 megabytes limit for e.g. optimal functionality in Mapeo Mobile. -->
-        <!-- It's not possible to estimate the exact size of a tile, so we use a rough estimate -->
-        <!-- of 1024 bytes per tile (512px). This is a very rough estimate and should be used as a guideline. -->
-        <!-- 500 megabytes = 500 x 1024 KB = 512,000 KB -->
-        <div v-if="estimatedTiles > 512000" class="text-red-600 mt-2">
-          <span class="font-bold">Warning:</span> You are requesting over 512,000 tiles.
+        <!-- Show warning if estimated tiles exceed limit
+        We want to set a 500 megabytes limit for e.g. optimal functionality in Mapeo Mobile.
+        It's not possible to estimate the exact size of a tile, so we use a reasonable 
+        minimum filesize estimate of 18,137 bytes per tile (512px).
+        500 megabytes = 500,000,000 / 18,137 = 275,679, rounded down to 275,000 -->
+        <div v-if="estimatedTiles > 275000" class="text-red-600 mt-2">
+          <span class="font-bold">Warning:</span> You are requesting over 275,000 tiles.
           This exceeds the permitted number of tiles. Please reduce the bounding box or zoom level.
         </div>
 
         <button 
           type="submit" 
-          :disabled="estimatedTiles > 512000" 
+          :disabled="estimatedTiles > 275000" 
           class="submit-button" 
-          :class="{ 'submit-button-disabled': estimatedTiles > 512000 }"
+          :class="{ 'submit-button-disabled': estimatedTiles > 275000 }"
         >Submit Request</button>
       </form>
 
