@@ -96,13 +96,13 @@ app.get("/mapstyles", (_req: Request, res: Response) => {
   if (MAPBOX_STYLE) {
     styles.unshift({
       name: MAPBOX_STYLE_NAME || "Mapbox Custom Style",
-      key: "mapbox-custom-map",
+      key: "mapbox",
       url: MAPBOX_STYLE,
     });
   } else {
     styles.unshift({
       name: "Mapbox Streets",
-      key: "mapbox-streets",
+      key: "mapbox",
       url: "mapbox://styles/mapbox/streets-v12",
     });
   }
