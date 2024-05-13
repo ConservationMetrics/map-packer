@@ -111,7 +111,7 @@
           Estimated number of tiles:
           {{ estimatedTiles.toLocaleString() }}
         </p>
-        <p v-if="estimatedTiles > 100000 && estimatedTiles < 512000" class="text-red-600 mt-2">
+        <p v-if="estimatedTiles > 100000 && estimatedTiles < 275000" class="text-red-600 mt-2">
           <span class="font-bold">Warning:</span> You are requesting over 100,000 tiles.
           Note that this will generate a very large offline map file.
           Please also make sure you will not exceed your tile quota for the map style API, or run into unexpected costs.
@@ -300,14 +300,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.submit-button-disabled {
-  background-color: gray;
-  cursor: not-allowed;
-}
-
-.submit-button-disabled:hover {
-  background-color: darkgray;
-}
-</style>

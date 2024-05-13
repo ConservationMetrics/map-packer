@@ -125,6 +125,15 @@
   .submit-button:hover {
     background-color: #45a049;
   }
+
+  .submit-button-disabled {
+    background-color: gray;
+    cursor: not-allowed;
+  }
+
+  .submit-button-disabled:hover {
+    background-color: darkgray;
+  }
   
   /* Request successfully submitted modal */
   .overlay {
