@@ -113,14 +113,29 @@
           Estimated number of tiles:
           {{ estimatedTiles.toLocaleString() }}
         </p>
-        <p v-if="estimatedTiles > 100000" class="text-red-600 mt-2">
+        <p v-if="estimatedTiles > 100000 && estimatedTiles < 512000" class="text-red-600 mt-2">
           <span class="font-bold">Warning:</span> You are requesting over 100,000 tiles.
           Note that this will generate a very large offline map file.
           Please also make sure you will not exceed your tile quota for the map style API, or run into unexpected costs.
         </p>
         </div>
 
-        <button type="submit" class="submit-button">Submit Request</button>
+        <!-- Show warning if estimated tiles exceed limit -->
+        <!-- We want to set a 500 megabytes limit for e.g. optimal functionality in Mapeo Mobile. -->
+        <!-- It's not possible to estimate the exact size of a tile, so we use a rough estimate -->
+        <!-- of 1024 bytes per tile (512px). This is a very rough estimate and should be used as a guideline. -->
+        <!-- 500 megabytes = 500 x 1024 KB = 512,000 KB -->
+        <div v-if="estimatedTiles > 512000" class="text-red-600 mt-2">
+          <span class="font-bold">Warning:</span> You are requesting over 512,000 tiles.
+          This exceeds the permitted number of tiles. Please reduce the bounding box or zoom level.
+        </div>
+
+        <button 
+          type="submit" 
+          :disabled="estimatedTiles > 512000" 
+          class="submit-button" 
+          :class="{ 'submit-button-disabled': estimatedTiles > 512000 }"
+        >Submit Request</button>
       </form>
 
   </div>
@@ -280,10 +295,21 @@ export default {
     },
     estimatedTiles() {
       return this.estimateNumberOfTiles(this.form.maxZoom, this.form.selectedBounds);
-    }
+    },
   },
   mounted() {
     this.fetchMapStyles();
   },
 };
 </script>
+
+<style>
+.submit-button-disabled {
+  background-color: gray;
+  cursor: not-allowed;
+}
+
+.submit-button-disabled:hover {
+  background-color: darkgray;
+}
+</style>
