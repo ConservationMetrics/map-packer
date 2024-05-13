@@ -16,8 +16,12 @@
       <div
         v-for="map in offlineMaps"
         :key="map.id"
-        class="card bg-white border border-gray-300 rounded-lg shadow-lg p-6 flex flex-col"
+        class="card relative bg-white border border-gray-300 rounded-lg shadow-lg p-6 flex flex-col"
       >
+        <button
+          class="delete absolute top-2 right-2 text-red-500 hover:text-red-300 font-bold py-1 px-1 cursor-pointer"
+          @click="deleteMap(map.id)"
+        >X</button>
         <h2 class="text-2xl font-bold text-gray-800 mb-2" v-if="map.title">
           {{ map.title }}
         </h2>
@@ -123,6 +127,21 @@ export default {
     };
   },
   methods: {
+    deleteMap(id) {
+      let confirmation = window.confirm("Are you sure you want to delete this map? This action cannot be undone.");
+
+      if (confirmation) {
+        const map = this.offlineMaps.find(m => m.id === id);
+        if (map) {
+          const message = {
+            requestId: map.id,
+            outputFilename: map.filename,
+            outputDir: map.file_location
+          };
+          this.$emit('deleteMap', message);
+        }
+      }
+    },
     formatFilesize(size) {
       return (size / 1024 / 1024).toFixed(2);
     },
@@ -180,11 +199,22 @@ export default {
 </script>
 
 <style scoped>
+.card {
+  position: relative;
+}
+
 .tooltip {
   position: absolute;
   margin-left: 10px;
   white-space: nowrap;
   transform: translateX(150%) translateY(-110%);
+  z-index: 10;
+}
+
+.delete {
+  position: absolute;
+  right: 10px;
+  top: 0px;
   z-index: 10;
 }
 </style>

@@ -150,8 +150,12 @@ app.post("/newmaprequest", async (req: Request, res: Response) => {
 
   try {
     // First, let's publish the request to the db
-    console.log("Inserting data into database...")
-    requestId = await insertDataIntoTable(db, DB_TABLE, req.body);
+    console.log("Inserting data into database...");
+
+    // remove type key from request body
+    const data = { ...req.body };
+    delete data.type;
+    requestId = await insertDataIntoTable(db, DB_TABLE, data);
 
     // Next, let's check if ASQ_QUEUE_NAME is set; if so, publish to message queue
     if (ASQ_QUEUE_NAME) {
@@ -160,14 +164,38 @@ app.post("/newmaprequest", async (req: Request, res: Response) => {
     } else {
       // If ASQ_QUEUE_NAME is not set, update the request status and error message in the db
       console.error("ASQ_QUEUE_NAME is not set.");
-      await updateDatabaseWithError(db, DB_TABLE, requestId, "ASQ_QUEUE_NAME is not set");
+      await updateDatabaseWithError(db, DB_TABLE, requestId, "InternalServerError: ASQ_QUEUE_NAME is not set");
     }
 
     res.status(200).json({ message: "Request successfully published!" });
   } catch (error: any) {
     console.error("Error on API side:", error.message);
     // If error is thrown, update the request status and error message in the db
-    await updateDatabaseWithError(db, DB_TABLE, requestId, error.message);
+    await updateDatabaseWithError(db, DB_TABLE, requestId, `InternalServerError: ${error.message}`);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API endpoint to POST a delete a map request
+app.post("/deletemaprequest/", async (req: Request, res: Response) => {
+  let requestId: number | void | null = req.body.requestId;
+
+  try {
+    // Let's check if ASQ_QUEUE_NAME is set; if so, publish to message queue
+    if (ASQ_QUEUE_NAME) {
+      console.log(`Publishing message to queue: ${ASQ_QUEUE_NAME}`);
+      await publishToAzureStorageQueue(ASQ_QUEUE_NAME, req.body, requestId);
+    } else {
+      // If ASQ_QUEUE_NAME is not set, update the request status and error message in the db
+      console.error("ASQ_QUEUE_NAME is not set.");
+      await updateDatabaseWithError(db, DB_TABLE, requestId, "InternalServerError: ASQ_QUEUE_NAME is not set");
+    }
+
+    res.status(200).json({ message: "Request successfully published!" });
+  } catch (error: any) {
+    console.error("Error on API side:", error.message);
+    // If error is thrown, update the request status and error message in the db
+    await updateDatabaseWithError(db, DB_TABLE, requestId, `InternalServerError: ${error.message}`);
     res.status(500).json({ error: error.message });
   }
 });

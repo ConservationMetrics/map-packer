@@ -3,6 +3,7 @@ import { QueueServiceClient } from "@azure/storage-queue";
 export async function publishToAzureStorageQueue(
   queueName: string,
   message: { 
+    type: any;
     bounds: any; 
     filename: any;
     mapbox_style: any;
@@ -30,6 +31,7 @@ export async function publishToAzureStorageQueue(
   // Transform the message object to match the inputs expected by mapgl-tile-renderer
   const transformedMessage = {
     requestId: requestId,
+    ...(message.type && { type: message.type }),
     ...(message.bounds && { bounds: message.bounds }),
     ...(message.style && { style: message.style }),
     ...(message.mapbox_style && { mapboxStyle: message.mapbox_style }),

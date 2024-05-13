@@ -2,6 +2,7 @@
   <div>
     <MapDashboard 
       v-if="dataFetched" 
+      @deleteMap="deleteMap"
       :mapbox-access-token="mapboxAccessToken"
       :offline-maps="offlineMaps"
       :offline-maps-uri="offlineMapsUri" 
@@ -19,6 +20,11 @@ export default {
     };
   },
   components: { MapDashboard },
+  methods: {
+    async deleteMap(message) {
+
+    },
+  },
   async asyncData({ $axios, app }) {
     // Set up the headers for the request
     let headers = {

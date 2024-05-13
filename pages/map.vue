@@ -34,6 +34,7 @@ export default {
     async handleFormSubmit(formData) {
         // Transform formData to match the expected database table schema
         const transformedData = {
+          type: "new_request",
           title: formData.title,
           filename: formData.title.replace(/\W+/g, '_'),
           status: "PENDING",
