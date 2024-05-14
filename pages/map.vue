@@ -2,7 +2,7 @@
   <div>
     <GenerateMap
       v-if="dataFetched"
-      @formSubmitted="handleFormSubmit"
+      @handleMapRequest="handleMapRequest"
       :availableMapStyles="availableMapStyles"
       :mapboxAccessToken="mapboxAccessToken"
       :mapLatitude="mapLatitude"
@@ -31,9 +31,9 @@ export default {
     };
   },
   methods: {
-    async handleFormSubmit(formData) {
+    async handleMapRequest(formData) {
         // Transform formData to match the expected database table schema
-        const transformedData = {
+        const transformedMessage = {
           type: "new_request",
           title: formData.title,
           filename: formData.title.replace(/\W+/g, '_'),
@@ -51,9 +51,9 @@ export default {
         };
       
         try {
-          await this.$axios.$post('/api/newmaprequest', transformedData, { headers: this.headers });
+          await this.$axios.$post('/api/maprequest', transformedMessage, { headers: this.headers });
         } catch (error) {
-          console.error("Error submitting form data:", error);
+          console.error("Error submitting request data:", error);
         }
     },
   },

@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 
 import setupDatabaseConnection from "./database/dbConnection";
-import { fetchData, insertDataIntoTable, updateDatabaseWithError } from "./database/dbOperations";
+import { fetchData, insertDataIntoTable, updateDatabaseMapRequest, updateDatabaseWithError } from "./database/dbOperations";
 import { publishToAzureStorageQueue } from "./messageQueue/azure";
 
 import { checkAuthStrategy } from "./middleware";
@@ -144,49 +144,33 @@ app.get("/mapstyle/planet/:year/:month", (req: Request, res: Response) => {
   }
 });
 
-// API endpoint to POST data to the db and publish message to queue
-app.post("/newmaprequest", async (req: Request, res: Response) => {
-  let requestId: number | void | null = null;
-
-  try {
-    // First, let's publish the request to the db
-    console.log("Inserting data into database...");
-
-    // remove type key from request body
-    const data = { ...req.body };
-    delete data.type;
-    requestId = await insertDataIntoTable(db, DB_TABLE, data);
-
-    // Next, let's check if ASQ_QUEUE_NAME is set; if so, publish to message queue
-    if (ASQ_QUEUE_NAME) {
-      console.log(`Publishing message to queue: ${ASQ_QUEUE_NAME}`);
-      await publishToAzureStorageQueue(ASQ_QUEUE_NAME, req.body, requestId);
-    } else {
-      // If ASQ_QUEUE_NAME is not set, update the request status and error message in the db
-      console.error("ASQ_QUEUE_NAME is not set.");
-      await updateDatabaseWithError(db, DB_TABLE, requestId, "InternalServerError: ASQ_QUEUE_NAME is not set");
-    }
-
-    res.status(200).json({ message: "Request successfully published!" });
-  } catch (error: any) {
-    console.error("Error on API side:", error.message);
-    // If error is thrown, update the request status and error message in the db
-    await updateDatabaseWithError(db, DB_TABLE, requestId, `InternalServerError: ${error.message}`);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// API endpoint to POST a delete a map request
-app.post("/deletemaprequest/", async (req: Request, res: Response) => {
+// API endpoint to POST a request to the db and publish message to queue
+app.post("/maprequest", async (req: Request, res: Response) => {
   let requestId: number | void | null = req.body.requestId;
 
   try {
-    // Let's check if ASQ_QUEUE_NAME is set; if so, publish to message queue
+    // If it's a new request, insert data into the database
+    if (req.body.type === "new_request") {
+      console.log("Inserting data into database...");
+      const data = { ...req.body };
+      delete data.type;
+      requestId = await insertDataIntoTable(db, DB_TABLE, data);
+    } 
+    // If it's a resubmit request, update the data in the database
+    else if (req.body.type === "resubmit_request") {
+      console.log("Updating data in database...");
+      const data = { ...req.body };
+      delete data.type;
+      delete data.requestId;
+      await updateDatabaseMapRequest(db, DB_TABLE, requestId, data);
+    }
+
+    // Publish message to Azure Storage Queue
+    // Delete requests are handled entirely by mapgl-tile-renderer
     if (ASQ_QUEUE_NAME) {
       console.log(`Publishing message to queue: ${ASQ_QUEUE_NAME}`);
       await publishToAzureStorageQueue(ASQ_QUEUE_NAME, req.body, requestId);
     } else {
-      // If ASQ_QUEUE_NAME is not set, update the request status and error message in the db
       console.error("ASQ_QUEUE_NAME is not set.");
       await updateDatabaseWithError(db, DB_TABLE, requestId, "InternalServerError: ASQ_QUEUE_NAME is not set");
     }
@@ -194,7 +178,6 @@ app.post("/deletemaprequest/", async (req: Request, res: Response) => {
     res.status(200).json({ message: "Request successfully published!" });
   } catch (error: any) {
     console.error("Error on API side:", error.message);
-    // If error is thrown, update the request status and error message in the db
     await updateDatabaseWithError(db, DB_TABLE, requestId, `InternalServerError: ${error.message}`);
     res.status(500).json({ error: error.message });
   }

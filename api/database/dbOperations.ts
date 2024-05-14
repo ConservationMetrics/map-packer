@@ -103,6 +103,34 @@ export const insertDataIntoTable = async (
   });
 };
 
+export async function updateDatabaseMapRequest(db: any, tableName: string, id: number | void | null, data: any) {
+  if (id === null || id === undefined || !Number.isInteger(id)) {
+    throw new Error('Invalid ID provided for updating database.');
+  }
+
+  const columns = Object.keys(data).map((key, index) => `${key} = $${index + 1}`).join(', ');
+  const values = Object.values(data);
+  values.push(id);
+
+  const query = `
+    UPDATE ${tableName}
+    SET ${columns}
+    WHERE id = $${values.length}
+  `;
+
+  return new Promise<void>((resolve, reject) => {
+    db.query(query, values, (err: Error) => {
+      if (err) {
+        console.error(`Error updating record ${id} in table ${tableName}: ${err.message}`);
+        reject(err);
+      } else {
+        console.log(`Record ${id} in table ${tableName} updated.`);
+        resolve();
+      }
+    });
+  });
+}
+
 export async function updateDatabaseWithError(db: any, tableName: string, id: number | void | null, errorMessage: string) {
   if (id === null || id === undefined || !Number.isInteger(id)) {
     throw new Error('Invalid ID provided for updating error message.');
