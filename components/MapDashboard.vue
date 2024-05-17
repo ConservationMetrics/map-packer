@@ -16,8 +16,12 @@
       <div
         v-for="map in offlineMaps"
         :key="map.id"
-        class="card bg-white border border-gray-300 rounded-lg shadow-lg p-6 flex flex-col"
+        class="card relative bg-white border border-gray-300 rounded-lg shadow-lg p-6 flex flex-col"
       >
+        <button
+          class="delete absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold py-1 px-1 cursor-pointer"
+          @click="deleteMap(map.id)"
+        >X</button>
         <h2 class="text-2xl font-bold text-gray-800 mb-2" v-if="map.title">
           {{ map.title }}
         </h2>
@@ -56,6 +60,14 @@
             }}
           </p>
         </div>
+        <div v-if="map.error_message" class="flex mb-2">
+            <button
+              class="copy-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out"
+              @click="resubmitMapRequest(map.id)"
+            >
+              Resubmit
+            </button>
+        </div>          
         <div v-if="map.file_location && offlineMapsUri" class="flex mb-2">
           <a
             :href="`${offlineMapsUri}/${map.filename}`"
@@ -102,12 +114,17 @@
         </p>
       </div>
     </div>
+    <div v-if="showModal" class="overlay"></div>
+    <div v-if="showModal" class="modal">
+      {{ modalMessage }}
+    </div>
   </div>
 </template>
 
 <script>
 import MiniMap from "@/components/MapDashboard/MiniMap.vue";
 import { copyLink } from "@/src/utils.ts";
+import overlayModal from '@/components/overlay.css';
 
 export default {
   components: { MiniMap },
@@ -120,9 +137,55 @@ export default {
     return {
       refreshKey: 0,
       tooltipId: null,
+      showModal: false,
+      modalMessage: '',
     };
   },
   methods: {
+    calculateDuration(start, end) {
+      const startDate = new Date(start);
+      const endDate = new Date(end);
+      const duration = endDate - startDate;
+      const hours = Math.floor(duration / (1000 * 60 * 60));
+      const minutes = Math.floor((duration / (1000 * 60)) % 60);
+      const seconds = Math.floor((duration / 1000) % 60);
+      return `${hours}h ${minutes}m ${seconds}s`;
+    },
+    copyLinkToClipboard(link, id) {
+      copyLink(link)
+        .then(() => {
+          this.tooltipId = id;
+          setTimeout(() => {
+            this.tooltipId = null;
+          }, 1500);
+        })
+        .catch((err) => {
+          console.error("Failed to copy:", err);
+        });
+    },
+    deleteMap(id) {
+      let confirmation = window.confirm("Are you sure you want to delete this offline map? This action cannot be undone.");
+
+      if (confirmation) {
+        const map = this.offlineMaps.find(m => m.id === id);
+        if (map) {
+          const message = {
+            type: "delete_request",
+            requestId: map.id,
+            filename: map.filename,
+            file_location: map.file_location
+          };
+          this.$emit('handleMapRequest', message);
+          this.modalMessage = 'Offline map request (and associated files) deleted!';
+          this.showModal = true;
+          // wait 3 seconds and refresh the page content
+          setTimeout(() => {
+            this.showModal = false;
+            location.reload();
+          }, 3000);
+        }
+      }
+    },
     formatFilesize(size) {
       return (size / 1024 / 1024).toFixed(2);
     },
@@ -146,6 +209,8 @@ export default {
       switch (status) {
         case "FAILED":
           return "font-semibold text-red-500";
+        case "PENDING DELETION":
+          return "font-semibold text-red-500";
         case "PENDING":
           return "font-semibold text-yellow-500";
         case "SUCCEEDED":
@@ -154,37 +219,63 @@ export default {
           return "font-semibold text-gray-600";
       }
     },
-    calculateDuration(start, end) {
-      const startDate = new Date(start);
-      const endDate = new Date(end);
-      const duration = endDate - startDate;
-      const hours = Math.floor(duration / (1000 * 60 * 60));
-      const minutes = Math.floor((duration / (1000 * 60)) % 60);
-      const seconds = Math.floor((duration / 1000) % 60);
-      return `${hours}h ${minutes}m ${seconds}s`;
-    },
-    copyLinkToClipboard(link, id) {
-      copyLink(link)
-        .then(() => {
-          this.tooltipId = id;
-          setTimeout(() => {
-            this.tooltipId = null;
-          }, 1500);
-        })
-        .catch((err) => {
-          console.error("Failed to copy:", err);
-        });
+    resubmitMapRequest(id) {
+      const map = this.offlineMaps.find(m => m.id === id);
+      if (map) {
+        const message = {
+          type: "resubmit_request",
+          title: map.title,
+          filename: map.filename,
+          status: "PENDING",
+          error_message: null,
+          description: map.description,
+          min_zoom: map.min_zoom,
+          max_zoom: map.max_zoom,
+          mapbox_style: map.mapbox_style,
+          planet_monthly_visual: map.planet_monthly_visual,
+          bounds: map.bounds,
+          style: map.style,
+          openstreetmap: map.openstreetmap,
+          number_of_tiles: map.number_of_tiles,
+          created_at: new Date(),
+          requestId: map.id,
+        };
+        this.$emit('handleMapRequest', message);
+        this.modalMessage = 'Offline map request successfully resubmitted!';
+        this.showModal = true;
+        // wait 3 seconds and refresh the page content
+        setTimeout(() => {
+          this.showModal = false;
+          location.reload();
+        }, 3000);
+      }
     },
   },
+  computed: {
+    style() {
+      return { ...overlayModal };
+    },
+  }
 };
 </script>
 
 <style scoped>
+.card {
+  position: relative;
+}
+
 .tooltip {
   position: absolute;
   margin-left: 10px;
   white-space: nowrap;
   transform: translateX(150%) translateY(-110%);
+  z-index: 10;
+}
+
+.delete {
+  position: absolute;
+  right: 10px;
+  top: 0px;
   z-index: 10;
 }
 </style>

@@ -5,6 +5,7 @@
       :mapbox-access-token="mapboxAccessToken"
       :offline-maps="offlineMaps"
       :offline-maps-uri="offlineMapsUri" 
+      @handleMapRequest="handleMapRequest"
     />
   </div>
 </template>
@@ -19,6 +20,23 @@ export default {
     };
   },
   components: { MapDashboard },
+  data() {
+    return {
+      headers: {
+        "x-api-key": this.$config.apiKey.replace(/['"]+/g, ""),
+        "x-auth-strategy": this.$auth.strategy.name,
+      },
+    };
+  },
+  methods: {
+    async handleMapRequest(message) {
+      try {
+          await this.$axios.$post('/api/maprequest', message, { headers: this.headers });
+        } catch (error) {
+          console.error("Error submitting request data:", error);
+        }
+    }
+  },
   async asyncData({ $axios, app }) {
     // Set up the headers for the request
     let headers = {

@@ -277,6 +277,8 @@ export default {
         formToSubmit.mapboxStyle = this.form.selectedStyle.replace('mapbox://styles/', '');
       }
 
+      formToSubmit.type = "new_request";
+
       this.$emit("formSubmitted", formToSubmit);
     },
   },
