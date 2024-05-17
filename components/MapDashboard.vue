@@ -74,6 +74,11 @@
             class="download-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out mr-4"
             >Download</a
           >
+          <button
+            class="qr-code bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out mr-4"
+            @click="toggleQRCode(map.id)"
+            >QR
+          </button>
           <div>
             <button
               class="copy-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out"
@@ -88,7 +93,10 @@
               Copied!
             </div>
           </div>
-        </div>          
+        </div>
+        <div v-if="showQRCodeId === map.id" class="flex mb-2">
+          <QRCode :value="`${offlineMapsUri}/${map.filename}`" size="300" />
+        </div>        
         <div class="space-y-2 flex-grow" v-if="map.status !== 'PENDING'">
             <h3 class="italic text-lg text-gray-600">Metadata</h3>
             <p v-if="map.work_begun && map.work_ended">
@@ -122,12 +130,14 @@
 </template>
 
 <script>
+import QRCode from 'qrcode.vue';
+
 import MiniMap from "@/components/MapDashboard/MiniMap.vue";
 import { copyLink } from "@/src/utils.ts";
 import overlayModal from '@/components/overlay.css';
 
 export default {
-  components: { MiniMap },
+  components: { MiniMap, QRCode },
   props: [
     "mapboxAccessToken",
     "offlineMaps",
@@ -137,6 +147,7 @@ export default {
     return {
       refreshKey: 0,
       tooltipId: null,
+      showQRCodeId: null,
       showModal: false,
       modalMessage: '',
     };
@@ -250,6 +261,9 @@ export default {
         }, 3000);
       }
     },
+    toggleQRCode(id) {
+      this.showQRCodeId = this.showQRCodeId === id ? null : id;
+    },
   },
   computed: {
     style() {
@@ -268,7 +282,7 @@ export default {
   position: absolute;
   margin-left: 10px;
   white-space: nowrap;
-  transform: translateX(150%) translateY(-110%);
+  transform: translateX(10%) translateY(20%);
   z-index: 10;
 }
 
