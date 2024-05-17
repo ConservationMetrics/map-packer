@@ -19,7 +19,7 @@
         class="card relative bg-white border border-gray-300 rounded-lg shadow-lg p-6 flex flex-col"
       >
         <button
-          class="delete absolute top-2 right-2 text-red-500 hover:text-red-300 font-bold py-1 px-1 cursor-pointer"
+          class="delete absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold py-1 px-1 cursor-pointer"
           @click="deleteMap(map.id)"
         >X</button>
         <h2 class="text-2xl font-bold text-gray-800 mb-2" v-if="map.title">
@@ -116,7 +116,7 @@
     </div>
     <div v-if="showModal" class="overlay"></div>
     <div v-if="showModal" class="modal">
-      Offline map request successfully resubmitted!
+      {{ modalMessage }}
     </div>
   </div>
 </template>
@@ -138,6 +138,7 @@ export default {
       refreshKey: 0,
       tooltipId: null,
       showModal: false,
+      modalMessage: '',
     };
   },
   methods: {
@@ -169,11 +170,19 @@ export default {
         const map = this.offlineMaps.find(m => m.id === id);
         if (map) {
           const message = {
+            type: "delete_request",
             requestId: map.id,
-            outputFilename: map.filename,
-            outputDir: map.file_location
+            filename: map.filename,
+            file_location: map.file_location
           };
           this.$emit('handleMapRequest', message);
+          this.modalMessage = 'Offline map request (and associated files) deleted!';
+          this.showModal = true;
+          // wait 3 seconds and refresh the page content
+          setTimeout(() => {
+            this.showModal = false;
+            location.reload();
+          }, 3000);
         }
       }
     },
@@ -199,6 +208,8 @@ export default {
     formatStatusColor(status) {
       switch (status) {
         case "FAILED":
+          return "font-semibold text-red-500";
+        case "PENDING DELETION":
           return "font-semibold text-red-500";
         case "PENDING":
           return "font-semibold text-yellow-500";
@@ -230,6 +241,7 @@ export default {
           requestId: map.id,
         };
         this.$emit('handleMapRequest', message);
+        this.modalMessage = 'Offline map request successfully resubmitted!';
         this.showModal = true;
         // wait 3 seconds and refresh the page content
         setTimeout(() => {

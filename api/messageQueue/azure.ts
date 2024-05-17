@@ -6,6 +6,7 @@ export async function publishToAzureStorageQueue(
     type: any;
     bounds: any; 
     filename: any;
+    file_location: any;
     mapbox_style: any;
     min_zoom: any; 
     max_zoom: any; 
@@ -40,12 +41,12 @@ export async function publishToAzureStorageQueue(
     ...(message.planet_monthly_visual && { monthYear: message.planet_monthly_visual }),
     ...(message.openstreetmap && { openStreetMap: message.openstreetmap }),
     ...(message.filename && { outputFilename: message.filename}),
-    ...(process.env.OFFLINE_MAPS_PATH && { outputDir: process.env.OFFLINE_MAPS_PATH })
+    ...(message.file_location ? { outputDir: message.file_location } : (process.env.OFFLINE_MAPS_PATH && { outputDir: process.env.OFFLINE_MAPS_PATH }))
   };
 
-  if (transformedMessage.style.includes("mapbox")) {
+  if (transformedMessage.style && transformedMessage.style.includes("mapbox")) {
     transformedMessage.apiKey = process.env.MAPBOX_ACCESS_TOKEN;
-  } else if (transformedMessage.style === "planet") {
+  } else if (transformedMessage.style && transformedMessage.style === "planet") {
     transformedMessage.apiKey = process.env.VUE_APP_PLANET_API_KEY;
   }
 

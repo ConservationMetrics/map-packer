@@ -164,9 +164,16 @@ app.post("/maprequest", async (req: Request, res: Response) => {
       delete data.requestId;
       await updateDatabaseMapRequest(db, DB_TABLE, requestId, data);
     }
+    // If it's a delete request, update the data in the database with STATUS = "PENDING DELETION"
+    // Delete requests are handled further by mapgl-tile-renderer
+    else if (req.body.type === "delete_request") {
+      console.log("Updating data in database...");
+      await updateDatabaseMapRequest(db, DB_TABLE, requestId, { status: "PENDING DELETION" });
+    } else {
+      throw new Error("Invalid request type");
+    }
 
     // Publish message to Azure Storage Queue
-    // Delete requests are handled entirely by mapgl-tile-renderer
     if (ASQ_QUEUE_NAME) {
       console.log(`Publishing message to queue: ${ASQ_QUEUE_NAME}`);
       await publishToAzureStorageQueue(ASQ_QUEUE_NAME, req.body, requestId);
