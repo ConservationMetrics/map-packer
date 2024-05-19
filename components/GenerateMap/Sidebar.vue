@@ -53,8 +53,7 @@
             type="month"
             id="planetMonthYear"
             v-model="form.planetMonthYear"
-            :disabled-date="setPlanetDateRange"
-            :default-value="maxPlanetMonthYear" 
+            :min="minPlanetMonthYear"
             :max="maxPlanetMonthYear"
             class="input-field"
           />
@@ -181,7 +180,6 @@ export default {
         description: "",
         selectedBounds: this.mapBounds,
         selectedStyle: this.mapStyle,
-        minPlanetMonthYear: '2020-09', // The first month we have Planet NICFI monthly basemaps
         maxPlanetMonthYear: calculateMaxPlanetMonthYear(),
         maxZoom: 8,
         estimatedTiles: 0,
@@ -277,12 +275,6 @@ export default {
 
       return totalTiles;
     },
-    setPlanetDateRange(date) {
-            // minMonth and maxMonth are in format YYYY-MM, but date is a Date object
-            // so we need to convert it to a string in the same format
-            date = date.toISOString().slice(0, 7);
-            return date < this.minPlanetMonthYear || date > this.maxPlanetMonthYear;
-        },
     submitForm() {
       let formToSubmit = { ...this.form, selectedStyle: this.selectedStyleKey };
 
@@ -318,6 +310,9 @@ export default {
           this.form.selectedStyle = selectedStyle.value;
         }
       },
+    },
+    minPlanetMonthYear() {
+      return '2020-09'; // The first month we have Planet NICFI monthly basemaps
     },
     maxPlanetMonthYear() {
       return calculateMaxPlanetMonthYear();
