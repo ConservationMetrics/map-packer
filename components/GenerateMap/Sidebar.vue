@@ -53,6 +53,8 @@
             type="month"
             id="planetMonthYear"
             v-model="form.planetMonthYear"
+            :disabled-date="setPlanetDateRange"
+            :default-value="maxPlanetMonthYear" 
             :max="maxPlanetMonthYear"
             class="input-field"
           />
@@ -160,7 +162,7 @@
 </template>
 
 <script>
-import { calculatePlanetMonthYear } from "@/src/utils";
+import { calculateMaxPlanetMonthYear } from "@/src/utils";
 
 // This specific pattern of importing vue-slider-component follows the official
 // documentation for server-side rendering: https://nightcatsama.github.io/vue-slider-component/#/
@@ -179,7 +181,8 @@ export default {
         description: "",
         selectedBounds: this.mapBounds,
         selectedStyle: this.mapStyle,
-        planetMonthYear: calculatePlanetMonthYear(),
+        minPlanetMonthYear: '2020-09', // The first month we have Planet NICFI monthly basemaps
+        maxPlanetMonthYear: calculateMaxPlanetMonthYear(),
         maxZoom: 8,
         estimatedTiles: 0,
       },
@@ -274,6 +277,12 @@ export default {
 
       return totalTiles;
     },
+    setPlanetDateRange(date) {
+            // minMonth and maxMonth are in format YYYY-MM, but date is a Date object
+            // so we need to convert it to a string in the same format
+            date = date.toISOString().slice(0, 7);
+            return date < this.minPlanetMonthYear || date > this.maxPlanetMonthYear;
+        },
     submitForm() {
       let formToSubmit = { ...this.form, selectedStyle: this.selectedStyleKey };
 
@@ -311,7 +320,7 @@ export default {
       },
     },
     maxPlanetMonthYear() {
-      return calculatePlanetMonthYear();
+      return calculateMaxPlanetMonthYear();
     },
     estimatedTiles() {
       return this.estimateNumberOfTiles(

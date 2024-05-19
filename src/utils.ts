@@ -26,13 +26,18 @@ export function copyLink(link: string): Promise<void> {
   });
 }
 
-export const calculatePlanetMonthYear = () => {
-  // Let's calculate a format like this: YYYY-MM but for two months earlier than this month
-  // So if it's ANY day in February, 2024, we want to get 2023-12
+export const calculateMaxPlanetMonthYear = () => {
+  // If the current day is less than or equal to 15, maxMonth is two months ago.
+  // Otherwise, maxMonth is the previous  month.
+  // This is because Planet NICFI monthly basemaps for the previous month are published on the 15th of each month.
   const date = new Date();
-  date.setMonth(date.getMonth() - 2);
-  const month = date.getMonth() + 1; // JavaScript months are 0-indexed, add 1 to normalize
+  if (date.getDate() <= 15) {
+    date.setMonth(date.getMonth() - 2);
+  } else {
+    date.setMonth(date.getMonth() - 1);
+  }
   const year = date.getFullYear();
-  const monthYear = `${year}-${month < 10 ? `0${month}` : month}`;
-  return monthYear;
+  const month = date.getMonth() + 1;
+  const monthStr = month < 10 ? `0${month}` : month;
+  return `${year}-${monthStr}`;
 };
