@@ -1,7 +1,12 @@
 import express, { Request, Response } from "express";
 
 import setupDatabaseConnection from "./database/dbConnection";
-import { fetchData, insertDataIntoTable, updateDatabaseMapRequest, updateDatabaseWithError } from "./database/dbOperations";
+import {
+  fetchData,
+  insertDataIntoTable,
+  updateDatabaseMapRequest,
+  updateDatabaseWithError,
+} from "./database/dbOperations";
 import { publishToAzureStorageQueue } from "./messageQueue/azure";
 
 import { checkAuthStrategy } from "./middleware";
@@ -155,7 +160,7 @@ app.post("/maprequest", async (req: Request, res: Response) => {
       const data = { ...req.body };
       delete data.type;
       requestId = await insertDataIntoTable(db, DB_TABLE, data);
-    } 
+    }
     // If it's a resubmit request, update the data in the database
     else if (req.body.type === "resubmit_request") {
       console.log("Updating data in database...");
@@ -168,7 +173,9 @@ app.post("/maprequest", async (req: Request, res: Response) => {
     // Delete requests are handled further by mapgl-tile-renderer
     else if (req.body.type === "delete_request") {
       console.log("Updating data in database...");
-      await updateDatabaseMapRequest(db, DB_TABLE, requestId, { status: "PENDING DELETION" });
+      await updateDatabaseMapRequest(db, DB_TABLE, requestId, {
+        status: "PENDING DELETION",
+      });
     } else {
       throw new Error("Invalid request type");
     }
@@ -179,13 +186,23 @@ app.post("/maprequest", async (req: Request, res: Response) => {
       await publishToAzureStorageQueue(ASQ_QUEUE_NAME, req.body, requestId);
     } else {
       console.error("ASQ_QUEUE_NAME is not set.");
-      await updateDatabaseWithError(db, DB_TABLE, requestId, "InternalServerError: ASQ_QUEUE_NAME is not set");
+      await updateDatabaseWithError(
+        db,
+        DB_TABLE,
+        requestId,
+        "InternalServerError: ASQ_QUEUE_NAME is not set",
+      );
     }
 
     res.status(200).json({ message: "Request successfully published!" });
   } catch (error: any) {
     console.error("Error on API side:", error.message);
-    await updateDatabaseWithError(db, DB_TABLE, requestId, `InternalServerError: ${error.message}`);
+    await updateDatabaseWithError(
+      db,
+      DB_TABLE,
+      requestId,
+      `InternalServerError: ${error.message}`,
+    );
     res.status(500).json({ error: error.message });
   }
 });

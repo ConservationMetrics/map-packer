@@ -32,8 +32,8 @@
 import Sidebar from "@/components/GenerateMap/Sidebar.vue";
 import MapNavigation from "@/components/GenerateMap/MapNavigation.vue";
 import MapCanvas from "@/components/GenerateMap/MapCanvas.vue";
-import style from '@/components/GenerateMap/style.css';
-import overlayModal from '@/components/overlay.css';
+import style from "@/components/GenerateMap/style.css";
+import overlayModal from "@/components/overlay.css";
 
 export default {
   components: { MapCanvas, Sidebar, MapNavigation },
@@ -59,7 +59,7 @@ export default {
       this.$emit("handleMapRequest", formData);
       this.showModal = true;
       setTimeout(() => {
-        this.$router.push('/');
+        this.$router.push("/");
       }, 3000);
     },
     updateMapParams(updateObj) {
@@ -76,7 +76,7 @@ export default {
     style() {
       return { ...style, ...overlayModal };
     },
-  }
+  },
 };
 </script>
 

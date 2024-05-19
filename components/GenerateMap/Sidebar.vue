@@ -1,146 +1,161 @@
 <template>
   <div class="sidebar">
-      <h1 class="text-xl font-bold text-gray-800 mb-2">
-        MapPacker: Generate Offline Map
-      </h1>
-      <p class="mb-2">
-        <em>Use this interface to submit a request to generate an offline map.</em>
-      </p>
-      <form @submit.prevent="submitForm">
-        <div class="form-group">
-          <label for="title">Title <span class="text-red-600">*</span></label>
-          <input
-            type="text"
-            id="title"
-            v-model="form.title"
-            required
-            class="input-field"
-          />
-        </div>
+    <h1 class="text-xl font-bold text-gray-800 mb-2">
+      MapPacker: Generate Offline Map
+    </h1>
+    <p class="mb-2">
+      <em
+        >Use this interface to submit a request to generate an offline map.</em
+      >
+    </p>
+    <form @submit.prevent="submitForm">
+      <div class="form-group">
+        <label for="title">Title <span class="text-red-600">*</span></label>
+        <input
+          type="text"
+          id="title"
+          v-model="form.title"
+          required
+          class="input-field"
+        />
+      </div>
 
-        <div class="form-group">
-          <label for="description">Description</label>
-          <textarea
-            id="description"
-            v-model="form.description"
-            class="input-field"
-          ></textarea>
-        </div>
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea
+          id="description"
+          v-model="form.description"
+          class="input-field"
+        ></textarea>
+      </div>
 
-        <div class="form-group">
-          <label for="mapStyle">Map Style <span class="text-red-600">*</span></label>
-          <select
-            id="mapStyle"
-            v-model="selectedStyleKey"
-            class="input-field"
-          >
-            <option
-              v-for="style in this.mapStyles"
-              :key="style.key"
-              :value="style.key"
-            >
-              {{ style.name }}
-            </option>
-          </select>
-        </div>
-
-        <div v-if="form.selectedStyle.includes('/api/mapstyle/planet/')">
-          <div class="form-group">
-            <label for="planetMonthYear"
-              >Planet Visual Basemap: Month & Year</label
-            >
-            <input
-              type="month"
-              id="planetMonthYear"
-              v-model="form.planetMonthYear"
-              :max="maxPlanetMonthYear"
-              class="input-field"
-            />
-          </div>
-        </div>
-
-        <div
-          v-if="
-            form.selectedStyle === 'mapbox://styles/mapbox/satellite-v9' ||
-            !form.selectedStyle.includes('mapbox')
-          "
-          class="form-group flex items-center"
+      <div class="form-group">
+        <label for="mapStyle"
+          >Map Style <span class="text-red-600">*</span></label
         >
+        <select id="mapStyle" v-model="selectedStyleKey" class="input-field">
+          <option
+            v-for="style in this.mapStyles"
+            :key="style.key"
+            :value="style.key"
+          >
+            {{ style.name }}
+          </option>
+        </select>
+      </div>
+
+      <div v-if="form.selectedStyle.includes('/api/mapstyle/planet/')">
+        <div class="form-group">
+          <label for="planetMonthYear"
+            >Planet Visual Basemap: Month & Year</label
+          >
           <input
-            type="checkbox"
-            id="osmLabels"
-            v-model="form.openstreetmap"
-            class="input-field osm-checkbox"
-          />
-          <label for="osmLabels" class="ml-2"
-            >Include OSM Data (not shown on map)</label
-          >
-        </div>
-
-        <div class="form-group">
-          <label
-            >Maximum Zoom Level (0 - 16)
-            <span class="text-red-600">*</span></label
-          >
-          <vue-slider
-            v-model="form.maxZoom"
-            :min="0"
-            :max="16"
-            :dot-size="14"
-            :tooltip="'always'"
-            :height="6"
-            class="slider"
-          ></vue-slider>
-        </div>
-
-        <div class="form-group">
-          <label for="bbox">Offline Map Bounding Box <span class="text-red-600">*</span></label>
-          <p class="text-gray-400 mb-1">
-            <em>Click or press the 
-            <img src="/polygon.svg" alt="Polygon Icon" style="display: inline-block; vertical-align: middle;">
-            button on the top right of the screen, and draw an area on the map.</em>
-          </p>
-          <textarea
-            type="text"
-            v-model="form.selectedBounds"
-            id="bbox"
-            required
-            class="code-block"
-            @keydown.prevent
+            type="month"
+            id="planetMonthYear"
+            v-model="form.planetMonthYear"
+            :max="maxPlanetMonthYear"
+            class="input-field"
           />
         </div>
+      </div>
 
-        <!-- Show estimated number of tiles -->
-        <div v-if="form.maxZoom && form.selectedBounds">
+      <div
+        v-if="
+          form.selectedStyle === 'mapbox://styles/mapbox/satellite-v9' ||
+          !form.selectedStyle.includes('mapbox')
+        "
+        class="form-group flex items-center"
+      >
+        <input
+          type="checkbox"
+          id="osmLabels"
+          v-model="form.openstreetmap"
+          class="input-field osm-checkbox"
+        />
+        <label for="osmLabels" class="ml-2"
+          >Include OSM Data (not shown on map)</label
+        >
+      </div>
+
+      <div class="form-group">
+        <label
+          >Maximum Zoom Level (0 - 16)
+          <span class="text-red-600">*</span></label
+        >
+        <vue-slider
+          v-model="form.maxZoom"
+          :min="0"
+          :max="16"
+          :dot-size="14"
+          :tooltip="'always'"
+          :height="6"
+          class="slider"
+        ></vue-slider>
+      </div>
+
+      <div class="form-group">
+        <label for="bbox"
+          >Offline Map Bounding Box <span class="text-red-600">*</span></label
+        >
+        <p class="text-gray-400 mb-1">
+          <em
+            >Click or press the
+            <img
+              src="/polygon.svg"
+              alt="Polygon Icon"
+              style="display: inline-block; vertical-align: middle"
+            />
+            button on the top right of the screen, and draw an area on the
+            map.</em
+          >
+        </p>
+        <textarea
+          type="text"
+          v-model="form.selectedBounds"
+          id="bbox"
+          required
+          class="code-block"
+          @keydown.prevent
+        />
+      </div>
+
+      <!-- Show estimated number of tiles -->
+      <div v-if="form.maxZoom && form.selectedBounds">
         <p class="italic">
           Estimated number of tiles:
           {{ estimatedTiles.toLocaleString() }}
         </p>
-        <p v-if="estimatedTiles > 100000 && estimatedTiles < 275000" class="text-red-600 mt-2">
-          <span class="font-bold">Warning:</span> You are requesting over 100,000 tiles.
-          Note that this will generate a very large offline map file.
-          Please also make sure you will not exceed your tile quota for the map style API, or run into unexpected costs.
+        <p
+          v-if="estimatedTiles > 100000 && estimatedTiles < 275000"
+          class="text-red-600 mt-2"
+        >
+          <span class="font-bold">Warning:</span> You are requesting over
+          100,000 tiles. Note that this will generate a very large offline map
+          file. Please also make sure you will not exceed your tile quota for
+          the map style API, or run into unexpected costs.
         </p>
-        </div>
+      </div>
 
-        <!-- Show warning if estimated tiles exceed limit
+      <!-- Show warning if estimated tiles exceed limit
         We want to set a 500 megabytes limit for e.g. optimal functionality in Mapeo Mobile.
         It's not possible to estimate the exact size of a tile, so we use a reasonable 
         minimum filesize estimate of 18,137 bytes per tile (512px).
         500 megabytes = 500,000,000 / 18,137 = 275,679, rounded down to 275,000 -->
-        <div v-if="estimatedTiles > 275000" class="text-red-600 mt-2">
-          <span class="font-bold">Warning:</span> You are requesting over 275,000 tiles.
-          This exceeds the permitted number of tiles. Please reduce the bounding box or zoom level.
-        </div>
+      <div v-if="estimatedTiles > 275000" class="text-red-600 mt-2">
+        <span class="font-bold">Warning:</span> You are requesting over 275,000
+        tiles. This exceeds the permitted number of tiles. Please reduce the
+        bounding box or zoom level.
+      </div>
 
-        <button 
-          type="submit" 
-          :disabled="estimatedTiles > 275000" 
-          class="submit-button" 
-          :class="{ 'submit-button-disabled': estimatedTiles > 275000 }"
-        >Submit Request</button>
-      </form>
-
+      <button
+        type="submit"
+        :disabled="estimatedTiles > 275000"
+        class="submit-button"
+        :class="{ 'submit-button-disabled': estimatedTiles > 275000 }"
+      >
+        Submit Request
+      </button>
+    </form>
   </div>
 </template>
 
@@ -155,12 +170,7 @@ import "vue-slider-component/theme/default.css";
 
 export default {
   components: { VueSlider },
-  props: [
-    "availableMapStyles",
-    "mapboxAccessToken",
-    "mapBounds",
-    "mapStyle",
-  ],
+  props: ["availableMapStyles", "mapboxAccessToken", "mapBounds", "mapStyle"],
   data() {
     return {
       mapStyles: [],
@@ -171,7 +181,7 @@ export default {
         selectedStyle: this.mapStyle,
         planetMonthYear: calculatePlanetMonthYear(),
         maxZoom: 8,
-        estimatedTiles: 0
+        estimatedTiles: 0,
       },
     };
   },
@@ -200,7 +210,7 @@ export default {
 
           // remove planet from existing mapstyles
           this.mapStyles = this.mapStyles.filter(
-            (style) => style.key !== "planet"
+            (style) => style.key !== "planet",
           );
 
           this.mapStyles.push({
@@ -274,7 +284,10 @@ export default {
 
       // If the selected style is mapbox, include the selected style url
       if (this.selectedStyleKey === "mapbox") {
-        formToSubmit.mapboxStyle = this.form.selectedStyle.replace('mapbox://styles/', '');
+        formToSubmit.mapboxStyle = this.form.selectedStyle.replace(
+          "mapbox://styles/",
+          "",
+        );
       }
 
       formToSubmit.type = "new_request";
@@ -285,21 +298,26 @@ export default {
   computed: {
     selectedStyleKey: {
       get() {
-        const selectedStyle = this.mapStyles.find(style => style.value === this.form.selectedStyle);
+        const selectedStyle = this.mapStyles.find(
+          (style) => style.value === this.form.selectedStyle,
+        );
         return selectedStyle ? selectedStyle.key : null;
       },
       set(key) {
-        const selectedStyle = this.mapStyles.find(style => style.key === key);
+        const selectedStyle = this.mapStyles.find((style) => style.key === key);
         if (selectedStyle) {
           this.form.selectedStyle = selectedStyle.value;
         }
-      }
+      },
     },
     maxPlanetMonthYear() {
       return calculatePlanetMonthYear();
     },
     estimatedTiles() {
-      return this.estimateNumberOfTiles(this.form.maxZoom, this.form.selectedBounds);
+      return this.estimateNumberOfTiles(
+        this.form.maxZoom,
+        this.form.selectedBounds,
+      );
     },
   },
   mounted() {

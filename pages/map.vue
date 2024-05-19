@@ -32,29 +32,31 @@ export default {
   },
   methods: {
     async handleMapRequest(formData) {
-        // Transform formData to match the expected database table schema
-        const transformedMessage = {
-          type: "new_request",
-          title: formData.title,
-          filename: formData.title.replace(/\W+/g, '_'),
-          status: "PENDING",
-          description: formData.description,
-          min_zoom: 0,
-          max_zoom: formData.maxZoom,
-          mapbox_style: formData.mapboxStyle,
-          planet_monthly_visual: formData.planetMonthYear,
-          bounds: formData.selectedBounds,
-          style: formData.selectedStyle,
-          openstreetmap: formData.openstreetmap,
-          number_of_tiles: formData.estimatedTiles,
-          created_at: new Date(),
-        };
-      
-        try {
-          await this.$axios.$post('/api/maprequest', transformedMessage, { headers: this.headers });
-        } catch (error) {
-          console.error("Error submitting request data:", error);
-        }
+      // Transform formData to match the expected database table schema
+      const transformedMessage = {
+        type: "new_request",
+        title: formData.title,
+        filename: formData.title.replace(/\W+/g, "_"),
+        status: "PENDING",
+        description: formData.description,
+        min_zoom: 0,
+        max_zoom: formData.maxZoom,
+        mapbox_style: formData.mapboxStyle,
+        planet_monthly_visual: formData.planetMonthYear,
+        bounds: formData.selectedBounds,
+        style: formData.selectedStyle,
+        openstreetmap: formData.openstreetmap,
+        number_of_tiles: formData.estimatedTiles,
+        created_at: new Date(),
+      };
+
+      try {
+        await this.$axios.$post("/api/maprequest", transformedMessage, {
+          headers: this.headers,
+        });
+      } catch (error) {
+        console.error("Error submitting request data:", error);
+      }
     },
   },
   async asyncData({ $axios, app }) {

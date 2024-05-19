@@ -1,10 +1,10 @@
 <template>
   <div>
-    <MapDashboard 
-      v-if="dataFetched" 
+    <MapDashboard
+      v-if="dataFetched"
       :mapbox-access-token="mapboxAccessToken"
       :offline-maps="offlineMaps"
-      :offline-maps-uri="offlineMapsUri" 
+      :offline-maps-uri="offlineMapsUri"
       @handleMapRequest="handleMapRequest"
     />
   </div>
@@ -31,11 +31,13 @@ export default {
   methods: {
     async handleMapRequest(message) {
       try {
-          await this.$axios.$post('/api/maprequest', message, { headers: this.headers });
-        } catch (error) {
-          console.error("Error submitting request data:", error);
-        }
-    }
+        await this.$axios.$post("/api/maprequest", message, {
+          headers: this.headers,
+        });
+      } catch (error) {
+        console.error("Error submitting request data:", error);
+      }
+    },
   },
   async asyncData({ $axios, app }) {
     // Set up the headers for the request

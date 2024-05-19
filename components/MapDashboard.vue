@@ -11,7 +11,8 @@
     <nuxt-link
       to="/map/"
       class="block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer transition-colors duration-200 text-center mb-8 md:hidden"
-      >+ Generate Map</nuxt-link>
+      >+ Generate Map</nuxt-link
+    >
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div
         v-for="map in offlineMaps"
@@ -21,15 +22,17 @@
         <button
           class="delete absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold py-1 px-1 cursor-pointer"
           @click="deleteMap(map.id)"
-        >X</button>
+        >
+          X
+        </button>
         <h2 class="text-2xl font-bold text-gray-800 mb-2" v-if="map.title">
           {{ map.title }}
         </h2>
         <div class="mb-2" v-if="map.bounds">
-            <MiniMap
-              :bounds=map.bounds
-              :mapbox-access-token="mapboxAccessToken"
-            />
+          <MiniMap
+            :bounds="map.bounds"
+            :mapbox-access-token="mapboxAccessToken"
+          />
         </div>
         <p class="mb-2 italic" v-if="map.description">{{ map.description }}</p>
         <div class="space-y-2 mb-2">
@@ -38,7 +41,8 @@
             <span :class="formatStatusColor(map.status)">{{ map.status }}</span>
           </p>
           <p class="text-red-600 break-words" v-if="map.error_message">
-            <span class="font-bold">Error message:</span> {{ map.error_message }}
+            <span class="font-bold">Error message:</span>
+            {{ map.error_message }}
           </p>
           <p v-if="map.created_at">
             <span class="font-bold">Requested on:</span>
@@ -61,13 +65,13 @@
           </p>
         </div>
         <div v-if="map.error_message" class="flex mb-2">
-            <button
-              class="copy-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out"
-              @click="resubmitMapRequest(map.id)"
-            >
-              Resubmit
-            </button>
-        </div>          
+          <button
+            class="copy-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out"
+            @click="resubmitMapRequest(map.id)"
+          >
+            Resubmit
+          </button>
+        </div>
         <div v-if="map.file_location && offlineMapsUri" class="flex mb-2">
           <a
             :href="`${offlineMapsUri}/${map.filename}`"
@@ -77,12 +81,15 @@
           <button
             class="qr-code bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out mr-4"
             @click="toggleQRCode(map.id)"
-            >QR
+          >
+            QR
           </button>
           <div>
             <button
               class="copy-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out"
-              @click="copyLinkToClipboard(`${offlineMapsUri}/${map.filename}`, map.id)"
+              @click="
+                copyLinkToClipboard(`${offlineMapsUri}/${map.filename}`, map.id)
+              "
             >
               Copy Link
             </button>
@@ -96,30 +103,31 @@
         </div>
         <div v-if="showQRCodeId === map.id" class="flex mb-2">
           <QRCode :value="`${offlineMapsUri}/${map.filename}`" size="300" />
-        </div>        
+        </div>
         <div class="space-y-2 flex-grow" v-if="map.status !== 'PENDING'">
-            <h3 class="italic text-lg text-gray-600">Metadata</h3>
-            <p v-if="map.work_begun && map.work_ended">
-              <span class="font-bold">Task Duration:</span>
-              {{ calculateDuration(map.work_begun, map.work_ended) }}
-            </p>
-            <p v-if="map.file_size">
-              <span class="font-bold">File Size:</span>
-              {{ formatFilesize(map.file_size) }} mb
-            </p>
-            <p v-if="map.number_of_tiles">
-              <span class="font-bold">Number of Tiles:</span>
-              {{ formatNumber(map.number_of_tiles) }}
-            </p>
+          <h3 class="italic text-lg text-gray-600">Metadata</h3>
+          <p v-if="map.work_begun && map.work_ended">
+            <span class="font-bold">Task Duration:</span>
+            {{ calculateDuration(map.work_begun, map.work_ended) }}
+          </p>
+          <p v-if="map.file_size">
+            <span class="font-bold">File Size:</span>
+            {{ formatFilesize(map.file_size) }} mb
+          </p>
+          <p v-if="map.number_of_tiles">
+            <span class="font-bold">Number of Tiles:</span>
+            {{ formatNumber(map.number_of_tiles) }}
+          </p>
         </div>
       </div>
-      <div v-if="offlineMaps.length === 0" class="card bg-white border border-gray-300 rounded-lg shadow-lg p-6 flex flex-col">
+      <div
+        v-if="offlineMaps.length === 0"
+        class="card bg-white border border-gray-300 rounded-lg shadow-lg p-6 flex flex-col"
+      >
         <h2 class="text-2xl font-bold text-gray-800 mb-2">
           No offline maps found.
         </h2>
-        <p class="mb-2 italic">
-          Please generate a new map.
-        </p>
+        <p class="mb-2 italic">Please generate a new map.</p>
       </div>
     </div>
     <div v-if="showModal" class="overlay"></div>
@@ -130,26 +138,22 @@
 </template>
 
 <script>
-import QRCode from 'qrcode.vue';
+import QRCode from "qrcode.vue";
 
 import MiniMap from "@/components/MapDashboard/MiniMap.vue";
 import { copyLink } from "@/src/utils.ts";
-import overlayModal from '@/components/overlay.css';
+import overlayModal from "@/components/overlay.css";
 
 export default {
   components: { MiniMap, QRCode },
-  props: [
-    "mapboxAccessToken",
-    "offlineMaps",
-    "offlineMapsUri"
-  ],
+  props: ["mapboxAccessToken", "offlineMaps", "offlineMapsUri"],
   data() {
     return {
       refreshKey: 0,
       tooltipId: null,
       showQRCodeId: null,
       showModal: false,
-      modalMessage: '',
+      modalMessage: "",
     };
   },
   methods: {
@@ -175,19 +179,22 @@ export default {
         });
     },
     deleteMap(id) {
-      let confirmation = window.confirm("Are you sure you want to delete this offline map? This action cannot be undone.");
+      let confirmation = window.confirm(
+        "Are you sure you want to delete this offline map? This action cannot be undone.",
+      );
 
       if (confirmation) {
-        const map = this.offlineMaps.find(m => m.id === id);
+        const map = this.offlineMaps.find((m) => m.id === id);
         if (map) {
           const message = {
             type: "delete_request",
             requestId: map.id,
             filename: map.filename,
-            file_location: map.file_location
+            file_location: map.file_location,
           };
-          this.$emit('handleMapRequest', message);
-          this.modalMessage = 'Offline map request (and associated files) deleted!';
+          this.$emit("handleMapRequest", message);
+          this.modalMessage =
+            "Offline map request (and associated files) deleted!";
           this.showModal = true;
           // wait 3 seconds and refresh the page content
           setTimeout(() => {
@@ -231,7 +238,7 @@ export default {
       }
     },
     resubmitMapRequest(id) {
-      const map = this.offlineMaps.find(m => m.id === id);
+      const map = this.offlineMaps.find((m) => m.id === id);
       if (map) {
         const message = {
           type: "resubmit_request",
@@ -251,8 +258,8 @@ export default {
           created_at: new Date(),
           requestId: map.id,
         };
-        this.$emit('handleMapRequest', message);
-        this.modalMessage = 'Offline map request successfully resubmitted!';
+        this.$emit("handleMapRequest", message);
+        this.modalMessage = "Offline map request successfully resubmitted!";
         this.showModal = true;
         // wait 3 seconds and refresh the page content
         setTimeout(() => {
@@ -269,7 +276,7 @@ export default {
     style() {
       return { ...overlayModal };
     },
-  }
+  },
 };
 </script>
 

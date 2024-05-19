@@ -35,9 +35,8 @@ export default {
   methods: {
     async login() {
       try {
-        await this.$auth.loginWith("auth0");      
+        await this.$auth.loginWith("auth0");
         this.$router.replace(this.redirectPath);
-        
       } catch (error) {
         console.error("Error logging in with Auth0:", error);
       }

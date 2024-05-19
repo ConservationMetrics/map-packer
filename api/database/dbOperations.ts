@@ -12,7 +12,10 @@ const checkTableExists = (
   });
 };
 
-const createMapRequestTable = async (db: any, table: string | undefined): Promise<void> => {
+const createMapRequestTable = async (
+  db: any,
+  table: string | undefined,
+): Promise<void> => {
   console.log(`Table ${table} does not exist. Creating...`);
   const query = `
     CREATE TABLE ${table} (
@@ -39,7 +42,7 @@ const createMapRequestTable = async (db: any, table: string | undefined): Promis
       work_begun TIMESTAMP(6),
       work_ended TIMESTAMP(6)
     )
-  `;  
+  `;
   return new Promise((resolve, reject) => {
     db.query(query, (err: Error) => {
       if (err) reject(err);
@@ -47,7 +50,7 @@ const createMapRequestTable = async (db: any, table: string | undefined): Promis
       resolve();
     });
   });
-}
+};
 
 const fetchDataFromTable = async (
   db: any,
@@ -72,7 +75,7 @@ export const fetchData = async (
   if (!databaseExists) {
     await createMapRequestTable(db, table);
   }
-  let data = await fetchDataFromTable(db, table);;
+  let data = await fetchDataFromTable(db, table);
 
   return { data };
 };
@@ -80,14 +83,16 @@ export const fetchData = async (
 export const insertDataIntoTable = async (
   db: any,
   table: string | undefined,
-  data: any
+  data: any,
 ): Promise<void> => {
   const databaseExists = await checkTableExists(db, table);
   if (!databaseExists) {
     await createMapRequestTable(db, table);
   }
   const columns = Object.keys(data).join(", ");
-  const placeholders = Object.keys(data).map((_, i) => `$${i + 1}`).join(", ");
+  const placeholders = Object.keys(data)
+    .map((_, i) => `$${i + 1}`)
+    .join(", ");
   const values = Object.values(data);
   // Return id so it can be used if needed for error handling
   const query = `INSERT INTO ${table} (${columns}) VALUES (${placeholders}) RETURNING id`;
@@ -97,18 +102,25 @@ export const insertDataIntoTable = async (
       if (result.rows.length > 0) {
         resolve(result.rows[0].id);
       } else {
-        reject(new Error('No rows returned after insert.'));
+        reject(new Error("No rows returned after insert."));
       }
     });
   });
 };
 
-export async function updateDatabaseMapRequest(db: any, tableName: string, id: number | void | null, data: any) {
+export async function updateDatabaseMapRequest(
+  db: any,
+  tableName: string,
+  id: number | void | null,
+  data: any,
+) {
   if (id === null || id === undefined || !Number.isInteger(id)) {
-    throw new Error('Invalid ID provided for updating database.');
+    throw new Error("Invalid ID provided for updating database.");
   }
 
-  const columns = Object.keys(data).map((key, index) => `${key} = $${index + 1}`).join(', ');
+  const columns = Object.keys(data)
+    .map((key, index) => `${key} = $${index + 1}`)
+    .join(", ");
   const values = Object.values(data);
   values.push(id);
 
@@ -121,7 +133,9 @@ export async function updateDatabaseMapRequest(db: any, tableName: string, id: n
   return new Promise<void>((resolve, reject) => {
     db.query(query, values, (err: Error) => {
       if (err) {
-        console.error(`Error updating record ${id} in table ${tableName}: ${err.message}`);
+        console.error(
+          `Error updating record ${id} in table ${tableName}: ${err.message}`,
+        );
         reject(err);
       } else {
         console.log(`Record ${id} in table ${tableName} updated.`);
@@ -131,9 +145,14 @@ export async function updateDatabaseMapRequest(db: any, tableName: string, id: n
   });
 }
 
-export async function updateDatabaseWithError(db: any, tableName: string, id: number | void | null, errorMessage: string) {
+export async function updateDatabaseWithError(
+  db: any,
+  tableName: string,
+  id: number | void | null,
+  errorMessage: string,
+) {
   if (id === null || id === undefined || !Number.isInteger(id)) {
-    throw new Error('Invalid ID provided for updating error message.');
+    throw new Error("Invalid ID provided for updating error message.");
   }
 
   const query = `
@@ -145,10 +164,14 @@ export async function updateDatabaseWithError(db: any, tableName: string, id: nu
   return new Promise<void>((resolve, reject) => {
     db.query(query, [errorMessage, id], (err: Error) => {
       if (err) {
-        console.error(`Error updating record ${id} in table ${tableName}: ${err.message}`);
+        console.error(
+          `Error updating record ${id} in table ${tableName}: ${err.message}`,
+        );
         reject(err);
       } else {
-        console.log(`Record ${id} in table ${tableName} updated with error message.`);
+        console.log(
+          `Record ${id} in table ${tableName} updated with error message.`,
+        );
         resolve();
       }
     });

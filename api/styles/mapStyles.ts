@@ -1,6 +1,11 @@
 import { calculatePlanetMonthYear } from "../../src/utils";
 
-export type MapStyleKey = "bing" | "google" | "esri" | "mapbox-satellite" | "planet" ;
+export type MapStyleKey =
+  | "bing"
+  | "google"
+  | "esri"
+  | "mapbox-satellite"
+  | "planet";
 
 interface MapStyle {
   name: string;
@@ -99,7 +104,7 @@ export const mapStyles: Record<MapStyleKey, MapStyle> = {
       ],
     },
   },
-  'mapbox-satellite': {
+  "mapbox-satellite": {
     name: "Mapbox Satellite",
     url: "mapbox://styles/mapbox/satellite-v9",
   },
@@ -111,7 +116,8 @@ export const mapStyles: Record<MapStyleKey, MapStyle> = {
         planet: {
           type: "raster",
           tiles: [
-            `https://tiles.planet.com/basemaps/v1/planet-tiles/planet_medres_visual_${calculatePlanetMonthYear()}_mosaic/gmap/{z}/{x}/{y}?api_key=` + (process.env.VUE_APP_PLANET_API_KEY || '').replace(/"/g, ''),
+            `https://tiles.planet.com/basemaps/v1/planet-tiles/planet_medres_visual_${calculatePlanetMonthYear()}_mosaic/gmap/{z}/{x}/{y}?api_key=` +
+              (process.env.VUE_APP_PLANET_API_KEY || "").replace(/"/g, ""),
           ],
           tileSize: 256,
         },

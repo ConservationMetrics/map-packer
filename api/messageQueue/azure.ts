@@ -2,19 +2,19 @@ import { QueueServiceClient } from "@azure/storage-queue";
 
 export async function publishToAzureStorageQueue(
   queueName: string,
-  message: { 
+  message: {
     type: any;
-    bounds: any; 
+    bounds: any;
     filename: any;
     file_location: any;
     mapbox_style: any;
-    min_zoom: any; 
-    max_zoom: any; 
+    min_zoom: any;
+    max_zoom: any;
     openstreetmap: any;
     planet_monthly_visual: any;
-    style: any; 
+    style: any;
   },
-  requestId: number | void | null = null
+  requestId: number | void | null = null,
 ) {
   const accountName = process.env.AZURE_STORAGE_CONNECTION_ACCOUNT_NAME;
   const storageKey = process.env.AZURE_STORAGE_CONNECTION_STORAGE_KEY;
@@ -38,15 +38,24 @@ export async function publishToAzureStorageQueue(
     ...(message.mapbox_style && { mapboxStyle: message.mapbox_style }),
     ...(message.max_zoom && { maxZoom: message.max_zoom }),
     ...(message.min_zoom && { minZoom: message.min_zoom }),
-    ...(message.planet_monthly_visual && { monthYear: message.planet_monthly_visual }),
+    ...(message.planet_monthly_visual && {
+      monthYear: message.planet_monthly_visual,
+    }),
     ...(message.openstreetmap && { openStreetMap: message.openstreetmap }),
-    ...(message.filename && { outputFilename: message.filename}),
-    ...(message.file_location ? { outputDir: message.file_location } : (process.env.OFFLINE_MAPS_PATH && { outputDir: process.env.OFFLINE_MAPS_PATH }))
+    ...(message.filename && { outputFilename: message.filename }),
+    ...(message.file_location
+      ? { outputDir: message.file_location }
+      : process.env.OFFLINE_MAPS_PATH && {
+          outputDir: process.env.OFFLINE_MAPS_PATH,
+        }),
   };
 
   if (transformedMessage.style && transformedMessage.style.includes("mapbox")) {
     transformedMessage.apiKey = process.env.MAPBOX_ACCESS_TOKEN;
-  } else if (transformedMessage.style && transformedMessage.style === "planet") {
+  } else if (
+    transformedMessage.style &&
+    transformedMessage.style === "planet"
+  ) {
     transformedMessage.apiKey = process.env.VUE_APP_PLANET_API_KEY;
   }
 
@@ -54,9 +63,13 @@ export async function publishToAzureStorageQueue(
 
   console.log(`Publishing message to Azure Storage Queue: ${messageString}`);
 
-  const response = await queueClient.sendMessage(Buffer.from(messageString).toString("base64"));
+  const response = await queueClient.sendMessage(
+    Buffer.from(messageString).toString("base64"),
+  );
   if (response.messageId) {
-    console.log(`Message successfully published with ID: ${response.messageId}`);
+    console.log(
+      `Message successfully published with ID: ${response.messageId}`,
+    );
     return response.messageId;
   } else {
     throw new Error("Failed to publish the message");
