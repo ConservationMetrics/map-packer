@@ -44,6 +44,20 @@
         </select>
       </div>
 
+      <div v-if="selectedStyleKey === 'mapbox-custom'" class="form-group">
+        <label for="customMapboxStyle">Your Mapbox Style URL</label>
+        <input
+          type="text"
+          id="customMapboxStyle"
+          v-model="customMapboxStyleUrl"
+          placeholder="mapbox://styles/user/styleId"
+          class="input-field"
+        />
+        <p v-if="!isValidCustomMapboxStyleUrl" class="text-red-600">
+          Please enter a valid Mapbox style URL.
+        </p>
+      </div>
+
       <div v-if="form.selectedStyle.includes('/api/mapstyle/planet/')">
         <div class="form-group">
           <label for="planetMonthYear"
@@ -174,6 +188,7 @@ export default {
   props: ["availableMapStyles", "mapboxAccessToken", "mapBounds", "mapStyle"],
   data() {
     return {
+      customMapboxStyleUrl: "",
       mapStyles: [],
       form: {
         title: "",
@@ -188,6 +203,12 @@ export default {
   },
   watch: {
     // Watch for changes to the map's style and bounds props
+    customMapboxStyleUrl(newVal) {
+      if (this.isValidCustomMapboxStyleUrl) {
+        // Emit only when a valid custom Mapbox style URL is entered
+        this.$emit("updateMapParams", { param: "Style", value: newVal });
+      }
+    },
     mapBounds(newVal) {
       this.form.selectedBounds = newVal;
     },
@@ -291,6 +312,11 @@ export default {
         );
       }
 
+      // If the selected style is custom-mapbox, include the custom Mapbox Style URL
+      if (this.selectedStyleKey === "mapbox-custom") {
+        formToSubmit.mapboxStyle = this.customMapboxStyleUrl;
+      }
+
       formToSubmit.type = "new_request";
 
       this.$emit("formSubmitted", formToSubmit);
@@ -322,6 +348,9 @@ export default {
         this.form.maxZoom,
         this.form.selectedBounds,
       );
+    },
+    isValidCustomMapboxStyleUrl() {
+      return /^mapbox:\/\/styles\/[^\/]+\/[^\/]+$/.test(this.customMapboxStyleUrl);
     },
   },
   mounted() {
