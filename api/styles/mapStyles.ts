@@ -5,6 +5,7 @@ export type MapStyleKey =
   | "google"
   | "esri"
   | "mapbox-satellite"
+  | "mapbox-streets"
   | "planet";
 
 interface MapStyle {
@@ -107,6 +108,10 @@ export const mapStyles: Record<MapStyleKey, MapStyle> = {
   "mapbox-satellite": {
     name: "Mapbox Satellite",
     url: "mapbox://styles/mapbox/satellite-v9",
+  },
+  "mapbox-streets": {
+    name: "Mapbox Streets",
+    url: "mapbox://styles/mapbox/streets-v12",
   },
   planet: {
     name: `Planet Monthly Visual Basemap`,

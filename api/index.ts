@@ -97,18 +97,12 @@ app.get("/mapstyles", (_req: Request, res: Response) => {
     url: value.url || `/api/mapstyle/${key}/`,
   }));
 
-  // append custom mapbox style (or streets fallback) to the top of the list of available styles
+  // append custom mapbox style to the top of the list of available styles
   if (MAPBOX_STYLE) {
     styles.unshift({
       name: MAPBOX_STYLE_NAME || "Mapbox Custom Style",
       key: "mapbox",
       url: MAPBOX_STYLE,
-    });
-  } else {
-    styles.unshift({
-      name: "Mapbox Streets",
-      key: "mapbox",
-      url: "mapbox://styles/mapbox/streets-v12",
     });
   }
 
