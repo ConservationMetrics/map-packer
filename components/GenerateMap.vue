@@ -65,13 +65,6 @@ export default {
     updateMapParams(updateObj) {
       let { param, value } = updateObj;
 
-      console.log(param)
-
-      if (param === "Style" && !/^mapbox:\/\/styles\/[^\/]+\/[^\/]+$/.test(value)) {
-        // If the style is not a valid Mapbox style URL, do not update
-        return;
-      }
-
       if (typeof value === "number") {
         value = parseFloat(value.toFixed(6));
       }

@@ -146,19 +146,22 @@ app.get("/mapstyle/planet/:year/:month", (req: Request, res: Response) => {
 // API endpoint to POST a request to the db and publish message to queue
 app.post("/maprequest", async (req: Request, res: Response) => {
   let requestId: number | void | null = req.body.requestId;
+  const data = { ...req.body };
+
+  if (data.style ="mapbox-custon") {
+    data.style ="mapbox"
+  }
 
   try {
     // If it's a new request, insert data into the database
     if (req.body.type === "new_request") {
       console.log("Inserting data into database...");
-      const data = { ...req.body };
       delete data.type;
       requestId = await insertDataIntoTable(db, DB_TABLE, data);
     }
     // If it's a resubmit request, update the data in the database
     else if (req.body.type === "resubmit_request") {
       console.log("Updating data in database...");
-      const data = { ...req.body };
       delete data.type;
       delete data.requestId;
       await updateDatabaseMapRequest(db, DB_TABLE, requestId, data);

@@ -53,9 +53,14 @@
           placeholder="mapbox://styles/user/styleId"
           class="input-field"
         />
-        <p v-if="!isValidCustomMapboxStyleUrl" class="text-red-600">
-          Please enter a valid Mapbox style URL.
-        </p>
+        <button
+          type="button"
+          class="render-button"
+          @click="renderCustomStyle"
+          :disabled="!isValidCustomMapboxStyleUrl"
+        >
+          Render
+        </button>
       </div>
 
       <div v-if="form.selectedStyle.includes('/api/mapstyle/planet/')">
@@ -195,20 +200,15 @@ export default {
         description: "",
         selectedBounds: this.mapBounds,
         selectedStyle: this.mapStyle,
+        selectedStyleKey: null,
         maxPlanetMonthYear: calculateMaxPlanetMonthYear(),
         maxZoom: 8,
         estimatedTiles: 0,
-      },
+      }
     };
   },
   watch: {
     // Watch for changes to the map's style and bounds props
-    customMapboxStyleUrl(newVal) {
-      if (this.isValidCustomMapboxStyleUrl) {
-        // Emit only when a valid custom Mapbox style URL is entered
-        this.$emit("updateMapParams", { param: "Style", value: newVal });
-      }
-    },
     mapBounds(newVal) {
       this.form.selectedBounds = newVal;
     },
@@ -222,7 +222,9 @@ export default {
     // Track and emit changes to map parameters in the sidebar form,
     // So that the parent component can update the map
     "form.selectedStyle": function (newVal) {
-      this.$emit("updateMapParams", { param: "Style", value: newVal });
+      if (newVal !== "/api/mapstyle/mapbox-custom/") {
+        this.$emit("updateMapParams", { param: "Style", value: newVal });
+      }
     },
     "form.planetMonthYear": function (newVal) {
       if (this.form.selectedStyle.includes("/api/mapstyle/planet/")) {
@@ -296,6 +298,13 @@ export default {
 
       return totalTiles;
     },
+    renderCustomStyle() {
+      if (/^mapbox:\/\/styles\/[^\/]+\/[^\/]+$/.test(this.customMapboxStyleUrl)) {
+        this.form.selectedStyle = this.customMapboxStyleUrl;
+        this.selectedStyleKey = "mapbox-custom";
+        this.$emit("updateMapParams", { param: "Style", value: this.customMapboxStyleUrl });
+      }
+    },
     submitForm() {
       let formToSubmit = { ...this.form, selectedStyle: this.selectedStyleKey };
 
@@ -328,7 +337,7 @@ export default {
         const selectedStyle = this.mapStyles.find(
           (style) => style.value === this.form.selectedStyle,
         );
-        return selectedStyle ? selectedStyle.key : null;
+        return selectedStyle ? selectedStyle.key : (this.form.selectedStyle === this.customMapboxStyleUrl ? "mapbox-custom" : null);
       },
       set(key) {
         const selectedStyle = this.mapStyles.find((style) => style.key === key);
@@ -358,3 +367,28 @@ export default {
   },
 };
 </script>
+<style scoped>
+.render-button {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 6px 9px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.render-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.render-button:not(:disabled):hover {
+  background-color: #45a049;
+}
+</style>
