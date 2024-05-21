@@ -4,6 +4,7 @@ export type MapStyleKey =
   | "bing"
   | "google"
   | "esri"
+  | "mapbox-custom"
   | "mapbox-satellite"
   | "mapbox-streets"
   | "planet";
@@ -104,6 +105,9 @@ export const mapStyles: Record<MapStyleKey, MapStyle> = {
         },
       ],
     },
+  },
+  "mapbox-custom": {
+    name: "Your Mapbox Style"
   },
   "mapbox-satellite": {
     name: "Mapbox Satellite",
