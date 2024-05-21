@@ -201,6 +201,7 @@ export default {
         selectedBounds: this.mapBounds,
         selectedStyle: this.mapStyle,
         selectedStyleKey: null,
+        planetMonthYear: calculateMaxPlanetMonthYear(),
         maxPlanetMonthYear: calculateMaxPlanetMonthYear(),
         maxZoom: 8,
         estimatedTiles: 0,
@@ -222,6 +223,12 @@ export default {
     // Track and emit changes to map parameters in the sidebar form,
     // So that the parent component can update the map
     "form.selectedStyle": function (newVal) {
+      if (newVal.includes("/api/mapstyle/planet/")) {
+        const [year, month] = this.form.planetMonthYear.split("-");
+        if (!year || !month) {
+          this.form.planetMonthYear = calculateMaxPlanetMonthYear();
+        }
+      }
       if (newVal !== "/api/mapstyle/mapbox-custom/") {
         this.$emit("updateMapParams", { param: "Style", value: newVal });
       }
