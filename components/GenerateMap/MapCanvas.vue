@@ -6,7 +6,7 @@
 import mapboxgl from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
-import osmtogeojson from 'osmtogeojson';
+import osmtogeojson from "osmtogeojson";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
@@ -18,7 +18,7 @@ export default {
     "mapLongitude",
     "mapStyle",
     "mapZoom",
-    "osmEnabled"
+    "osmEnabled",
   ],
   data() {
     return {
@@ -60,7 +60,7 @@ export default {
           this.removeOSMLayers();
         }
       }
-    }
+    },
   },
   methods: {
     getWSENstring(bounds) {
@@ -85,46 +85,46 @@ export default {
       return wsen;
     },
     addOSMLayers() {
-      if (!this.$map.getSource('osm')) {
-        this.$map.addSource('osm', {
-          type: 'vector',
-          url: 'mapbox://mapbox.mapbox-streets-v8'
+      if (!this.$map.getSource("osm")) {
+        this.$map.addSource("osm", {
+          type: "vector",
+          url: "mapbox://mapbox.mapbox-streets-v8",
         });
 
         // Add waterway lines
         this.$map.addLayer({
-          id: 'osm-waterway-lines',
-          type: 'line',
-          source: 'osm',
-          'source-layer': 'waterway',
+          id: "osm-waterway-lines",
+          type: "line",
+          source: "osm",
+          "source-layer": "waterway",
           paint: {
-            'line-width': 2,
-            'line-color': '#0000ff' // blue for waterways
-          }
+            "line-width": 2,
+            "line-color": "#0000ff", // blue for waterways
+          },
         });
 
         // Add highway lines
         this.$map.addLayer({
-          id: 'osm-highway-lines',
-          type: 'line',
-          source: 'osm',
-          'source-layer': 'road',
+          id: "osm-highway-lines",
+          type: "line",
+          source: "osm",
+          "source-layer": "road",
           paint: {
-            'line-width': 2,
-            'line-color': '#a52a2a' // brown for highways
-          }
+            "line-width": 2,
+            "line-color": "#a52a2a", // brown for highways
+          },
         });
 
         // Add boundary lines
         this.$map.addLayer({
-          id: 'osm-boundary-lines',
-          type: 'line',
-          source: 'osm',
-          'source-layer': 'admin',
+          id: "osm-boundary-lines",
+          type: "line",
+          source: "osm",
+          "source-layer": "admin",
           paint: {
-            'line-width': 2,
-            'line-color': '#ffa500' // orange for boundaries
-          }
+            "line-width": 2,
+            "line-color": "#ffa500", // orange for boundaries
+          },
         });
 
         // TODO: get glyphs working
@@ -151,19 +151,19 @@ export default {
       }
     },
     removeOSMLayers() {
-      if (this.$map.getLayer('osm-waterway-lines')) {
-        this.$map.removeLayer('osm-waterway-lines');
+      if (this.$map.getLayer("osm-waterway-lines")) {
+        this.$map.removeLayer("osm-waterway-lines");
       }
-      if (this.$map.getLayer('osm-highway-lines')) {
-        this.$map.removeLayer('osm-highway-lines');
+      if (this.$map.getLayer("osm-highway-lines")) {
+        this.$map.removeLayer("osm-highway-lines");
       }
-      if (this.$map.getLayer('osm-boundary-lines')) {
-        this.$map.removeLayer('osm-boundary-lines');
+      if (this.$map.getLayer("osm-boundary-lines")) {
+        this.$map.removeLayer("osm-boundary-lines");
       }
-      if (this.$map.getSource('osm')) {
-        this.$map.removeSource('osm');
+      if (this.$map.getSource("osm")) {
+        this.$map.removeSource("osm");
       }
-    }
+    },
   },
   mounted() {
     mapboxgl.accessToken = this.mapboxAccessToken;

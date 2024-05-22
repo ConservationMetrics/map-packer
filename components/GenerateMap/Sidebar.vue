@@ -206,7 +206,7 @@ export default {
         maxPlanetMonthYear: calculateMaxPlanetMonthYear(),
         maxZoom: 8,
         estimatedTiles: 0,
-      }
+      },
     };
   },
   watch: {
@@ -309,10 +309,15 @@ export default {
       return totalTiles;
     },
     renderCustomStyle() {
-      if (/^mapbox:\/\/styles\/[^\/]+\/[^\/]+$/.test(this.customMapboxStyleUrl)) {
+      if (
+        /^mapbox:\/\/styles\/[^\/]+\/[^\/]+$/.test(this.customMapboxStyleUrl)
+      ) {
         this.form.selectedStyle = this.customMapboxStyleUrl;
         this.selectedStyleKey = "mapbox-custom";
-        this.$emit("updateMapParams", { param: "Style", value: this.customMapboxStyleUrl });
+        this.$emit("updateMapParams", {
+          param: "Style",
+          value: this.customMapboxStyleUrl,
+        });
       }
     },
     submitForm() {
@@ -341,7 +346,10 @@ export default {
       this.$emit("formSubmitted", formToSubmit);
     },
     toggleOSM() {
-      this.$emit("updateMapParams", { param: "OsmEnabled", value: this.form.openstreetmap });
+      this.$emit("updateMapParams", {
+        param: "OsmEnabled",
+        value: this.form.openstreetmap,
+      });
     },
   },
   computed: {
@@ -350,7 +358,11 @@ export default {
         const selectedStyle = this.mapStyles.find(
           (style) => style.value === this.form.selectedStyle,
         );
-        return selectedStyle ? selectedStyle.key : (this.form.selectedStyle === this.customMapboxStyleUrl ? "mapbox-custom" : null);
+        return selectedStyle
+          ? selectedStyle.key
+          : this.form.selectedStyle === this.customMapboxStyleUrl
+            ? "mapbox-custom"
+            : null;
       },
       set(key) {
         const selectedStyle = this.mapStyles.find((style) => style.key === key);
@@ -360,7 +372,7 @@ export default {
       },
     },
     minPlanetMonthYear() {
-      return '2020-09'; // The first month we have Planet NICFI monthly basemaps
+      return "2020-09"; // The first month we have Planet NICFI monthly basemaps
     },
     maxPlanetMonthYear() {
       return calculateMaxPlanetMonthYear();
@@ -372,7 +384,9 @@ export default {
       );
     },
     isValidCustomMapboxStyleUrl() {
-      return /^mapbox:\/\/styles\/[^\/]+\/[^\/]+$/.test(this.customMapboxStyleUrl);
+      return /^mapbox:\/\/styles\/[^\/]+\/[^\/]+$/.test(
+        this.customMapboxStyleUrl,
+      );
     },
   },
   mounted() {
@@ -382,7 +396,7 @@ export default {
 </script>
 <style scoped>
 .render-button {
-  background-color: #4CAF50; /* Green */
+  background-color: #4caf50; /* Green */
   border: none;
   color: white;
   padding: 6px 9px;

@@ -107,7 +107,7 @@ export const mapStyles: Record<MapStyleKey, MapStyle> = {
     },
   },
   "mapbox-custom": {
-    name: "Your Mapbox Style"
+    name: "Your Mapbox Style",
   },
   "mapbox-satellite": {
     name: "Mapbox Satellite",

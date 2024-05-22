@@ -75,7 +75,7 @@ export default {
       if (param === "OsmEnabled") {
         this.osmEnabled = value;
       } else {
-        this[`selected${param}`] = value;     
+        this[`selected${param}`] = value;
         if (param === "Style") {
           this.osmEnabled = false;
           this.$emit("updateMapParams", { param: "OsmEnabled", value: false });
