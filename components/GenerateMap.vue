@@ -6,6 +6,7 @@
       :availableMapStyles="availableMapStyles"
       :mapBounds="selectedBounds"
       :mapStyle="selectedStyle"
+      :osmEnabled="osmEnabled"
     />
     <MapNavigation
       @updateMapParams="updateMapParams"
@@ -20,6 +21,7 @@
       :mapLongitude="selectedLongitude"
       :mapStyle="selectedStyle"
       :mapZoom="selectedZoom"
+      :osmEnabled="osmEnabled"
     />
     <div v-if="showModal" class="overlay"></div>
     <div v-if="showModal" class="modal">
@@ -46,6 +48,7 @@ export default {
   ],
   data() {
     return {
+      osmEnabled: false,
       selectedBounds: "",
       selectedLatitude: this.mapLatitude,
       selectedLongitude: this.mapLongitude,
@@ -69,7 +72,15 @@ export default {
         value = parseFloat(value.toFixed(6));
       }
 
-      this[`selected${param}`] = value;
+      if (param === "OsmEnabled") {
+        this.osmEnabled = value;
+      } else {
+        this[`selected${param}`] = value;     
+        if (param === "Style") {
+          this.osmEnabled = false;
+          this.$emit("updateMapParams", { param: "OsmEnabled", value: false });
+        }
+      }
     },
   },
   computed: {

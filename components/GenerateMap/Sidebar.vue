@@ -91,9 +91,10 @@
           id="osmLabels"
           v-model="form.openstreetmap"
           class="input-field osm-checkbox"
+          @change="toggleOSM"
         />
         <label for="osmLabels" class="ml-2"
-          >Include OSM Data (not shown on map)</label
+          >Include OSM Data (labels not shown)</label
         >
       </div>
 
@@ -231,6 +232,8 @@ export default {
       }
       if (newVal !== "/api/mapstyle/mapbox-custom/") {
         this.$emit("updateMapParams", { param: "Style", value: newVal });
+        this.$emit("updateMapParams", { param: "OsmEnabled", value: false });
+        this.form.openstreetmap = false;
       }
     },
     "form.planetMonthYear": function (newVal) {
@@ -336,6 +339,9 @@ export default {
       formToSubmit.type = "new_request";
 
       this.$emit("formSubmitted", formToSubmit);
+    },
+    toggleOSM() {
+      this.$emit("updateMapParams", { param: "OsmEnabled", value: this.form.openstreetmap });
     },
   },
   computed: {
