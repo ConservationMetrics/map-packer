@@ -6,6 +6,7 @@
 import mapboxgl from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
+import osmtogeojson from "osmtogeojson";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
@@ -17,10 +18,12 @@ export default {
     "mapLongitude",
     "mapStyle",
     "mapZoom",
+    "osmEnabled",
   ],
   data() {
     return {
       draw: null,
+      mapLoaded: false,
       selectedLatitude: this.mapLatitude,
       selectedLongitude: this.mapLongitude,
       selectedStyle: this.mapStyle,
@@ -49,6 +52,15 @@ export default {
         this.$map.setZoom(newVal);
       }
     },
+    osmEnabled(newVal) {
+      if (this.mapLoaded) {
+        if (newVal) {
+          this.addOSMLayers();
+        } else {
+          this.removeOSMLayers();
+        }
+      }
+    },
   },
   methods: {
     getWSENstring(bounds) {
@@ -72,6 +84,86 @@ export default {
 
       return wsen;
     },
+    addOSMLayers() {
+      if (!this.$map.getSource("osm")) {
+        this.$map.addSource("osm", {
+          type: "vector",
+          url: "mapbox://mapbox.mapbox-streets-v8",
+        });
+
+        // Add waterway lines
+        this.$map.addLayer({
+          id: "osm-waterway-lines",
+          type: "line",
+          source: "osm",
+          "source-layer": "waterway",
+          paint: {
+            "line-width": 2,
+            "line-color": "#0000ff", // blue for waterways
+          },
+        });
+
+        // Add highway lines
+        this.$map.addLayer({
+          id: "osm-highway-lines",
+          type: "line",
+          source: "osm",
+          "source-layer": "road",
+          paint: {
+            "line-width": 2,
+            "line-color": "#a52a2a", // brown for highways
+          },
+        });
+
+        // Add boundary lines
+        this.$map.addLayer({
+          id: "osm-boundary-lines",
+          type: "line",
+          source: "osm",
+          "source-layer": "admin",
+          paint: {
+            "line-width": 2,
+            "line-color": "#ffa500", // orange for boundaries
+          },
+        });
+
+        // TODO: get glyphs working
+        // glyphs: "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf"
+
+        // this.$map.addLayer({
+        //   id: 'osm-point-labels',
+        //   type: 'symbol',
+        //   source: 'osm',
+        //   filter: ["==", "$type", "Point"],
+        //   layout: {
+        //     'text-field': '{name}',
+        //     'text-font': ['Noto Sans Medium'],
+        //     'text-size': ['interpolate', ['linear'], ['zoom'], 8, 12, 16, 24],
+        //     'text-offset': [0, 1.5],
+        //     'text-anchor': 'top'
+        //   },
+        //   paint: {
+        //     'text-color': '#000000',
+        //     'text-halo-color': '#ffffff',
+        //     'text-halo-width': 2
+        //   }
+        // });
+      }
+    },
+    removeOSMLayers() {
+      if (this.$map.getLayer("osm-waterway-lines")) {
+        this.$map.removeLayer("osm-waterway-lines");
+      }
+      if (this.$map.getLayer("osm-highway-lines")) {
+        this.$map.removeLayer("osm-highway-lines");
+      }
+      if (this.$map.getLayer("osm-boundary-lines")) {
+        this.$map.removeLayer("osm-boundary-lines");
+      }
+      if (this.$map.getSource("osm")) {
+        this.$map.removeSource("osm");
+      }
+    },
   },
   mounted() {
     mapboxgl.accessToken = this.mapboxAccessToken;
@@ -86,6 +178,8 @@ export default {
     });
 
     this.$map.on("load", () => {
+      this.mapLoaded = true;
+
       // Navigation Control (zoom buttons and compass)
       const nav = new mapboxgl.NavigationControl();
       this.$map.addControl(nav, "top-right");
@@ -174,6 +268,11 @@ export default {
         // Fallback to the first control group if there's only one
         // (add at the end of the group if so)
         controlGroups[0].appendChild(button);
+      }
+
+      // Add OSM layers if enabled
+      if (this.osmEnabled) {
+        this.addOSMLayers();
       }
     });
   },
