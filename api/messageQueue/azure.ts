@@ -2,6 +2,7 @@ import { QueueServiceClient } from "@azure/storage-queue";
 
 export async function publishToAzureStorageQueue(
   queueName: string,
+  requestId: number | void | null = null,
   message: {
     type: any;
     bounds: any;
@@ -14,7 +15,6 @@ export async function publishToAzureStorageQueue(
     planet_monthly_visual: any;
     style: any;
   },
-  requestId: number | void | null = null,
 ) {
   const accountName = process.env.AZURE_STORAGE_CONNECTION_ACCOUNT_NAME;
   const storageKey = process.env.AZURE_STORAGE_CONNECTION_STORAGE_KEY;

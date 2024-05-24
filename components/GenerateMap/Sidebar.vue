@@ -337,8 +337,19 @@ export default {
       }
 
       // If the selected style is custom-mapbox, include the custom Mapbox Style URL
+      if (this.selectedStyleKey === "mapbox-streets") {
+        formToSubmit.mapboxStyle = this.form.selectedStyle.replace(
+          "mapbox://styles/",
+          "",
+        );
+      }
+
+      // If the selected style is custom-mapbox, include the custom Mapbox Style URL
       if (this.selectedStyleKey === "mapbox-custom") {
-        formToSubmit.mapboxStyle = this.customMapboxStyleUrl;
+        formToSubmit.mapboxStyle = this.customMapboxStyleUrl.replace(
+          "mapbox://styles/",
+          "",
+        );
       }
 
       formToSubmit.type = "new_request";

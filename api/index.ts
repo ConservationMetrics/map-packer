@@ -148,23 +148,25 @@ app.post("/maprequest", async (req: Request, res: Response) => {
   let requestId: number | void | null = req.body.requestId;
   const data = { ...req.body };
 
-  if (data.style ="mapbox-custon") {
-    data.style ="mapbox"
+  if ((data.style = "mapbox-custom") || (data.style = "mapbox-streets")) {
+    data.style = "mapbox";
   }
-
   try {
     // If it's a new request, insert data into the database
     if (req.body.type === "new_request") {
       console.log("Inserting data into database...");
-      delete data.type;
-      requestId = await insertDataIntoTable(db, DB_TABLE, data);
+      const new_request = { ...data };
+      delete new_request.type;
+      requestId = await insertDataIntoTable(db, DB_TABLE, new_request);
     }
     // If it's a resubmit request, update the data in the database
     else if (req.body.type === "resubmit_request") {
       console.log("Updating data in database...");
-      delete data.type;
-      delete data.requestId;
-      await updateDatabaseMapRequest(db, DB_TABLE, requestId, data);
+      const resubmit_request = { ...data };
+      delete resubmit_request.type;
+      delete resubmit_request.requestId;
+      data.type = "new_request";
+      await updateDatabaseMapRequest(db, DB_TABLE, requestId, resubmit_request);
     }
     // If it's a delete request, update the data in the database with STATUS = "PENDING DELETION"
     // Delete requests are handled further by mapgl-tile-renderer
@@ -180,7 +182,7 @@ app.post("/maprequest", async (req: Request, res: Response) => {
     // Publish message to Azure Storage Queue
     if (ASQ_QUEUE_NAME) {
       console.log(`Publishing message to queue: ${ASQ_QUEUE_NAME}`);
-      await publishToAzureStorageQueue(ASQ_QUEUE_NAME, req.body, requestId);
+      await publishToAzureStorageQueue(ASQ_QUEUE_NAME, requestId, data);
     } else {
       console.error("ASQ_QUEUE_NAME is not set.");
       await updateDatabaseWithError(
