@@ -108,6 +108,36 @@ export const insertDataIntoTable = async (
   });
 };
 
+export const handleDeleteRequest = async (
+  db: any,
+  table: string | undefined,
+  requestId: number | void | null
+): Promise<boolean> => {
+  if (requestId === null || requestId === undefined || !Number.isInteger(requestId)) {
+    throw new Error("Invalid ID provided for delete request.");
+  }
+
+  const query = `SELECT file_location, filename FROM ${table} WHERE id = $1`;
+  const result = await db.query(query, [requestId]);
+  const { file_location, filename } = result.rows[0];
+
+  if (!file_location || !filename) {
+    console.log("File location or filename is NULL. Deleting row...");
+    const deleteQuery = `DELETE FROM ${table} WHERE id = $1`;
+    await db.query(deleteQuery, [requestId]);
+    return false; 
+  } else {
+    if (!table) {
+      throw new Error("Table name must be provided.");
+    }
+    console.log("Updating data in database...");
+    await updateDatabaseMapRequest(db, table, requestId, {
+      status: "PENDING DELETION",
+    });
+    return true;
+  }
+};
+
 export async function updateDatabaseMapRequest(
   db: any,
   tableName: string,

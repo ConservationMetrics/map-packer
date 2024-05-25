@@ -20,6 +20,7 @@
         class="card relative bg-white border border-gray-300 rounded-lg shadow-lg p-6 flex flex-col"
       >
         <button
+          v-if="map.status !== 'PENDING'"
           class="delete absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold py-1 px-1 cursor-pointer"
           @click="deleteMap(map.id)"
         >

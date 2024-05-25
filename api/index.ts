@@ -3,6 +3,7 @@ import express, { Request, Response } from "express";
 import setupDatabaseConnection from "./database/dbConnection";
 import {
   fetchData,
+  handleDeleteRequest,
   insertDataIntoTable,
   updateDatabaseMapRequest,
   updateDatabaseWithError,
@@ -172,13 +173,15 @@ app.post("/maprequest", async (req: Request, res: Response) => {
       data.type = "new_request";
       await updateDatabaseMapRequest(db, DB_TABLE, requestId, resubmit_request);
     }
-    // If it's a delete request, update the data in the database with STATUS = "PENDING DELETION"
-    // Delete requests are handled further by mapgl-tile-renderer
+    // If it's a delete request, delete the row if no files are found,
+    // Else set status to PENDING_DELETION and publish message for mapgl-tile-renderer
+    // to handle deletion
     else if (req.body.type === "delete_request") {
-      console.log("Updating data in database...");
-      await updateDatabaseMapRequest(db, DB_TABLE, requestId, {
-        status: "PENDING DELETION",
-      });
+      const shouldPublish = await handleDeleteRequest(db, DB_TABLE, requestId);
+      if (!shouldPublish) {
+        res.status(200).json({ message: "Row deleted without publishing to queue." });
+        return;
+      }
     } else {
       throw new Error("Invalid request type");
     }
