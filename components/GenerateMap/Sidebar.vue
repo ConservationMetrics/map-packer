@@ -318,7 +318,9 @@ export default {
       return totalTiles;
     },
     renderCustomStyle() {
-      if (/^mapbox:\/\/styles\/[^\/]+\/[^\/]+$/.test(this.customMapboxStyleUrl)) {
+      if (
+        /^mapbox:\/\/styles\/[^\/]+\/[^\/]+$/.test(this.customMapboxStyleUrl)
+      ) {
         this.form.selectedStyle = this.customMapboxStyleUrl;
         this.selectedStyleKey = "mapbox-custom";
         this.$emit("updateMapParams", {
@@ -409,7 +411,9 @@ export default {
       );
     },
     isValidMapboxStyleAndToken() {
-      const isValidStyle = /^mapbox:\/\/styles\/[^\/]+\/[^\/]+$/.test(this.customMapboxStyleUrl);
+      const isValidStyle = /^mapbox:\/\/styles\/[^\/]+\/[^\/]+$/.test(
+        this.customMapboxStyleUrl,
+      );
       const isValidToken = /^pk\.ey/.test(this.localMapboxAccessToken);
       return isValidStyle && isValidToken;
     },

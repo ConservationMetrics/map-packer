@@ -150,7 +150,7 @@ app.post("/maprequest", async (req: Request, res: Response) => {
   let requestId: number | void | null = req.body.requestId;
   const data = { ...req.body };
 
-  if ((data.style === "mapbox-custom") || (data.style === "mapbox-streets")) {
+  if (data.style === "mapbox-custom" || data.style === "mapbox-streets") {
     data.style = "mapbox";
   }
 
@@ -179,7 +179,9 @@ app.post("/maprequest", async (req: Request, res: Response) => {
     else if (req.body.type === "delete_request") {
       const shouldPublish = await handleDeleteRequest(db, DB_TABLE, requestId);
       if (!shouldPublish) {
-        res.status(200).json({ message: "Row deleted without publishing to queue." });
+        res
+          .status(200)
+          .json({ message: "Row deleted without publishing to queue." });
         return;
       }
     } else {

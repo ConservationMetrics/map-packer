@@ -111,9 +111,13 @@ export const insertDataIntoTable = async (
 export const handleDeleteRequest = async (
   db: any,
   table: string | undefined,
-  requestId: number | void | null
+  requestId: number | void | null,
 ): Promise<boolean> => {
-  if (requestId === null || requestId === undefined || !Number.isInteger(requestId)) {
+  if (
+    requestId === null ||
+    requestId === undefined ||
+    !Number.isInteger(requestId)
+  ) {
     throw new Error("Invalid ID provided for delete request.");
   }
 
@@ -125,7 +129,7 @@ export const handleDeleteRequest = async (
     console.log("File location or filename is NULL. Deleting row...");
     const deleteQuery = `DELETE FROM ${table} WHERE id = $1`;
     await db.query(deleteQuery, [requestId]);
-    return false; 
+    return false;
   } else {
     if (!table) {
       throw new Error("Table name must be provided.");
