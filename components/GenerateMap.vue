@@ -16,7 +16,7 @@
     />
     <MapCanvas
       @updateMapParams="updateMapParams"
-      :mapboxAccessToken="mapboxAccessToken"
+      :mapboxAccessToken="localMapboxAccessToken"
       :mapLatitude="selectedLatitude"
       :mapLongitude="selectedLongitude"
       :mapStyle="selectedStyle"
@@ -48,6 +48,7 @@ export default {
   ],
   data() {
     return {
+      localMapboxAccessToken: this.mapboxAccessToken,
       osmEnabled: false,
       selectedBounds: "",
       selectedLatitude: this.mapLatitude,
@@ -74,6 +75,8 @@ export default {
 
       if (param === "OsmEnabled") {
         this.osmEnabled = value;
+      } else if (param === "AccessToken") {
+        this.localMapboxAccessToken = value;
       } else {
         this[`selected${param}`] = value;
         if (param === "Style") {

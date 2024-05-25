@@ -31,6 +31,7 @@ import {
   MAP_LATITUDE,
   MAP_LONGITUDE,
   OFFLINE_MAPS_URI,
+  PLANET_API_KEY,
 } from "./config";
 
 const app = express();
@@ -148,15 +149,17 @@ app.post("/maprequest", async (req: Request, res: Response) => {
   let requestId: number | void | null = req.body.requestId;
   const data = { ...req.body };
 
-  if ((data.style = "mapbox-custom") || (data.style = "mapbox-streets")) {
+  if ((data.style === "mapbox-custom") || (data.style === "mapbox-streets")) {
     data.style = "mapbox";
   }
+
   try {
     // If it's a new request, insert data into the database
     if (req.body.type === "new_request") {
       console.log("Inserting data into database...");
       const new_request = { ...data };
       delete new_request.type;
+      delete new_request.apiKey;
       requestId = await insertDataIntoTable(db, DB_TABLE, new_request);
     }
     // If it's a resubmit request, update the data in the database
@@ -164,6 +167,7 @@ app.post("/maprequest", async (req: Request, res: Response) => {
       console.log("Updating data in database...");
       const resubmit_request = { ...data };
       delete resubmit_request.type;
+      delete resubmit_request.apiKey;
       delete resubmit_request.requestId;
       data.type = "new_request";
       await updateDatabaseMapRequest(db, DB_TABLE, requestId, resubmit_request);
@@ -177,6 +181,13 @@ app.post("/maprequest", async (req: Request, res: Response) => {
       });
     } else {
       throw new Error("Invalid request type");
+    }
+
+    // Set the apiKey based on the style
+    if (data.style && data.style.includes("mapbox")) {
+      data.apiKey = data.apiKey || MAPBOX_ACCESS_TOKEN;
+    } else if (data.style && data.style === "planet") {
+      data.apiKey = data.apiKey || PLANET_API_KEY;
     }
 
     // Publish message to Azure Storage Queue

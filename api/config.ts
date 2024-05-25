@@ -19,6 +19,7 @@ interface EnvVars {
   PORT: string;
   SECRET_JWT_KEY: string;
   VUE_APP_API_KEY: string;
+  VUE_APP_PLANET_API_KEY: string;
 }
 
 const env = process.env as unknown as EnvVars;
@@ -57,6 +58,7 @@ const MAP_LATITUDE = getEnvVar("MAP_LATITUDE") as string;
 const MAP_LONGITUDE = getEnvVar("MAP_LONGITUDE") as string;
 const OFFLINE_MAPS_URI = getEnvVar("OFFLINE_MAPS_URI");
 const PASSWORD = getEnvVar("PASSWORD");
+const PLANET_API_KEY = getEnvVar("VUE_APP_PLANET_API_KEY") as string;
 const SECRET_JWT_KEY = getEnvVar("SECRET_JWT_KEY", "secret-jwt-key") as string;
 
 export {
@@ -78,5 +80,6 @@ export {
   MAP_LONGITUDE,
   OFFLINE_MAPS_URI,
   PASSWORD,
+  PLANET_API_KEY,
   SECRET_JWT_KEY,
 };

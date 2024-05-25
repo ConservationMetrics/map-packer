@@ -53,11 +53,19 @@
           placeholder="mapbox://styles/user/styleId"
           class="input-field"
         />
+        <label for="customMapboxStyle">Your Mapbox Access Token</label>
+        <input
+          type="text"
+          id="mapboxAccessToken"
+          v-model="localMapboxAccessToken"
+          placeholder="pk.ey…"
+          class="input-field"
+        />
         <button
           type="button"
           class="render-button"
           @click="renderCustomStyle"
-          :disabled="!isValidCustomMapboxStyleUrl"
+          :disabled="!isValidMapboxStyleAndToken"
         >
           Render
         </button>
@@ -195,6 +203,7 @@ export default {
   data() {
     return {
       customMapboxStyleUrl: "",
+      localMapboxAccessToken: this.mapboxAccessToken,
       mapStyles: [],
       form: {
         title: "",
@@ -309,15 +318,19 @@ export default {
       return totalTiles;
     },
     renderCustomStyle() {
-      if (
-        /^mapbox:\/\/styles\/[^\/]+\/[^\/]+$/.test(this.customMapboxStyleUrl)
-      ) {
+      if (/^mapbox:\/\/styles\/[^\/]+\/[^\/]+$/.test(this.customMapboxStyleUrl)) {
         this.form.selectedStyle = this.customMapboxStyleUrl;
         this.selectedStyleKey = "mapbox-custom";
         this.$emit("updateMapParams", {
           param: "Style",
           value: this.customMapboxStyleUrl,
         });
+        this.$emit("updateMapParams", {
+          param: "AccessToken",
+          value: this.localMapboxAccessToken,
+        });
+      } else {
+        console.error("Invalid Mapbox Style URL");
       }
     },
     submitForm() {
@@ -350,6 +363,7 @@ export default {
           "mapbox://styles/",
           "",
         );
+        formToSubmit.mapboxAccessToken = this.localMapboxAccessToken;
       }
 
       formToSubmit.type = "new_request";
@@ -394,10 +408,10 @@ export default {
         this.form.selectedBounds,
       );
     },
-    isValidCustomMapboxStyleUrl() {
-      return /^mapbox:\/\/styles\/[^\/]+\/[^\/]+$/.test(
-        this.customMapboxStyleUrl,
-      );
+    isValidMapboxStyleAndToken() {
+      const isValidStyle = /^mapbox:\/\/styles\/[^\/]+\/[^\/]+$/.test(this.customMapboxStyleUrl);
+      const isValidToken = /^pk\.ey/.test(this.localMapboxAccessToken);
+      return isValidStyle && isValidToken;
     },
   },
   mounted() {

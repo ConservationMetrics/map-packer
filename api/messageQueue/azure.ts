@@ -14,6 +14,7 @@ export async function publishToAzureStorageQueue(
     openstreetmap: any;
     planet_monthly_visual: any;
     style: any;
+    apiKey: any;
   },
 ) {
   const accountName = process.env.AZURE_STORAGE_CONNECTION_ACCOUNT_NAME;
@@ -48,16 +49,8 @@ export async function publishToAzureStorageQueue(
       : process.env.OFFLINE_MAPS_PATH && {
           outputDir: process.env.OFFLINE_MAPS_PATH,
         }),
+    ...(message.apiKey && { apiKey: message.apiKey }),
   };
-
-  if (transformedMessage.style && transformedMessage.style.includes("mapbox")) {
-    transformedMessage.apiKey = process.env.MAPBOX_ACCESS_TOKEN;
-  } else if (
-    transformedMessage.style &&
-    transformedMessage.style === "planet"
-  ) {
-    transformedMessage.apiKey = process.env.VUE_APP_PLANET_API_KEY;
-  }
 
   const messageString = JSON.stringify(transformedMessage);
 

@@ -50,6 +50,11 @@ export default {
         created_at: new Date(),
       };
 
+      // Include mapboxAccessToken if it exists
+      if (formData.mapboxAccessToken) {
+        transformedMessage.apiKey = formData.mapboxAccessToken;
+      }
+
       try {
         await this.$axios.$post("/api/maprequest", transformedMessage, {
           headers: this.headers,

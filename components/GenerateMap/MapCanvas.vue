@@ -42,13 +42,11 @@ export default {
       }
     },
     mapStyle(newVal) {
-      if (this.$map) {
-        this.$map.setStyle(newVal);
-      }
+      this.setMapStyle(newVal);
     },
     mapZoom(newVal) {
       if (this.$map) {
-        this.$map.setZoom(newVal);
+        this.$map.setStyle(newVal);
       }
     },
     osmEnabled(newVal) {
@@ -161,6 +159,12 @@ export default {
       }
       if (this.$map.getSource("osm")) {
         this.$map.removeSource("osm");
+      }
+    },
+    setMapStyle(newVal) {
+      if (this.$map) {
+        mapboxgl.accessToken = this.mapboxAccessToken;
+        this.$map.setStyle(newVal);
       }
     },
   },
