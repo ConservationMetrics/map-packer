@@ -20,7 +20,7 @@
         class="card relative bg-white border border-gray-300 rounded-lg shadow-lg p-6 flex flex-col"
       >
         <button
-          v-if="map.status !== 'PENDING'"
+          v-if="map.status !== 'PENDING' && map.status !== 'PROCESSING' && map.status !== 'PENDING DELETION'"
           class="delete absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold py-1 px-1 cursor-pointer"
           @click="deleteMap(map.id)"
         >
@@ -105,7 +105,7 @@
         <div v-if="showQRCodeId === map.id" class="flex mb-2">
           <QRCode :value="`${offlineMapsUri}/${map.filename}`" size="300" />
         </div>
-        <div class="space-y-2 flex-grow" v-if="map.status !== 'PENDING'">
+        <div class="space-y-2 flex-grow" v-if="map.status !== 'PENDING' && map.status !== 'PROCESSING'">
           <h3 class="italic text-lg text-gray-600">Metadata</h3>
           <p v-if="map.work_begun && map.work_ended">
             <span class="font-bold">Task Duration:</span>
@@ -231,6 +231,8 @@ export default {
         case "PENDING DELETION":
           return "font-semibold text-red-500";
         case "PENDING":
+          return "font-semibold text-yellow-500";
+        case "PROCESSING":
           return "font-semibold text-yellow-500";
         case "SUCCEEDED":
           return "font-semibold text-green-500";
