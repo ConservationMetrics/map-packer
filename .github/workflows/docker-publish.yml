@@ -1,0 +1,82 @@
+name: Publish to DockerHub
+
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+    branches:
+      - 'main'
+  release:
+    types: [created]
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: communityfirst/map-packer
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+      - name: Docker Hub Description
+        if: github.event_name == 'release'
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: communityfirst/map-packer
+          short-description: 'A Nuxt app to allow users to generate and manage offline map requests to mapgl-tile-renderer.          '
+    #   - name: Test run of Docker image
+    #     run: |
+    #       docker run --rm \
+    #         -e DATABASE="your_db_location" \
+    #         -e DB_HOST="localhost" \
+    #         -e DB_USER="your_db_user" \
+    #         -e DB_PASSWORD="your_db_password" \
+    #         -e DB_PORT="5432" \
+    #         -e DB_SSL="true" \
+    #         -e DB_TABLE="offline_maps" \
+    #         -e PORT="8080" \
+    #         -e NUXT_ENV_AUTH_STRATEGY="auth0" \
+    #         -e PASSWORD="guardian-connector" \
+    #         -e SECRET_JWT_KEY="secret-jwt-key" \
+    #         -e NUXT_ENV_AUTH0_DOMAIN="domain.us.auth0.com" \
+    #         -e NUXT_ENV_AUTH0_CLIENT_ID="" \
+    #         -e NUXT_ENV_AUTH0_CLIENT_SECRET="" \
+    #         -e NUXT_ENV_AUTH0_AUDIENCE="https://audience.auth0.com/api/v2/" \
+    #         -e NUXT_ENV_AUTH0_BASE_URL='http://localhost:8080' \
+    #         -e VUE_APP_API_KEY="" \
+    #         -e MAP_ZOOM=9 \
+    #         -e MAP_LATITUDE=40.7128 \
+    #         -e MAP_LONGITUDE=-74.0060 \
+    #         -e MAPBOX_STYLE="mapbox://styles/mapbox/streets-v12" \
+    #         -e MAPBOX_STYLE_NAME="Satellite Streets" \
+    #         -e MAPBOX_ACCESS_TOKEN="your_mapbox_token" \
+    #         -e VUE_APP_PLANET_API_KEY="your_planet_api_key" \
+    #         -e ASQ_QUEUE_NAME="mappacker-requests" \
+    #         -e AZURE_STORAGE_CONNECTION_ACCOUNT_NAME="" \
+    #         -e AZURE_STORAGE_CONNECTION_STORAGE_KEY="" \
+    #         -e OFFLINE_MAPS_URI="https://your-offline-maps-uri.com/api/public/dl/your-offline-maps-folder" \
+    #         -e OFFLINE_MAPS_PATH="/offline-maps" \
+    #         ${{ steps.meta.outputs.tags }}
