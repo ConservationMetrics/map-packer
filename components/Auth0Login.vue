@@ -1,10 +1,14 @@
 <template>
   <div class="flex flex-col items-center justify-center h-screen">
+    <p class="auth-message italic" lang="en">Please sign up or log in to access this application.</p>
+    <p class="auth-message italic" lang="es">spanish</p>
+    <p class="auth-message italic" lang="pt">Por favor, inescreva-se ou fa</p>
+    <p class="auth-message italic" lang="nl">Meld u alstublieft aan of log in om toegang te krijgen tot deze applicatie.</p>
     <button
-      class="px-4 py-2 mb-4 bg-blue-500 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50"
+      class="px-4 py-2 mt-4 mb-4 bg-blue-500 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50"
       @click="login"
     >
-      Login with auth0
+      Sign up or log in
     </button>
     <p v-if="errorMessage" class="text-red-500 text-xs italic">
       {{ errorMessage }}
@@ -13,6 +17,8 @@
 </template>
 
 <script>
+import style from "@/components/auth.css";
+
 export default {
   data() {
     return {

@@ -14,7 +14,7 @@ const config: NuxtConfig = {
   head: {
     title: "MapPacker",
     htmlAttrs: {
-      lang: "en",
+      lang: 'en' // TODO: set browserLanguage, maybe use a Nuxt plugin
     },
     meta: [
       { charset: "utf-8" },
