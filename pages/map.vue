@@ -32,11 +32,19 @@ export default {
   },
   methods: {
     async handleMapRequest(formData) {
+      // Function to remove accents and replace non-alphanumeric characters with underscores
+      const normalizeFilename = (str) => {
+        return str
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/\W+/g, "_");
+      };
+
       // Transform formData to match the expected database table schema
       const transformedMessage = {
         type: "new_request",
         title: formData.title,
-        filename: formData.title.replace(/\W+/g, "_"),
+        filename: normalizeFilename(formData.title),
         status: "PENDING",
         description: formData.description,
         min_zoom: 0,
