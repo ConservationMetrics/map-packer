@@ -100,10 +100,10 @@ const config: NuxtConfig = {
 
   i18n: {
     locales: [
-      { code: "en", iso: "en-US", file: "en.json" },
-      { code: "es", iso: "es-ES", file: "es.json" },
-      { code: "pt", iso: "pt-PT", file: "pt.json" },
-      { code: "nl", iso: "nl-NL", file: "nl.json" },
+      { code: "en", name: "English", iso: "en-US", file: "en.json" },
+      { code: "es", name: "Español", iso: "es-ES", file: "es.json" },
+      { code: "pt", name: "Português", iso: "pt-PT", file: "pt.json" },
+      { code: "nl", name: "Nederlands", iso: "nl-NL", file: "nl.json" },
     ],
     defaultLocale: "en",
     detectBrowserLanguage: {

@@ -1,10 +1,36 @@
 <template>
   <div class="mt-4 mx-auto w-full max-w-6xl px-4">
+    <div class="flex justify-end space-x-4 mb-4">
+    <div class="relative inline-block text-left">
+      <div>
+        <button @click="toggleDropdown" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
+          {{ currentLocaleName }}
+          <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        </button>
+      </div>
+      <div v-if="dropdownOpen" class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+        <div class="py-1">
+          <a
+            href="#"
+            v-for="locale in availableLocales"
+            :key="locale.code"
+            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            @click.prevent.stop="changeLocale(locale.code)"
+          >
+            {{ locale.name }}
+          </a>
+        </div>
+      </div>
+    </div>
     <nuxt-link
       :to="localePath('map')"
-      class="absolute top-4 right-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer transition-colors duration-200 hidden md:block"
-      >+ {{ $t("generateMap") }}</nuxt-link
+      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer transition-colors duration-200 hidden md:block"
     >
+      + {{ $t("generateMap") }}
+    </nuxt-link>
+  </div>
     <h1 class="text-4xl font-bold text-gray-800 mb-8 text-center">
       {{ $t("availableOfflineMaps") }}
     </h1>
@@ -172,6 +198,7 @@ export default {
   props: ["mapboxAccessToken", "offlineMaps", "offlineMapsUri"],
   data() {
     return {
+      dropdownOpen: false,
       refreshKey: 0,
       tooltipId: null,
       showQRCodeId: null,
@@ -188,6 +215,10 @@ export default {
       const minutes = Math.floor((duration / (1000 * 60)) % 60);
       const seconds = Math.floor((duration / 1000) % 60);
       return `${hours}h ${minutes}m ${seconds}s`;
+    },
+    changeLocale(localeCode) {
+      this.$i18n.setLocale(localeCode);
+      this.dropdownOpen = false;
     },
     copyLinkToClipboard(link, id) {
       copyLink(link)
@@ -290,11 +321,21 @@ export default {
         }, 3000);
       }
     },
+    toggleDropdown() {
+      this.dropdownOpen = !this.dropdownOpen;
+    },
     toggleQRCode(id) {
       this.showQRCodeId = this.showQRCodeId === id ? null : id;
     },
   },
   computed: {
+    currentLocaleName() {
+      const currentLocale = this.availableLocales.find(locale => locale.code === this.$i18n.locale);
+      return currentLocale ? currentLocale.name : '';
+    },
+    availableLocales() {
+      return this.$i18n.locales;
+    },
     style() {
       return { ...overlayModal };
     },
