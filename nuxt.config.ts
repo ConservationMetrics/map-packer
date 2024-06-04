@@ -13,9 +13,6 @@ const config: NuxtConfig = {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: "MapPacker",
-    htmlAttrs: {
-      lang: 'en' // TODO: set browserLanguage, maybe use a Nuxt plugin
-    },
     meta: [
       { charset: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
@@ -44,7 +41,7 @@ const config: NuxtConfig = {
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
-  modules: ["@nuxtjs/axios"],
+  modules: ["@nuxtjs/axios", "@nuxtjs/i18n"],
 
   serverMiddleware: [{ path: "/api", handler: "~/api/index.ts" }],
 
@@ -99,6 +96,29 @@ const config: NuxtConfig = {
     },
     apiKey: process.env.VUE_APP_API_KEY,
     authStrategy,
+  },
+
+  i18n: {
+    locales: [
+      { code: "en", iso: "en-US", file: "en.json" },
+      { code: "es", iso: "es-ES", file: "es.json" },
+      { code: "pt", iso: "pt-PT", file: "pt.json" },
+      { code: "nl", iso: "nl-NL", file: "nl.json" },
+    ],
+    defaultLocale: "en",
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: "i18n_redirected",
+      alwaysRedirect: true,
+      fallbackLocale: "en",
+      redirectOn: "all",
+    },
+    lazy: true,
+    langDir: "lang/",
+    strategy: "no_prefix",
+    vueI18n: {
+      fallbackLocale: "en",
+    },
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build

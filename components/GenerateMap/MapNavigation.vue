@@ -1,8 +1,13 @@
 <template>
   <div class="map-navigation">
-    <h2 class="text-xl font-bold text-gray-800 mb-2">Map controls</h2>
+    <h2 class="text-xl font-bold text-gray-800 mb-2">
+      {{ $t("mapControls") }}
+    </h2>
     <div class="form-group">
-      <label>Zoom level (0 - 16) <span class="text-red-600">*</span></label>
+      <label
+        >{{ $t("zoomLevel") }} (0 - 16)
+        <span class="text-red-600">*</span></label
+      >
       <vue-slider
         v-model="form.selectedZoom"
         :min="0"
@@ -16,7 +21,7 @@
 
     <div class="form-group flex">
       <div class="flex-grow mr-2">
-        <label for="centerLat">Center lat</label>
+        <label for="centerLat">{{ $t("centerLat") }}</label>
         <input
           type="number"
           step="0.000001"
@@ -29,7 +34,7 @@
         />
       </div>
       <div class="flex-grow">
-        <label for="centerLng">Center long</label>
+        <label for="centerLng">{{ $t("centerLong") }}</label>
         <input
           type="number"
           step="0.000001"

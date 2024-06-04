@@ -25,7 +25,7 @@
     />
     <div v-if="showModal" class="overlay"></div>
     <div v-if="showModal" class="modal">
-      Offline map request successfully submitted!
+      {{ $t("offlineMapRequestSubmitted") }}!
     </div>
   </div>
 </template>
@@ -63,7 +63,7 @@ export default {
       this.$emit("handleMapRequest", formData);
       this.showModal = true;
       setTimeout(() => {
-        this.$router.push("/");
+        this.$router.push(this.localePath("/"));
       }, 3000);
     },
     updateMapParams(updateObj) {

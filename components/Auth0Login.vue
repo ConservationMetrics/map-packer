@@ -1,14 +1,11 @@
 <template>
   <div class="flex flex-col items-center justify-center h-screen">
-    <p class="auth-message italic" lang="en">Please sign up or log in to access this application.</p>
-    <p class="auth-message italic" lang="es">spanish</p>
-    <p class="auth-message italic" lang="pt">Por favor, inescreva-se ou fa</p>
-    <p class="auth-message italic" lang="nl">Meld u alstublieft aan of log in om toegang te krijgen tot deze applicatie.</p>
+    <p class="italic">{{ $t("authMessage") }}.</p>
     <button
       class="px-4 py-2 mt-4 mb-4 bg-blue-500 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50"
       @click="login"
     >
-      Sign up or log in
+      {{ $t("loginButton") }}
     </button>
     <p v-if="errorMessage" class="text-red-500 text-xs italic">
       {{ errorMessage }}
@@ -17,17 +14,18 @@
 </template>
 
 <script>
-import style from "@/components/auth.css";
-
 export default {
   data() {
     return {
       errorMessage: "",
-      redirectPath: "/",
+      redirectPath: this.localePath("/"),
     };
   },
   created() {
-    this.redirectPath = this.$route.query.redirect || "/";
+    const redirect = this.$route.query.redirect;
+    this.redirectPath = redirect
+      ? decodeURIComponent(redirect)
+      : this.localePath("/");
   },
   mounted() {
     const hashParams = new URLSearchParams(window.location.hash.substring(1));
@@ -37,14 +35,18 @@ export default {
     if (error === "access_denied") {
       this.errorMessage = decodeURIComponent(errorDescription);
     }
+    if (this.$auth.loggedIn) {
+      this.$router.replace(this.redirectPath);
+    }
   },
   methods: {
     async login() {
       try {
-        await this.$auth.loginWith("auth0");
-        this.$router.replace(this.redirectPath);
+        await this.$auth.loginWith("auth0", {
+          redirectUri: window.location.origin + this.redirectPath,
+        });
       } catch (error) {
-        console.error("Error logging in with Auth0:", error);
+        console.error(this.$t("auth0LoginError") + ":", error);
       }
     },
   },

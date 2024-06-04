@@ -1,16 +1,16 @@
 <template>
   <div class="sidebar">
     <h1 class="text-xl font-bold text-gray-800 mb-2">
-      MapPacker: Generate Offline Map
+      MapPacker: {{ $t("generateOfflineMap") }}
     </h1>
     <p class="mb-2">
-      <em
-        >Use this interface to submit a request to generate an offline map.</em
-      >
+      <em>{{ $t("useInterface") }}</em>
     </p>
     <form @submit.prevent="submitForm">
       <div class="form-group">
-        <label for="title">Title <span class="text-red-600">*</span></label>
+        <label for="title"
+          >{{ $t("title") }} <span class="text-red-600">*</span></label
+        >
         <input
           type="text"
           id="title"
@@ -21,7 +21,7 @@
       </div>
 
       <div class="form-group">
-        <label for="description">Description</label>
+        <label for="description">{{ $t("description") }}</label>
         <textarea
           id="description"
           v-model="form.description"
@@ -31,7 +31,7 @@
 
       <div class="form-group">
         <label for="mapStyle"
-          >Map Style <span class="text-red-600">*</span></label
+          >{{ $t("mapStyle") }} <span class="text-red-600">*</span></label
         >
         <select id="mapStyle" v-model="selectedStyleKey" class="input-field">
           <option
@@ -45,7 +45,7 @@
       </div>
 
       <div v-if="selectedStyleKey === 'mapbox-custom'" class="form-group">
-        <label for="customMapboxStyle">Your Mapbox Style URL</label>
+        <label for="customMapboxStyle">{{ $t("yourMapboxStyleURL") }}</label>
         <input
           type="text"
           id="customMapboxStyle"
@@ -53,7 +53,7 @@
           placeholder="mapbox://styles/user/styleId"
           class="input-field"
         />
-        <label for="customMapboxStyle">Your Mapbox Access Token</label>
+        <label for="customMapboxStyle">{{ $t("yourMapboxAccessToken") }}</label>
         <input
           type="text"
           id="mapboxAccessToken"
@@ -67,15 +67,13 @@
           @click="renderCustomStyle"
           :disabled="!isValidMapboxStyleAndToken"
         >
-          Render
+          {{ $t("render") }}
         </button>
       </div>
 
       <div v-if="form.selectedStyle.includes('/api/mapstyle/planet/')">
         <div class="form-group">
-          <label for="planetMonthYear"
-            >Planet Visual Basemap: Month & Year</label
-          >
+          <label for="planetMonthYear">{{ $t("planetBasemap") }}</label>
           <input
             type="month"
             id="planetMonthYear"
@@ -101,14 +99,12 @@
           class="input-field osm-checkbox"
           @change="toggleOSM"
         />
-        <label for="osmLabels" class="ml-2"
-          >Include OSM Data (labels not shown)</label
-        >
+        <label for="osmLabels" class="ml-2">{{ $t("includeOSMData") }}</label>
       </div>
 
       <div class="form-group">
         <label
-          >Maximum Zoom Level (0 - 16)
+          >{{ $t("maximumZoomLevel") }} (0 - 16)
           <span class="text-red-600">*</span></label
         >
         <vue-slider
@@ -124,18 +120,18 @@
 
       <div class="form-group">
         <label for="bbox"
-          >Offline Map Bounding Box <span class="text-red-600">*</span></label
+          >{{ $t("offlineMapBoundingBox") }}
+          <span class="text-red-600">*</span></label
         >
         <p class="text-gray-400 mb-1">
           <em
-            >Click or press the
+            >{{ $t("clickOrPressThe") }}
             <img
               src="/polygon.svg"
               alt="Polygon Icon"
               style="display: inline-block; vertical-align: middle"
             />
-            button on the top right of the screen, and draw an area on the
-            map.</em
+            {{ $t("buttonThenDraw") }}.</em
           >
         </p>
         <textarea
@@ -151,17 +147,15 @@
       <!-- Show estimated number of tiles -->
       <div v-if="form.maxZoom && form.selectedBounds">
         <p class="italic">
-          Estimated number of tiles:
+          {{ $t("estimatedNumberOfTiles") }}:
           {{ estimatedTiles.toLocaleString() }}
         </p>
         <p
           v-if="estimatedTiles > 100000 && estimatedTiles < 275000"
           class="text-red-600 mt-2"
         >
-          <span class="font-bold">Warning:</span> You are requesting over
-          100,000 tiles. Note that this will generate a very large offline map
-          file. Please also make sure you will not exceed your tile quota for
-          the map style API, or run into unexpected costs.
+          <span class="font-bold">{{ $t("Warning") }}:</span>
+          {{ $t("over100000Tiles") }}
         </p>
       </div>
 
@@ -171,9 +165,8 @@
         minimum filesize estimate of 18,137 bytes per tile (512px).
         500 megabytes = 500,000,000 / 18,137 = 275,679, rounded down to 275,000 -->
       <div v-if="estimatedTiles > 275000" class="text-red-600 mt-2">
-        <span class="font-bold">Warning:</span> You are requesting over 275,000
-        tiles. This exceeds the permitted number of tiles. Please reduce the
-        bounding box or zoom level.
+        <span class="font-bold">{{ $t("Warning") }}:</span>
+        {{ $t("over275000Tiles") }}
       </div>
 
       <button
@@ -182,7 +175,7 @@
         class="submit-button"
         :class="{ 'submit-button-disabled': estimatedTiles > 275000 }"
       >
-        Submit Request
+        {{ $t("submitRequest") }}
       </button>
     </form>
   </div>
