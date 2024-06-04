@@ -62,7 +62,7 @@ export default {
   methods: {
     getWSENstring(bounds) {
       if (bounds.length === 0) {
-        return "No coordinates provided";
+        return this.$t("noCoordinatesProvided");
       }
 
       let minLat = bounds[0].lat;

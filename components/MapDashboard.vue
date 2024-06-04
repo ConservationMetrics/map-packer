@@ -1,17 +1,43 @@
 <template>
   <div class="mt-4 mx-auto w-full max-w-6xl px-4">
+    <div class="flex justify-end space-x-4 mb-4">
+    <div class="relative inline-block text-left">
+      <div>
+        <button @click="toggleDropdown" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
+          {{ currentLocaleName }}
+          <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        </button>
+      </div>
+      <div v-if="dropdownOpen" class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+        <div class="py-1">
+          <a
+            href="#"
+            v-for="locale in availableLocales"
+            :key="locale.code"
+            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            @click.prevent.stop="changeLocale(locale.code)"
+          >
+            {{ locale.name }}
+          </a>
+        </div>
+      </div>
+    </div>
     <nuxt-link
-      to="/map/"
-      class="absolute top-4 right-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer transition-colors duration-200 hidden md:block"
-      >+ Generate Map</nuxt-link
+      :to="localePath('map')"
+      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer transition-colors duration-200 hidden md:block"
     >
+      + {{ $t("generateMap") }}
+    </nuxt-link>
+  </div>
     <h1 class="text-4xl font-bold text-gray-800 mb-8 text-center">
-      Available Offline Maps
+      {{ $t("availableOfflineMaps") }}
     </h1>
     <nuxt-link
       to="/map/"
       class="block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer transition-colors duration-200 text-center mb-8 md:hidden"
-      >+ Generate Map</nuxt-link
+      >+ {{ $t("generateMap") }}</nuxt-link
     >
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div
@@ -42,31 +68,46 @@
         <p class="mb-2 italic" v-if="map.description">{{ map.description }}</p>
         <div class="space-y-2 mb-2">
           <p v-if="map.status">
-            <span class="font-bold">Status:</span>
-            <span :class="formatStatusColor(map.status)">{{ map.status }}</span>
+            <span class="font-bold">{{ $t("status") }}:</span>
+            <span :class="formatStatusColor(map.status)">
+              {{
+                map.status === "FAILED"
+                  ? $t("failed").toUpperCase()
+                  : map.status === "SUCCEEDED"
+                    ? $t("succeeded").toUpperCase()
+                    : map.status === "PROCESSING"
+                      ? $t("processing").toUpperCase()
+                      : map.status === "PENDING"
+                        ? $t("pending").toUpperCase()
+                        : map.status === "PENDING DELETION"
+                          ? $t("pendingDeletion").toUpperCase()
+                          : map.status
+              }}
+            </span>
           </p>
           <p class="text-red-600 break-words" v-if="map.error_message">
-            <span class="font-bold">Error message:</span>
+            <span class="font-bold">{{ $t("errorMessage") }}:</span>
             {{ map.error_message }}
           </p>
           <p v-if="map.created_at">
-            <span class="font-bold">Requested on:</span>
+            <span class="font-bold">{{ $t("requestedOn") }}:</span>
             {{ formatDate(map.created_at) }}
           </p>
           <p v-if="map.work_ended">
-            <span class="font-bold">Finished on:</span>
+            <span class="font-bold">{{ $t("finishedOn") }}:</span>
             {{ formatDate(map.work_ended) }}
           </p>
           <p v-if="map.style">
-            <span class="font-bold">Map Style:</span> {{ map.style
+            <span class="font-bold">{{ $t("mapStyle") }}:</span> {{ map.style
             }}<span v-if="map.planet_monthly_visual">
               ({{ map.planet_monthly_visual }})</span
-            ><span v-if="map.openstreetmap === true">, with OSM labels </span>
+            ><span v-if="map.openstreetmap === true"
+              >, {{ $t("withOSMLabels") }}
+            </span>
           </p>
           <p v-if="map.max_zoom">
-            <span class="font-bold">Zoom Level:</span> {{ map.min_zoom }}-{{
-              map.max_zoom
-            }}
+            <span class="font-bold">{{ $t("zoomLevel") }}:</span>
+            {{ map.min_zoom }}-{{ map.max_zoom }}
           </p>
         </div>
         <div v-if="map.error_message" class="flex mb-2">
@@ -74,14 +115,14 @@
             class="copy-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out"
             @click="resubmitMapRequest(map.id)"
           >
-            Resubmit
+            {{ $t("resubmit") }}
           </button>
         </div>
         <div v-if="map.file_location && offlineMapsUri" class="flex mb-2">
           <a
             :href="`${offlineMapsUri}/${map.filename}`"
             class="download-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out mr-4"
-            >Download</a
+            >{{ $t("download") }}</a
           >
           <button
             class="qr-code bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out mr-4"
@@ -96,13 +137,13 @@
                 copyLinkToClipboard(`${offlineMapsUri}/${map.filename}`, map.id)
               "
             >
-              Copy Link
+              {{ $t("copyLink") }}
             </button>
             <div
               v-if="tooltipId === (map ? map.id : null)"
               class="tooltip bg-gray-500 text-white py-1 px-2 rounded transition duration-300 ease-in-out"
             >
-              Copied!
+              {{ $t("copied") }}!
             </div>
           </div>
         </div>
@@ -113,17 +154,17 @@
           class="space-y-2 flex-grow"
           v-if="map.status !== 'PENDING' && map.status !== 'PROCESSING'"
         >
-          <h3 class="italic text-lg text-gray-600">Metadata</h3>
+          <h3 class="italic text-lg text-gray-600">{{ $t("metadata") }}</h3>
           <p v-if="map.work_begun && map.work_ended">
-            <span class="font-bold">Task Duration:</span>
+            <span class="font-bold">{{ $t("taskDuration") }}:</span>
             {{ calculateDuration(map.work_begun, map.work_ended) }}
           </p>
           <p v-if="map.file_size">
-            <span class="font-bold">File Size:</span>
+            <span class="font-bold">{{ $t("fileSize") }}:</span>
             {{ formatFilesize(map.file_size) }} mb
           </p>
           <p v-if="map.number_of_tiles">
-            <span class="font-bold">Number of Tiles:</span>
+            <span class="font-bold">{{ $t("numberOfTiles") }}:</span>
             {{ formatNumber(map.number_of_tiles) }}
           </p>
         </div>
@@ -133,9 +174,9 @@
         class="card bg-white border border-gray-300 rounded-lg shadow-lg p-6 flex flex-col"
       >
         <h2 class="text-2xl font-bold text-gray-800 mb-2">
-          No offline maps found.
+          {{ $t("noOfflineMapsFound") }}.
         </h2>
-        <p class="mb-2 italic">Please generate a new map.</p>
+        <p class="mb-2 italic">{{ $t("pleaseGenerateANewMap") }}</p>
       </div>
     </div>
     <div v-if="showModal" class="overlay"></div>
@@ -157,6 +198,7 @@ export default {
   props: ["mapboxAccessToken", "offlineMaps", "offlineMapsUri"],
   data() {
     return {
+      dropdownOpen: false,
       refreshKey: 0,
       tooltipId: null,
       showQRCodeId: null,
@@ -174,6 +216,10 @@ export default {
       const seconds = Math.floor((duration / 1000) % 60);
       return `${hours}h ${minutes}m ${seconds}s`;
     },
+    changeLocale(localeCode) {
+      this.$i18n.setLocale(localeCode);
+      this.dropdownOpen = false;
+    },
     copyLinkToClipboard(link, id) {
       copyLink(link)
         .then(() => {
@@ -187,9 +233,7 @@ export default {
         });
     },
     deleteMap(id) {
-      let confirmation = window.confirm(
-        "Are you sure you want to delete this offline map? This action cannot be undone.",
-      );
+      let confirmation = window.confirm(this.$t("mapDeleteConfirmation") + ".");
 
       if (confirmation) {
         const map = this.offlineMaps.find((m) => m.id === id);
@@ -201,9 +245,8 @@ export default {
             file_location: map.file_location,
           };
           this.$emit("handleMapRequest", message);
-          this.modalMessage =
-            "Offline map request (and associated files) deleted!";
-          this.showModal = true;
+          (this.modalMessage = this.$t("mapWithFilesDeleted") + "!"),
+            (this.showModal = true);
           // wait 3 seconds and refresh the page content
           setTimeout(() => {
             this.showModal = false;
@@ -269,8 +312,8 @@ export default {
           requestId: map.id,
         };
         this.$emit("handleMapRequest", message);
-        this.modalMessage = "Offline map request successfully resubmitted!";
-        this.showModal = true;
+        (this.modalMessage = this.$t("mapDeleted") + "!"),
+          (this.showModal = true);
         // wait 3 seconds and refresh the page content
         setTimeout(() => {
           this.showModal = false;
@@ -278,11 +321,21 @@ export default {
         }, 3000);
       }
     },
+    toggleDropdown() {
+      this.dropdownOpen = !this.dropdownOpen;
+    },
     toggleQRCode(id) {
       this.showQRCodeId = this.showQRCodeId === id ? null : id;
     },
   },
   computed: {
+    currentLocaleName() {
+      const currentLocale = this.availableLocales.find(locale => locale.code === this.$i18n.locale);
+      return currentLocale ? currentLocale.name : '';
+    },
+    availableLocales() {
+      return this.$i18n.locales;
+    },
     style() {
       return { ...overlayModal };
     },
