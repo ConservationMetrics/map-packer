@@ -46,6 +46,7 @@ export default {
     async loadMore() {
       if (!this.nextCursor || this.isLoading) return;
 
+      // To avoid multiple requests at the same time
       this.isLoading = true;
 
       try {
@@ -58,7 +59,7 @@ export default {
           this.offlineMaps.push(...response.offlineMaps);
           this.nextCursor = response.nextCursor;
         } else {
-          this.nextCursor = null; // No more data to load
+          this.nextCursor = null;
         }
       } catch (error) {
         console.error("Error fetching more data:", error);
