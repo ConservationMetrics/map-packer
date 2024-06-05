@@ -18,7 +18,7 @@ import GenerateMap from "~/components/GenerateMap.vue";
 export default {
   head() {
     return {
-      title: "MapPacker: Map Request Generator",
+      title: "MapPacker: " + this.$t("generateOfflineMap"),
     };
   },
   components: { GenerateMap },

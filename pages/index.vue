@@ -16,7 +16,7 @@ import MapDashboard from "~/components/MapDashboard.vue";
 export default {
   head() {
     return {
-      title: "MapPacker: Available Offline Maps",
+      title: "MapPacker: " + this.$t("availableOfflineMaps"),
     };
   },
   components: { MapDashboard },
