@@ -68,8 +68,8 @@ app.get("/data", async (req: Request, res: Response) => {
       const response = {
         mapboxAccessToken: MAPBOX_ACCESS_TOKEN,
         // Set nextCursor to the last id in the data array
-        // How this works: If there are more rows in the database,
-        //the last row's id will be used as the nextCursor
+        // If there are more rows in the database,
+        // the last row's id will be used as the nextCursor
         // to fetch the next set of rows. If not, nextCursor will be null.
         nextCursor: data.length ? data[data.length - 1].id : null,
         offlineMaps: data,
