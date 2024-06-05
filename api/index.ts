@@ -13,7 +13,6 @@ import { publishToAzureStorageQueue } from "./messageQueue/azure";
 import { checkAuthStrategy } from "./middleware";
 import { getLogin, postLogin } from "./loginController";
 
-import { sortByDate } from "./dataProcessing/filterData";
 import { mapStyles } from "./styles/mapStyles";
 
 import {
@@ -55,20 +54,21 @@ const db = setupDatabaseConnection(
 );
 
 // API endpoint to retrieve offline maps from db
-app.get("/data", async (_req: Request, res: Response) => {
+app.get("/data", async (req: Request, res: Response) => {
+  const limit = parseInt(req.query.limit as string) || 6;
+  const cursor = req.query.cursor ? parseInt(req.query.cursor as string) : null;
+
   try {
-    // Fetch data
-    const { data } = await fetchData(db, DB_TABLE);
+    // Fetch data (with pagination if requested)
+    const { data } = await fetchData(db, DB_TABLE, limit, cursor);
 
     if (data === null) {
       res.json([]);
     } else {
-      // Sort offline maps in descending order by created_at field
-      const sortedData = sortByDate(data, "created_at");
-
       const response = {
         mapboxAccessToken: MAPBOX_ACCESS_TOKEN,
-        offlineMaps: sortedData,
+        nextCursor: data.length ? data[data.length - 1].id : null,
+        offlineMaps: data,
         offlineMapsUri: OFFLINE_MAPS_URI,
       };
       res.json(response);
