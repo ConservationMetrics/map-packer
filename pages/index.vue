@@ -3,9 +3,11 @@
     <MapDashboard
       v-if="dataFetched"
       :mapbox-access-token="mapboxAccessToken"
+      :next-cursor="nextCursor"
       :offline-maps="offlineMaps"
       :offline-maps-uri="offlineMapsUri"
       @handleMapRequest="handleMapRequest"
+      @loadMore="loadMore"
     />
   </div>
 </template>
@@ -22,10 +24,13 @@ export default {
   components: { MapDashboard },
   data() {
     return {
+      dataFetched: false,
       headers: {
         "x-api-key": this.$config.apiKey.replace(/['"]+/g, ""),
         "x-auth-strategy": this.$auth.strategy.name,
       },
+      nextCursor: null,
+      offlineMaps: [],
     };
   },
   methods: {
@@ -36,6 +41,30 @@ export default {
         });
       } catch (error) {
         console.error("Error submitting request data:", error);
+      }
+    },
+    async loadMore() {
+      if (!this.nextCursor || this.isLoading) return;
+
+      // To avoid multiple requests at the same time
+      this.isLoading = true;
+
+      try {
+        const response = await this.$axios.$get(
+          `/api/data?cursor=${this.nextCursor}`,
+          { headers: this.headers },
+        );
+
+        if (response.offlineMaps.length > 0) {
+          this.offlineMaps.push(...response.offlineMaps);
+          this.nextCursor = response.nextCursor;
+        } else {
+          this.nextCursor = null;
+        }
+      } catch (error) {
+        console.error("Error fetching more data:", error);
+      } finally {
+        this.isLoading = false;
       }
     },
   },
@@ -52,6 +81,7 @@ export default {
       return {
         dataFetched: true,
         mapboxAccessToken: response.mapboxAccessToken,
+        nextCursor: response.nextCursor,
         offlineMaps: response.offlineMaps,
         offlineMapsUri: response.offlineMapsUri,
       };

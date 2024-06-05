@@ -55,13 +55,28 @@ const createMapRequestTable = async (
 const fetchDataFromTable = async (
   db: any,
   table: string | undefined,
+  limit: number,
+  cursor: number | null,
 ): Promise<any[]> => {
   let query: string;
-  query = `SELECT * FROM ${table}`;
+  let values: any[] = [limit];
+
+  if (cursor) {
+    query = `SELECT * FROM ${table} WHERE id < $2 ORDER BY id DESC LIMIT $1`;
+    values.push(cursor);
+  } else {
+    query = `SELECT * FROM ${table} ORDER BY id DESC LIMIT $1`;
+  }
+
   return new Promise((resolve, reject) => {
-    db.query(query, (err: Error, result: { rows: any[] }) => {
-      if (err) reject(err);
-      resolve(result.rows);
+    db.query(query, values, (err: Error, result: { rows: any[] }) => {
+      if (err) {
+        reject(err);
+      } else if (!result || !result.rows) {
+        reject(new Error("No result returned from query."));
+      } else {
+        resolve(result.rows);
+      }
     });
   });
 };
@@ -69,15 +84,17 @@ const fetchDataFromTable = async (
 export const fetchData = async (
   db: any,
   table: string | undefined,
+  limit: number,
+  cursor: number | null,
 ): Promise<{ data: any[] | null }> => {
   console.log(`Fetching data from ${table}...`);
   const databaseExists = await checkTableExists(db, table);
   if (!databaseExists) {
     await createMapRequestTable(db, table);
   }
-  let data = await fetchDataFromTable(db, table);
+  let data = await fetchDataFromTable(db, table, limit, cursor);
 
-  return { data };
+  return { data: data || null };
 };
 
 export const insertDataIntoTable = async (
