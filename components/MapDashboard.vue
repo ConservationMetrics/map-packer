@@ -218,9 +218,7 @@ export default {
   },
   data() {
     return {
-      currentPage: 1,
       dropdownOpen: false,
-      itemsPerPage: 6,
       refreshKey: 0,
       tooltipId: null,
       showQRCodeId: null,
