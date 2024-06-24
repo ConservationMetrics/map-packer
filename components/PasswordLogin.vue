@@ -35,70 +35,53 @@
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      password: "",
-      error: null,
-      redirectPath: this.localePath("/"),
-    };
-  },
-  async created() {
-    this.redirectPath = this.$route.query.redirect
-      ? this.localePath(this.$route.query.redirect)
-      : this.localePath("/");
+<script setup>
+import { ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useRoute, useRouter } from 'vue-router'
+// import { useAuth } from '@nuxtjs/auth-next'
+// import { useAxios } from 'axios'
 
-    if (this.$route.query.secret_key) {
-      try {
-        const response = await this.$axios.$get("/api/login", {
-          params: {
-            secret_key: this.$route.query.secret_key,
-          },
-        });
-        // If the request is successful, log in the user
-        if (response.token) {
-          this.$auth.strategy.token.set(`Bearer ${response.token}`);
-          location.reload();
+const { locale, setLocale } = useI18n()
+const route = useRoute()
+const router = useRouter()
+// const { $axios } = useAxios()
+// const { $auth, loginWith } = useAuth()
+
+let password = ref("")
+let error = ref(null)
+let redirectPath = ref(locale.value ? `/${locale.value}/` : '/')
+
+// watch($auth.loggedIn, (loggedIn) => {
+//   if (loggedIn) {
+//     router.push(redirectPath.value)
+//   }
+// })
+
+async function login() {
+  const authStrategy = $config.authStrategy || "none"
+  if (authStrategy === "password") {
+    try {
+      await loginWith("password", {
+        data: {
+          password: password.value,
+        },
+      })
+      router.push(redirectPath.value)
+    } catch (error) {
+      if (error.response) {
+        if (error.response.status === 403) {
+          error.value = $t("passwordIncorrect") + "."
+        } else if (error.response.data && error.response.data.message) {
+          error.value = error.response.data.message
+        } else {
+          error.value = $t("loginError") + "."
         }
-      } catch (error) {
-        this.error = this.$t("loginError") + ".";
+      } else {
+        error.value = error.message || $t("loginError") + "."
       }
     }
-  },
-  methods: {
-    async login() {
-      const authStrategy = this.$config.authStrategy || "none";
-      if (authStrategy === "password") {
-        try {
-          await this.$auth.loginWith("password", {
-            data: {
-              password: this.password,
-            },
-          });
-          this.$router.push(this.redirectPath);
-        } catch (error) {
-          if (error.response) {
-            if (error.response.status === 403) {
-              this.error = this.$t("passwordIncorrect") + ".";
-            } else if (error.response.data && error.response.data.message) {
-              this.error = error.response.data.message;
-            } else {
-              this.error = this.$t("loginError") + ".";
-            }
-          } else {
-            this.error = error.message || this.$t("loginError") + ".";
-          }
-        }
-      }
-    },
-  },
-  watch: {
-    "$auth.loggedIn"(loggedIn) {
-      if (loggedIn) {
-        this.$router.push(this.redirectPath);
-      }
-    },
-  },
-};
+  }
+}
+
 </script>
