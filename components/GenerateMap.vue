@@ -35,7 +35,6 @@ import Sidebar from "@/components/GenerateMap/Sidebar.vue";
 import MapNavigation from "@/components/GenerateMap/MapNavigation.vue";
 import MapCanvas from "@/components/GenerateMap/MapCanvas.vue";
 import style from "@/components/GenerateMap/style.css";
-import overlayModal from "@/components/overlay.css";
 
 export default {
   components: { MapCanvas, Sidebar, MapNavigation },
@@ -86,15 +85,12 @@ export default {
       }
     },
   },
-  computed: {
-    style() {
-      return { ...style, ...overlayModal };
-    },
-  },
 };
 </script>
 
 <style scoped>
+@import '@/components/overlay.css';
+
 body {
   margin: 0;
   padding: 0;

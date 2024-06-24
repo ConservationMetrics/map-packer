@@ -161,7 +161,7 @@
 
       <!-- Show warning if estimated tiles exceed limit
         We want to set a 500 megabytes limit for e.g. optimal functionality in Mapeo Mobile.
-        It's not possible to estimate the exact size of a tile, so we use a reasonable 
+        It's not possible to estimate the exact size of a tile, so we use a reasonable
         minimum filesize estimate of 18,137 bytes per tile (512px).
         500 megabytes = 500,000,000 / 18,137 = 275,679, rounded down to 275,000 -->
       <div v-if="estimatedTiles > 275000" class="text-red-600 mt-2">
@@ -182,7 +182,7 @@
 </template>
 
 <script>
-import { calculateMaxPlanetMonthYear } from "@/src/utils";
+import { calculateMaxPlanetMonthYear } from "~/utils";
 
 // This specific pattern of importing vue-slider-component follows the official
 // documentation for server-side rendering: https://nightcatsama.github.io/vue-slider-component/#/
