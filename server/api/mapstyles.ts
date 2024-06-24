@@ -17,5 +17,5 @@ export default defineEventHandler((event: H3Event) => {
     })
   }
 
-  return send(event, styles)
+  return send(event, JSON.stringify(styles))
 })

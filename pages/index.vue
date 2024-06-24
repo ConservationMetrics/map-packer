@@ -26,19 +26,22 @@ const offlineMaps = ref([])
 const offlineMapsUri = ref('')
 const isLoading = ref(false)
 
+// Fetch initial data
 const { data: initialData, error: initialError } = await useFetch('/api/data')
 
 if (initialData.value && !initialError.value) {
-  dataFetched.value = true
   const parsedData = JSON.parse(initialData.value)
   mapboxAccessToken.value = parsedData.mapboxAccessToken
   nextCursor.value = parsedData.nextCursor
   offlineMaps.value = parsedData.offlineMaps
   offlineMapsUri.value = parsedData.offlineMapsUri
+
+  dataFetched.value = true
 } else {
   console.error("Error fetching data:", initialError.value)
 }
 
+// POST map request (emitted by component)
 const handleMapRequest = async (message) => {
   try {
     await $fetch('/api/maprequest', {
@@ -53,6 +56,7 @@ const handleMapRequest = async (message) => {
   }
 }
 
+// Load more data based on cursor pagination
 const loadMore = async () => {
   if (!nextCursor.value || isLoading.value) return
 

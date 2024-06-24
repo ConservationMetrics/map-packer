@@ -22,7 +22,7 @@
     "qrcode.vue": "^3.4.1",
     "vue": "^3.4.29",
     "vue-router": "^4.3.3",
-    "vue-slider-component": "^3.2.24"
+    "vue-slider-component": "^4.1.0-beta.7"
   },
   "devDependencies": {
     "@nuxtjs/i18n": "^8.3.1",

@@ -6,13 +6,16 @@
 import { ref, onMounted, nextTick } from 'vue'
 import mapboxgl from 'mapbox-gl'
 
+// Define props
 const props = defineProps({
   mapboxAccessToken: String,
   bounds: String,
 })
 
+// Set up reactive state
 const mapContainer = ref(null)
 
+// On mount
 onMounted(async () => {
   mapboxgl.accessToken = props.mapboxAccessToken
 

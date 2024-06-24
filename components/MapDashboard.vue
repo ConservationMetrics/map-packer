@@ -40,12 +40,12 @@
           </div>
         </div>
       </div>
-      <NuxtLink
-        :to="localePath('map')"
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer transition-colors duration-200 hidden md:block"
-      >
+      <button
+        @click="navigateToMap"
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer transition-colors duration-200 hidden md:block"
+          >
         + {{ $t("generateMap") }}
-      </NuxtLink>
+    </button>
     </div>
     <h1 class="text-4xl font-bold text-gray-800 mb-8 text-center">
       {{ $t("availableOfflineMaps") }}
@@ -204,12 +204,14 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 
 import QRCode from "qrcode.vue";
 import MiniMap from "@/components/MapDashboard/MiniMap.vue";
 import { copyLink } from "~/utils";
 
+// Define props
 const props = defineProps({
   mapboxAccessToken: String,
   offlineMaps: Array,
@@ -217,16 +219,21 @@ const props = defineProps({
   nextCursor: Number,
 });
 
+// Set up composables
 const emit = defineEmits(['handleMapRequest', 'loadMore']);
-
 const { t, locale, locales } = useI18n();
 
+// Set up router
+const router = useRouter();
+
+// Set up reactive state
 const dropdownOpen = ref(false);
 const tooltipId = ref(null);
 const showQRCodeId = ref(null);
 const showModal = ref(false);
 const modalMessage = ref('');
 
+// Methods
 const calculateDuration = (start, end) => {
   const startDate = new Date(start);
   const endDate = new Date(end);
@@ -322,6 +329,10 @@ const loadMore = () => {
   emit('loadMore');
 };
 
+const navigateToMap = () => {
+  router.push({ name: 'map', params: { lang: locale.value } });
+};
+
 const resubmitMapRequest = (id) => {
   const map = props.offlineMaps.find((m) => m.id === id);
   if (map) {
@@ -370,6 +381,7 @@ const availableLocales = computed(() => locales.value);
 
 const paginatedOfflineMaps = computed(() => props.offlineMaps);
 
+// On mount
 onMounted(() => {
   window.addEventListener('scroll', handleScroll);
 });

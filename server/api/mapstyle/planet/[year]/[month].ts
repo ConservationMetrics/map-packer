@@ -13,7 +13,7 @@ export default defineEventHandler((event) => {
     const mapStyleEntry = mapStyles[styleKey as keyof typeof mapStyles]
     const newTileUrl = (mapStyleEntry.style as any).sources.planet.tiles[0].replace(/\d{4}-\d{2}/, `${year}-${month}`)
     ;(mapStyleEntry.style as any).sources.planet.tiles[0] = newTileUrl
-    return send(event, mapStyleEntry.style)
+    return send(event, JSON.stringify(mapStyleEntry.style))
   } else {
     return sendError(event, new Error("Map style not found"))
   }

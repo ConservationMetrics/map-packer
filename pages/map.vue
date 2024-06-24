@@ -3,103 +3,94 @@
     <GenerateMap
       v-if="dataFetched"
       @handleMapRequest="handleMapRequest"
-      :availableMapStyles="availableMapStyles"
-      :mapboxAccessToken="mapboxAccessToken"
-      :mapLatitude="mapLatitude"
-      :mapLongitude="mapLongitude"
-      :mapZoom="mapZoom"
+      :available-map-styles="availableMapStyles"
+      :mapbox-access-token="mapboxAccessToken"
+      :map-latitude="mapLatitude"
+      :map-longitude="mapLongitude"
+      :map-zoom="mapZoom"
     />
   </div>
 </template>
 
-<script>
-import GenerateMap from "~/components/GenerateMap.vue";
+<script setup>
+import { useFetch, useHead } from '#imports'
+import { useI18n } from 'vue-i18n'
 
-export default {
-  head() {
-    return {
-      title: "MapPacker: " + this.$t("generateOfflineMap"),
-    };
-  },
-  components: { GenerateMap },
-  data() {
-    return {
-      headers: {
-        "x-api-key": this.$config.apiKey.replace(/['"]+/g, ""),
-        "x-auth-strategy": this.$auth.strategy.name,
-      },
-    };
-  },
-  methods: {
-    async handleMapRequest(formData) {
-      // Function to remove accents and replace non-alphanumeric characters with underscores
-      const normalizeFilename = (str) => {
-        return str
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .replace(/\W+/g, "_");
-      };
+const { t } = useI18n()
 
-      // Transform formData to match the expected database table schema
-      const transformedMessage = {
-        type: "new_request",
-        title: formData.title,
-        filename: normalizeFilename(formData.title),
-        status: "PENDING",
-        description: formData.description,
-        min_zoom: 0,
-        max_zoom: formData.maxZoom,
-        mapbox_style: formData.mapboxStyle,
-        planet_monthly_visual: formData.planetMonthYear,
-        bounds: formData.selectedBounds,
-        style: formData.selectedStyle,
-        openstreetmap: formData.openstreetmap,
-        number_of_tiles: formData.estimatedTiles,
-        created_at: new Date(),
-      };
+const dataFetched = ref(false)
+const availableMapStyles = ref([])
+const mapboxAccessToken = ref('')
+const mapLatitude = ref(0)
+const mapLongitude = ref(0)
+const mapZoom = ref(0)
 
-      // Include mapboxAccessToken if it exists
-      if (formData.mapboxAccessToken) {
-        transformedMessage.apiKey = formData.mapboxAccessToken;
-      }
+// Fetch initial data
+const { data, error } = await useFetch('/api/map')
 
-      try {
-        await this.$axios.$post("/api/maprequest", transformedMessage, {
-          headers: this.headers,
-        });
-      } catch (error) {
-        console.error("Error submitting request data:", error);
-      }
-    },
-  },
-  async asyncData({ $axios, app }) {
-    // Set up the headers for the request
-    let headers = {
-      "x-api-key": app.$config.apiKey.replace(/['"]+/g, ""),
-      "x-auth-strategy": app.$auth.strategy.name,
-    };
+if (data.value && !error.value) {
+  const parsedData = JSON.parse(data.value)
+  mapboxAccessToken.value = parsedData.mapboxAccessToken
+  mapLatitude.value = Number(parsedData.mapLatitude)
+  mapLongitude.value = Number(parsedData.mapLongitude)
+  mapZoom.value = Number(parsedData.mapZoom)
 
-    try {
-      // Use the table name in the API request
-      const response = await $axios.$get(`/api/map`, { headers });
-      const availableMapStyles = await $axios.$get(`/api/mapstyles`, {
-        headers,
-      });
-      return {
-        dataFetched: true,
-        availableMapStyles: availableMapStyles,
-        mapboxAccessToken: response.mapboxAccessToken,
-        mapLatitude: response.mapLatitude,
-        mapLongitude: response.mapLongitude,
-        mapZoom: response.mapZoom,
-      };
-    } catch (error) {
-      // Handle errors as appropriate
-      console.error("Error fetching data:", error);
-      return {
-        dataFetched: false,
-      };
-    }
-  },
-};
+  let mapStyles = await $fetch('/api/mapstyles')
+  if (typeof mapStyles === 'string') {
+    mapStyles = mapStyles.split(',')
+  }
+  availableMapStyles.value = mapStyles
+
+  dataFetched.value = true
+} else {
+  console.error("Error fetching data:", error.value)
+  dataFetched.value = false
+}
+
+// POST map request (emitted by component)
+const handleMapRequest = async (formData) => {
+  // Function to remove accents and replace non-alphanumeric characters with underscores
+  const normalizeFilename = (str) => {
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\W+/g, "_")
+  }
+
+  // Transform formData to match the expected database table schema
+  const transformedMessage = {
+    type: "new_request",
+    title: formData.title,
+    filename: normalizeFilename(formData.title),
+    status: "PENDING",
+    description: formData.description,
+    min_zoom: 0,
+    max_zoom: formData.maxZoom,
+    mapbox_style: formData.mapboxStyle,
+    planet_monthly_visual: formData.planetMonthYear,
+    bounds: formData.selectedBounds,
+    style: formData.selectedStyle,
+    openstreetmap: formData.openstreetmap,
+    number_of_tiles: formData.estimatedTiles,
+    created_at: new Date(),
+  }
+
+  // Include mapboxAccessToken if it exists
+  if (formData.mapboxAccessToken) {
+    transformedMessage.apiKey = formData.mapboxAccessToken
+  }
+
+  try {
+    await $fetch('/api/maprequest', {
+      method: 'POST',
+      body: transformedMessage,
+    })
+  } catch (error) {
+    console.error("Error submitting request data:", error)
+  }
+}
+
+useHead({
+  title: 'MapPacker: ' + t("generateOfflineMap"),
+})
 </script>
