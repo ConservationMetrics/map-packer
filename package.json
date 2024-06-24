@@ -3,11 +3,11 @@
   "version": "2.0.0",
   "type": "module",
   "description": "A Nuxt app to allow users to generate and manage offline map requests",
-  "private": true,
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
+    "lint": "prettier --write ./ --ignore-path .prettierignore",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
