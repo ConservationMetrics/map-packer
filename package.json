@@ -1,50 +1,38 @@
 {
   "name": "map-packer",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "type": "module",
   "description": "A Nuxt app to allow users to generate and manage offline map requests",
   "private": true,
   "scripts": {
-    "dev": "nuxt",
     "build": "nuxt build",
-    "start": "nuxt start",
+    "dev": "nuxt dev",
     "generate": "nuxt generate",
-    "lint": "prettier --write ./ --ignore-path .prettierignore",
-    "prepare": "husky install"
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
   },
   "dependencies": {
     "@azure/storage-queue": "^12.22.0",
     "@mapbox/mapbox-gl-draw": "^1.4.3",
-    "@nuxtjs/auth-next": "5.0.0-1667386184.dfbbb54",
-    "@nuxtjs/axios": "^5.13.6",
-    "@nuxtjs/dotenv": "^1.4.2",
-    "@nuxtjs/i18n": "^7.3.1",
-    "core-js": "^3.37.1",
-    "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "mapbox-gl": "^3.4.0",
     "mapbox-gl-draw-rectangle-mode": "^1.0.4",
-    "nuxt": "^2.17.2",
+    "nuxt": "^3.12.2",
     "pg": "^8.12.0",
-    "qrcode.vue": "^1.7.0",
-    "vue": "^2.7.10",
-    "vue-server-renderer": "^2.7.16",
-    "vue-slider-component": "^3.2.24",
-    "vue-template-compiler": "^2.7.16"
+    "qrcode.vue": "^3.4.1",
+    "vue": "^3.4.29",
+    "vue-router": "^4.3.3",
+    "vue-slider-component": "^3.2.24"
   },
   "devDependencies": {
-    "@nuxt/types": "^2.17.4",
-    "@nuxt/typescript-build": "^2.1.0",
-    "@nuxt/typescript-runtime": "^3.0.2",
-    "@types/express": "^4.17.21",
+    "@nuxtjs/i18n": "^8.3.1",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/mapbox-gl": "^3.1.0",
     "@types/pg": "^8.11.6",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.7",
-    "nuxt-windicss": "^2",
-    "prettier": "^3.3.2",
-    "typescript": "^5.5.2"
+    "nuxt-windicss": "^2.6.1",
+    "prettier": "^3.3.2"
   },
   "husky": {
     "hooks": {
@@ -57,7 +45,7 @@
     ]
   },
   "engines": {
-    "node": "18.17.0"
+    "node": "20.15.0"
   },
   "author": "Conservation Metrics",
   "license": "MIT"

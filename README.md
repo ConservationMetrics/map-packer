@@ -48,11 +48,16 @@ $ npm run dev
 $ npm run build
 $ npm run start
 
+# locally preview production build:
+$ npm run preview
+
 # generate static project
 $ npm run generate
 ```
 
 Add `--hostname 0.0.0.0` if you want the app to be accessible across your local network.
+
+Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
 
 ## Deployment
 
