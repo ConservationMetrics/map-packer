@@ -55,12 +55,13 @@ export default defineEventHandler(async (event: H3Event) => {
     } else if (data.type === "delete_request") {
       const shouldPublish = await handleDeleteRequest(db, DB_TABLE, requestId)
       if (!shouldPublish) {
-        return send(event, { message: "Row deleted without publishing to queue." })
+        return send(event, JSON.stringify({ message: "Row deleted without publishing to queue." }))
       }
     } else {
       throw new Error("Invalid request type")
     }
 
+    // Add Mapbox and Planet tokens from env vars server-side
     if (data.style && data.style.includes("mapbox")) {
       data.apiKey = data.apiKey || MAPBOX_ACCESS_TOKEN
     } else if (data.style && data.style === "planet") {
@@ -75,7 +76,7 @@ export default defineEventHandler(async (event: H3Event) => {
       await updateDatabaseWithError(db, DB_TABLE, requestId, "InternalServerError: ASQ_QUEUE_NAME is not set")
     }
 
-    return send(event, { message: "Request successfully published!" })
+    return send(event, JSON.stringify({ message: "Request successfully published!" }))
   } catch (error: any) {
     console.error("Error on API side:", error.message)
     await updateDatabaseWithError(db, DB_TABLE, requestId, `InternalServerError: ${error.message}`)

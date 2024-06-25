@@ -211,9 +211,7 @@ const form = reactive({
   description: '',
   selectedBounds: props.mapBounds,
   selectedStyle: props.mapStyle,
-  selectedStyleKey: null,
   planetMonthYear: calculateMaxPlanetMonthYear(),
-  maxPlanetMonthYear: calculateMaxPlanetMonthYear(),
   maxZoom: 8,
   estimatedTiles: 0,
 })
@@ -275,21 +273,21 @@ const renderCustomStyle = () => {
 }
 
 const submitForm = () => {
-  const formToSubmit = { ...form, selectedStyle: form.selectedStyleKey }
+  const formToSubmit = { ...form, selectedStyle: selectedStyleKey.value }
 
-  if (form.selectedStyleKey !== 'planet') {
+  if (selectedStyleKey.value !== 'planet') {
     delete formToSubmit.planetMonthYear
   }
 
-  if (form.selectedStyleKey === 'mapbox') {
+  if (selectedStyleKey.value === 'mapbox') {
     formToSubmit.mapboxStyle = form.selectedStyle.replace('mapbox://styles/', '')
   }
 
-  if (form.selectedStyleKey === 'mapbox-streets') {
-    formToSubmit.mapboxStyle = form.selectedStyle.replace('mapbox://styles/', '')
+  if (selectedStyleKey.value === 'mapbox-streets') {
+    formToSubmit.mapboxStyle = 'mapbox/streets-v12'
   }
 
-  if (form.selectedStyleKey === 'mapbox-custom') {
+  if (selectedStyleKey.value === 'mapbox-custom') {
     formToSubmit.mapboxStyle = customMapboxStyleUrl.value.replace('mapbox://styles/', '')
     formToSubmit.mapboxAccessToken = localMapboxAccessToken.value
   }
@@ -346,12 +344,12 @@ watch(() => props.mapStyle, (newVal) => {
 })
 
 watch(() => form.selectedStyle, (newVal) => {
-  if (newVal && newVal.includes('/api/mapstyle/planet/')) {
-    const [year, month] = form.planetMonthYear.split('-')
-    if (!year || !month) {
-      form.planetMonthYear = calculateMaxPlanetMonthYear()
-    }
-  }
+  // if (newVal && newVal.includes('/api/mapstyle/planet/')) {
+  //   const [year, month] = form.planetMonthYear.split('-')
+  //   if (!year || !month) {
+  //     form.planetMonthYear = calculateMaxPlanetMonthYear()
+  //   }
+  // }
   if (newVal && newVal !== '/api/mapstyle/mapbox-custom/') {
     emit('updateMapParams', { param: 'Style', value: newVal })
     emit('updateMapParams', { param: 'OsmEnabled', value: false })
@@ -380,231 +378,6 @@ watch(() => form.planetMonthYear, (newVal) => {
 onMounted(() => {
   fetchMapStyles()
 })
-// export default {
-//   components: { VueSlider },
-//   props: ["availableMapStyles", "mapboxAccessToken", "mapBounds", "mapStyle"],
-//   data() {
-//     return {
-//       customMapboxStyleUrl: "",
-//       localMapboxAccessToken: this.mapboxAccessToken,
-//       mapStyles: [],
-//       form: {
-//         title: "",
-//         description: "",
-//         selectedBounds: this.mapBounds,
-//         selectedStyle: this.mapStyle,
-//         selectedStyleKey: null,
-//         planetMonthYear: calculateMaxPlanetMonthYear(),
-//         maxPlanetMonthYear: calculateMaxPlanetMonthYear(),
-//         maxZoom: 8,
-//         estimatedTiles: 0,
-//       },
-//     };
-//   },
-//   watch: {
-//     // Watch for changes to the map's style and bounds props
-//     mapBounds(newVal) {
-//       this.form.selectedBounds = newVal;
-//     },
-//     mapStyle(newVal) {
-//       this.form.selectedStyle = newVal;
-//     },
-//     estimatedTiles(newVal) {
-//       this.form.estimatedTiles = newVal;
-//     },
-
-//     // Track and emit changes to map parameters in the sidebar form,
-//     // So that the parent component can update the map
-//     "form.selectedStyle": function (newVal) {
-//       if (newVal.includes("/api/mapstyle/planet/")) {
-//         const [year, month] = this.form.planetMonthYear.split("-");
-//         if (!year || !month) {
-//           this.form.planetMonthYear = calculateMaxPlanetMonthYear();
-//         }
-//       }
-//       if (newVal !== "/api/mapstyle/mapbox-custom/") {
-//         this.$emit("updateMapParams", { param: "Style", value: newVal });
-//         this.$emit("updateMapParams", { param: "OsmEnabled", value: false });
-//         this.form.openstreetmap = false;
-//       }
-//     },
-//     "form.planetMonthYear": function (newVal) {
-//       if (this.form.selectedStyle.includes("/api/mapstyle/planet/")) {
-//         const [year, month] = newVal.split("-");
-//         if (year && month) {
-//           this.form.selectedStyle = `/api/mapstyle/planet/${year}/${month}`;
-
-//           // remove planet from existing mapstyles
-//           this.mapStyles = this.mapStyles.filter(
-//             (style) => style.key !== "planet",
-//           );
-
-//           this.mapStyles.push({
-//             name: "Planet Monthly Visual Basemap",
-//             key: "planet",
-//             value: this.form.selectedStyle,
-//           });
-//         }
-//       }
-//     },
-//   },
-//   methods: {
-//     fetchMapStyles() {
-//       // Add available map styles to the mapStyles array
-//       this.mapStyles = this.mapStyles.concat(
-//         this.availableMapStyles.map((style) => {
-//           return {
-//             name: style.name,
-//             key: style.key,
-//             value: style.url,
-//           };
-//         }),
-//       );
-//       // Sort map styles by name
-//       this.mapStyles.sort((a, b) => a.name.localeCompare(b.name));
-//     },
-//     estimateNumberOfTiles(maxZoom, boundsStr) {
-//       const bounds = boundsStr.split(",").map(Number);
-
-//       // Convert degrees to radians
-//       const degToRad = (degrees) => degrees * (Math.PI / 180);
-
-//       // Calculate the number of tiles for a given zoom level and bounds
-//       const tilesAtZoom = (zoom, [west, south, east, north]) => {
-//         const tileCount = (lat, lon, zoom) => {
-//           const x = Math.floor(((lon + 180) / 360) * Math.pow(2, zoom));
-//           const y = Math.floor(
-//             ((1 -
-//               Math.log(Math.tan(degToRad(lat)) + 1 / Math.cos(degToRad(lat))) /
-//                 Math.PI) /
-//               2) *
-//               Math.pow(2, zoom),
-//           );
-//           return { x, y };
-//         };
-
-//         const topLeft = tileCount(north, west, zoom);
-//         const bottomRight = tileCount(south, east, zoom);
-
-//         const tileWidth = Math.abs(bottomRight.x - topLeft.x) + 1;
-//         const tileHeight = Math.abs(bottomRight.y - topLeft.y) + 1;
-
-//         return tileWidth * tileHeight;
-//       };
-
-//       // Sum the number of tiles from zoom level 0 to maxZoom
-//       let totalTiles = 0;
-//       for (let zoom = 0; zoom <= maxZoom; zoom++) {
-//         totalTiles += tilesAtZoom(zoom, bounds);
-//       }
-
-//       return totalTiles;
-//     },
-//     renderCustomStyle() {
-//       if (
-//         /^mapbox:\/\/styles\/[^\/]+\/[^\/]+$/.test(this.customMapboxStyleUrl)
-//       ) {
-//         this.form.selectedStyle = this.customMapboxStyleUrl;
-//         this.selectedStyleKey = "mapbox-custom";
-//         this.$emit("updateMapParams", {
-//           param: "Style",
-//           value: this.customMapboxStyleUrl,
-//         });
-//         this.$emit("updateMapParams", {
-//           param: "AccessToken",
-//           value: this.localMapboxAccessToken,
-//         });
-//       } else {
-//         console.error("Invalid Mapbox Style URL");
-//       }
-//     },
-//     submitForm() {
-//       let formToSubmit = { ...this.form, selectedStyle: this.selectedStyleKey };
-
-//       // Remove planetMonthYear if the selected style is not planet
-//       if (this.selectedStyleKey !== "planet") {
-//         delete formToSubmit.planetMonthYear;
-//       }
-
-//       // If the selected style is mapbox, include the selected style url
-//       if (this.selectedStyleKey === "mapbox") {
-//         formToSubmit.mapboxStyle = this.form.selectedStyle.replace(
-//           "mapbox://styles/",
-//           "",
-//         );
-//       }
-
-//       // If the selected style is custom-mapbox, include the custom Mapbox Style URL
-//       if (this.selectedStyleKey === "mapbox-streets") {
-//         formToSubmit.mapboxStyle = this.form.selectedStyle.replace(
-//           "mapbox://styles/",
-//           "",
-//         );
-//       }
-
-//       // If the selected style is custom-mapbox, include the custom Mapbox Style URL
-//       if (this.selectedStyleKey === "mapbox-custom") {
-//         formToSubmit.mapboxStyle = this.customMapboxStyleUrl.replace(
-//           "mapbox://styles/",
-//           "",
-//         );
-//         formToSubmit.mapboxAccessToken = this.localMapboxAccessToken;
-//       }
-
-//       formToSubmit.type = "new_request";
-
-//       this.$emit("formSubmitted", formToSubmit);
-//     },
-//     toggleOSM() {
-//       this.$emit("updateMapParams", {
-//         param: "OsmEnabled",
-//         value: this.form.openstreetmap,
-//       });
-//     },
-//   },
-//   computed: {
-//     selectedStyleKey: {
-//       get() {
-//         const selectedStyle = this.mapStyles.find(
-//           (style) => style.value === this.form.selectedStyle,
-//         );
-//         return selectedStyle
-//           ? selectedStyle.key
-//           : this.form.selectedStyle === this.customMapboxStyleUrl
-//             ? "mapbox-custom"
-//             : null;
-//       },
-//       set(key) {
-//         const selectedStyle = this.mapStyles.find((style) => style.key === key);
-//         if (selectedStyle) {
-//           this.form.selectedStyle = selectedStyle.value;
-//         }
-//       },
-//     },
-//     minPlanetMonthYear() {
-//       return "2020-09"; // The first month we have Planet NICFI monthly basemaps
-//     },
-//     maxPlanetMonthYear() {
-//       return calculateMaxPlanetMonthYear();
-//     },
-//     estimatedTiles() {
-//       return this.estimateNumberOfTiles(
-//         this.form.maxZoom,
-//         this.form.selectedBounds,
-//       );
-//     },
-//     isValidMapboxStyleAndToken() {
-//       const isValidStyle = /^mapbox:\/\/styles\/[^\/]+\/[^\/]+$/.test(
-//         this.customMapboxStyleUrl,
-//       );
-//       const isValidToken = /^pk\.ey/.test(this.localMapboxAccessToken);
-//       return isValidStyle && isValidToken;
-//     },
-//   },
-//   mounted() {
-//     this.fetchMapStyles();
-//   },
-// };
 </script>
 
 <style scoped>
