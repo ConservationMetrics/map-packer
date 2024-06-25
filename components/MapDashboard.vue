@@ -40,12 +40,12 @@
           </div>
         </div>
       </div>
-      <button
-        @click="navigateToMap"
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer transition-colors duration-200 hidden md:block"
-          >
+      <NuxtLinkLocale
+        to="/map"
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer transition-colors duration-200 hidden md:block"
+      >
         + {{ $t("generateMap") }}
-    </button>
+      </NuxtLinkLocale>
     </div>
     <h1 class="text-4xl font-bold text-gray-800 mb-8 text-center">
       {{ $t("availableOfflineMaps") }}
@@ -204,7 +204,6 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
-import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 
 import QRCode from "qrcode.vue";
@@ -222,9 +221,6 @@ const props = defineProps({
 // Set up composables
 const emit = defineEmits(['handleMapRequest', 'loadMore']);
 const { t, locale, locales } = useI18n();
-
-// Set up router
-const router = useRouter();
 
 // Set up reactive state
 const dropdownOpen = ref(false);
@@ -327,10 +323,6 @@ const handleScroll = () => {
 
 const loadMore = () => {
   emit('loadMore');
-};
-
-const navigateToMap = () => {
-  router.push({ name: 'map', params: { lang: locale.value } });
 };
 
 const resubmitMapRequest = (id) => {

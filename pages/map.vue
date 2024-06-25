@@ -29,7 +29,8 @@ const mapZoom = ref(0)
 const { data, error } = await useFetch('/api/map')
 
 if (data.value && !error.value) {
-  const parsedData = JSON.parse(data.value)
+  let parsedData = typeof data.value === 'string' ? JSON.parse(data.value) : data.value
+
   mapboxAccessToken.value = parsedData.mapboxAccessToken
   mapLatitude.value = Number(parsedData.mapLatitude)
   mapLongitude.value = Number(parsedData.mapLongitude)

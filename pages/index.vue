@@ -30,7 +30,8 @@ const isLoading = ref(false)
 const { data: initialData, error: initialError } = await useFetch('/api/data')
 
 if (initialData.value && !initialError.value) {
-  const parsedData = JSON.parse(initialData.value)
+  let parsedData = typeof initialData.value === 'string' ? JSON.parse(initialData.value) : initialData.value
+
   mapboxAccessToken.value = parsedData.mapboxAccessToken
   nextCursor.value = parsedData.nextCursor
   offlineMaps.value = parsedData.offlineMaps

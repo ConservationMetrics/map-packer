@@ -63,14 +63,15 @@ const showModal = ref(false)
 
 // Set up composables
 const router = useRouter()
-const { t, localePath } = useI18n()
+const { t } = useI18n()
+const localePath = useLocalePath()
 
 // Methods
 const handleFormSubmit = (formData) => {
   emit('handleMapRequest', formData)
   showModal.value = true
   setTimeout(() => {
-    router.push("/")
+    router.push(localePath("/"))
   }, 3000)
 }
 
