@@ -16,8 +16,7 @@
 import { useFetch, useHead } from '#imports'
 import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n()
-
+// Set up reactive state
 const dataFetched = ref(false)
 const availableMapStyles = ref([])
 const mapboxAccessToken = ref('')
@@ -25,8 +24,17 @@ const mapLatitude = ref(0)
 const mapLongitude = ref(0)
 const mapZoom = ref(0)
 
+// Set up composables
+const { t } = useI18n()
+
+// Define headers
+const config = useRuntimeConfig()
+const headers = {
+  'x-api-key': config.public.apiKey.replace(/['"]+/g, "")
+}
+
 // Fetch initial data
-const { data, error } = await useFetch('/api/map')
+const { data, error } = await useFetch('/api/map', { headers })
 
 if (data.value && !error.value) {
   let parsedData = typeof data.value === 'string' ? JSON.parse(data.value) : data.value
@@ -36,7 +44,7 @@ if (data.value && !error.value) {
   mapLongitude.value = Number(parsedData.mapLongitude)
   mapZoom.value = Number(parsedData.mapZoom)
 
-  let mapStyles = await $fetch('/api/mapstyles')
+  let mapStyles = await $fetch('/api/mapstyles', { headers })
   if (typeof mapStyles === 'string') {
     mapStyles = mapStyles.split(',')
   }
@@ -85,6 +93,7 @@ const handleMapRequest = async (formData) => {
     await $fetch('/api/maprequest', {
       method: 'POST',
       body: transformedMessage,
+      headers: headers
     })
   } catch (error) {
     console.error("Error submitting request data:", error)

@@ -46,11 +46,11 @@ export default defineNuxtConfig({
     strategy: "no_prefix",
   },
 
-  // serverMiddleware: [{ path: "/api", handler: "~/api/index.ts" }],
-
-  // router: {
-  //   middleware: ["authMiddleware"],
-  // },
+  runtimeConfig: {
+    public: {
+      apiKey: process.env.VUE_APP_API_KEY
+    }
+  },
 
   // auth: {
   //   strategies: {

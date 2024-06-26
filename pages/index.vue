@@ -17,8 +17,7 @@ import { useFetch, useHead } from '#imports'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n()
-
+// Set up reactive state
 const dataFetched = ref(false)
 const mapboxAccessToken = ref('')
 const nextCursor = ref(null)
@@ -26,8 +25,17 @@ const offlineMaps = ref([])
 const offlineMapsUri = ref('')
 const isLoading = ref(false)
 
+// Set up composables
+const { t } = useI18n()
+
+// Define headers
+const config = useRuntimeConfig()
+const headers = {
+  'x-api-key': config.public.apiKey.replace(/['"]+/g, "")
+}
+
 // Fetch initial data
-const { data: initialData, error: initialError } = await useFetch('/api/data')
+const { data: initialData, error: initialError } = await useFetch('/api/data', { headers })
 
 if (initialData.value && !initialError.value) {
   let parsedData = typeof initialData.value === 'string' ? JSON.parse(initialData.value) : initialData.value
@@ -48,9 +56,7 @@ const handleMapRequest = async (message) => {
     await $fetch('/api/maprequest', {
       method: 'POST',
       body: message,
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      headers: headers
     })
   } catch (error) {
     console.error("Error submitting request data:", error)
@@ -65,9 +71,7 @@ const loadMore = async () => {
 
   try {
     const { data: moreData, error: moreError } = await useFetch(`/api/data?cursor=${nextCursor.value}`, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      headers: headers
     })
 
     if (moreData.value && !moreError.value) {
