@@ -39,49 +39,62 @@
 import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
-// import { useAuth } from '@nuxtjs/auth-next'
-// import { useAxios } from 'axios'
+import { useAuth } from '@nuxtjs/auth-next'
+import { useFetch, useRuntimeConfig } from '#app'
 
-const { locale, setLocale } = useI18n()
+// Define composables
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
-// const { $axios } = useAxios()
-// const { $auth, loginWith } = useAuth()
+const auth = useAuth()
+const config = useRuntimeConfig()
 
+// Set up reactive state
 let password = ref("")
 let error = ref(null)
-let redirectPath = ref(locale.value ? `/${locale.value}/` : '/')
+let redirectPath = ref(route.query.redirect ? decodeURIComponent(route.query.redirect) : '/')
 
-// watch($auth.loggedIn, (loggedIn) => {
-//   if (loggedIn) {
-//     router.push(redirectPath.value)
-//   }
-// })
+// Watch
+watch(() => auth.loggedIn, (loggedIn) => {
+  if (loggedIn) {
+    router.push(redirectPath.value)
+  }
+})
 
+// Methods
 async function login() {
-  const authStrategy = $config.authStrategy || "none"
+  const authStrategy = config.authStrategy || "none"
   if (authStrategy === "password") {
     try {
-      await loginWith("password", {
-        data: {
-          password: password.value,
+      const { data, error: fetchError } = await useFetch('/api/login/post', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
         },
+        body: JSON.stringify({
+          password: password.value
+        })
       })
-      router.push(redirectPath.value)
-    } catch (error) {
-      if (error.response) {
-        if (error.response.status === 403) {
-          error.value = $t("passwordIncorrect") + "."
-        } else if (error.response.data && error.response.data.message) {
-          error.value = error.response.data.message
+
+      if (fetchError) {
+        if (fetchError.response && fetchError.response.status === 403) {
+          error.value = t("passwordIncorrect") + "."
+        } else if (fetchError.response && fetchError.response.data && fetchError.response.data.message) {
+          error.value = fetchError.response.data.message
         } else {
-          error.value = $t("loginError") + "."
+          error.value = t("loginError") + "."
         }
       } else {
-        error.value = error.message || $t("loginError") + "."
+        await auth.loginWith('local', {
+          data: {
+            token: data.token
+          }
+        })
+        router.push(redirectPath.value)
       }
+    } catch (err) {
+      error.value = err.message || t("loginError") + "."
     }
   }
 }
-
 </script>

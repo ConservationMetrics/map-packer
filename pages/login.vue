@@ -2,34 +2,26 @@
   <component :is="loginComponent" />
 </template>
 
-<script>
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { useRuntimeConfig } from '#app'
 import Auth0Login from "~/components/Auth0Login.vue";
 import PasswordLogin from "~/components/PasswordLogin.vue";
 
-export default {
-  data() {
-    return {
-      authStrategy: "none",
-    };
-  },
-  created() {
-    try {
-      this.authStrategy = this.$config.authStrategy;
-    } catch (error) {
-      console.error(
-        "Error fetching authStrategy config on client side:",
-        error,
-      );
-    }
-  },
-  components: {
-    Auth0Login,
-    PasswordLogin,
-  },
-  computed: {
-    loginComponent() {
-      return this.authStrategy === "auth0" ? Auth0Login : PasswordLogin;
-    },
-  },
-};
+// Define composables
+const config = useRuntimeConfig()
+const authStrategy = ref('none')
+
+// On Mount
+onMounted(() => {
+  try {
+    authStrategy.value = config.authStrategy
+  } catch (error) {
+    console.error('Error fetching authStrategy config on client side:', error)
+  }
+})
+
+const loginComponent = computed(() => {
+  return authStrategy.value === 'auth0' ? Auth0Login : PasswordLogin
+})
 </script>

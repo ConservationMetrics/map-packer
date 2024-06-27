@@ -24,7 +24,7 @@ export default defineNuxtConfig({
   modules: [
     "@nuxtjs/i18n",
     "nuxt-windicss",
-    // "@nuxtjs/auth-next",
+    "nuxt-auth-utils"
   ],
 
   i18n: {

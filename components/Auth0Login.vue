@@ -13,42 +13,47 @@
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      errorMessage: "",
-      redirectPath: this.localePath("/"),
-    };
-  },
-  created() {
-    const redirect = this.$route.query.redirect;
-    this.redirectPath = redirect
-      ? decodeURIComponent(redirect)
-      : this.localePath("/");
-  },
-  mounted() {
-    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    const error = hashParams.get("error");
-    const errorDescription = hashParams.get("error_description");
+<script setup>
+import { ref, onMounted, computed } from 'vue'
+import { useRouter, useRoute, useLocalePath } from '#app'
+import { useAuth } from '@nuxt/auth-next'
+import { useI18n } from 'vue-i18n'
 
-    if (error === "access_denied") {
-      this.errorMessage = decodeURIComponent(errorDescription);
-    }
-    if (this.$auth.loggedIn) {
-      this.$router.replace(this.redirectPath);
-    }
-  },
-  methods: {
-    async login() {
-      try {
-        await this.$auth.loginWith("auth0", {
-          redirectUri: window.location.origin + this.redirectPath,
-        });
-      } catch (error) {
-        console.error(this.$t("auth0LoginError") + ":", error);
-      }
-    },
-  },
-};
+// Define composables
+const errorMessage = ref('')
+const { t } = useI18n()
+const route = useRoute()
+const router = useRouter()
+const auth = useAuth()
+const localePath = useLocalePath()
+
+const redirectPath = ref(localePath('/'))
+
+// On mount
+onMounted(() => {
+  const redirect = route.query.redirect
+  redirectPath.value = redirect ? decodeURIComponent(redirect) : localePath('/')
+
+  const hashParams = new URLSearchParams(window.location.hash.substring(1))
+  const error = hashParams.get('error')
+  const errorDescription = hashParams.get('error_description')
+
+  if (error === 'access_denied') {
+    errorMessage.value = decodeURIComponent(errorDescription)
+  }
+  if (auth.loggedIn) {
+    router.replace(redirectPath.value)
+  }
+})
+
+// Methods
+const login = async () => {
+  try {
+    await auth.loginWith('auth0', {
+      redirectUri: window.location.origin + redirectPath.value,
+    })
+  } catch (error) {
+    console.error(t('auth0LoginError') + ':', error)
+  }
+}
 </script>
