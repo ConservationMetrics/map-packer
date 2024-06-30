@@ -1,11 +1,13 @@
-// const authStrategy: string =
-//   process.env.NUXT_ENV_AUTH_STRATEGY?.replace(/['"]+/g, "") || "none";
-// const auth0Domain: string =
-//   process.env.NUXT_ENV_AUTH0_DOMAIN?.replace(/['"]+/g, "") || "";
-// const auth0ClientId: string =
-//   process.env.NUXT_ENV_AUTH0_CLIENT_ID?.replace(/['"]+/g, "") || "";
-// const auth0Audience: string =
-//   process.env.NUXT_ENV_AUTH0_AUDIENCE?.replace(/['"]+/g, "") || "";
+const apiKey: string =
+  process.env.VUE_APP_API_KEY?.replace(/['"]+/g, "") || "";
+const authStrategy: string =
+  process.env.NUXT_ENV_AUTH_STRATEGY?.replace(/['"]+/g, "") || "none";
+const auth0domain: string =
+  process.env.NUXT_ENV_AUTH0_DOMAIN?.replace(/['"]+/g, "") || "";
+const auth0clientId: string =
+  process.env.NUXT_ENV_AUTH0_CLIENT_ID?.replace(/['"]+/g, "") || "";
+const auth0baseUrl: string =
+  process.env.NUXT_ENV_AUTH0_BASE_URL?.replace(/['"]+/g, "") || "";
 
 export default defineNuxtConfig({
   // Global page headers: https://nuxt.com/docs/getting-started/seo-meta
@@ -23,8 +25,7 @@ export default defineNuxtConfig({
   // Modules : https://nuxt.com/docs/guide/concepts/modules
   modules: [
     "@nuxtjs/i18n",
-    "nuxt-windicss",
-    "nuxt-auth-utils"
+    "nuxt-windicss"
   ],
 
   i18n: {
@@ -46,9 +47,19 @@ export default defineNuxtConfig({
     strategy: "no_prefix",
   },
 
+  plugins: [
+    '~/plugins/auth0-vue'
+  ],
+
   runtimeConfig: {
     public: {
-      apiKey: process.env.VUE_APP_API_KEY
+      apiKey: apiKey,
+      auth0: {
+        domain: auth0domain,
+        clientId: auth0clientId,
+        baseUrl: auth0baseUrl
+      },
+      authStrategy,
     }
   },
 

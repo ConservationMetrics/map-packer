@@ -14,25 +14,24 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import { useRouter, useRoute, useLocalePath } from '#app'
-import { useAuth } from '@nuxt/auth-next'
+import { ref, onMounted } from 'vue'
+import { useAuth0 } from '@auth0/auth0-vue'
 import { useI18n } from 'vue-i18n'
 
 // Define composables
 const errorMessage = ref('')
 const { t } = useI18n()
-const route = useRoute()
 const router = useRouter()
-const auth = useAuth()
+const auth0 = !import.meta.env.SSR ? useAuth0() : undefined
 const localePath = useLocalePath()
+const { $auth0 } = useNuxtApp()
 
 const redirectPath = ref(localePath('/'))
 
 // On mount
 onMounted(() => {
-  const redirect = route.query.redirect
-  redirectPath.value = redirect ? decodeURIComponent(redirect) : localePath('/')
+  const redirect = router.currentRoute.value.query.redirect
+  redirectPath.value = redirect ? decodeURIComponent(redirect) : localePath('/map')
 
   const hashParams = new URLSearchParams(window.location.hash.substring(1))
   const error = hashParams.get('error')
@@ -41,19 +40,24 @@ onMounted(() => {
   if (error === 'access_denied') {
     errorMessage.value = decodeURIComponent(errorDescription)
   }
-  if (auth.loggedIn) {
-    router.replace(redirectPath.value)
-  }
+
+  watch(() => $auth0?.isAuthenticated.value, (newValue) => {
+    if (newValue) {
+      router.push(redirectPath.value)
+    }
+  })
 })
 
-// Methods
-const login = async () => {
-  try {
-    await auth.loginWith('auth0', {
-      redirectUri: window.location.origin + redirectPath.value,
+const login = () => {
+  $auth0?.checkSession()
+  if (!$auth0?.isAuthenticated.value) {
+    $auth0?.loginWithRedirect({
+      appState: {
+        target: useRoute().path,
+      },
     })
-  } catch (error) {
-    console.error(t('auth0LoginError') + ':', error)
+  } else {
+    router.push(redirectPath.value)
   }
 }
 </script>

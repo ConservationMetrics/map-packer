@@ -12,13 +12,13 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@auth0/auth0-vue": "^2.3.3",
     "@azure/storage-queue": "^12.22.0",
     "@mapbox/mapbox-gl-draw": "^1.4.3",
     "jsonwebtoken": "^9.0.2",
     "mapbox-gl": "^3.4.0",
     "mapbox-gl-draw-rectangle-mode": "^1.0.4",
     "nuxt": "^3.12.2",
-    "nuxt-auth-utils": "^0.1.0",
     "pg": "^8.12.0",
     "qrcode.vue": "^3.4.1",
     "vue": "^3.4.29",

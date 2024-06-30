@@ -22,7 +22,7 @@ To get started, configure your MapPacker application environmental variables as 
 
 **Message Queue:** Provide your message queue variables to publish your map request to a storage queue service, where it can be picked up by a [mapgl-tile-renderer](http://github.com/conservationMetrics/mapgl-tile-renderer/) task worker. For Azure, you need a queue name, a storage account name, and a storage account key.
 
-**Authentication strategy:** MapPacker supports three different authentication strategies: auth0, password (from an environmental var) with JWT key, or none. Set your authentication strategy in `NUXT_ENV_AUTH_STRATEGY`.
+**Authentication strategy:** Currently, MapPacker supports two different authentication strategies: auth0 or none. Set your authentication strategy in `NUXT_ENV_AUTH_STRATEGY`.
 
 - If you are using an auth0 strategy, then you need to provide a domain, client ID, client secret, audience, and base URL.
 - If you are using a password strategy, then you need to provide a password, and secret JWT key.
