@@ -87,8 +87,9 @@
 
       <div
         v-if="
-          form.selectedStyle === 'mapbox://styles/mapbox/satellite-v9' ||
-          !form.selectedStyle.includes('mapbox')
+          (form.selectedStyle === 'mapbox://styles/mapbox/satellite-v9' ||
+          !form.selectedStyle.includes('mapbox')) && 
+          !form.selectedStyle.includes('stadia')
         "
         class="form-group flex items-center"
       >
