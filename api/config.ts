@@ -20,6 +20,7 @@ interface EnvVars {
   SECRET_JWT_KEY: string;
   VUE_APP_API_KEY: string;
   VUE_APP_PLANET_API_KEY: string;
+  VUE_APP_STADIA_API_KEY: string;
 }
 
 const env = process.env as unknown as EnvVars;
@@ -60,6 +61,7 @@ const OFFLINE_MAPS_URI = getEnvVar("OFFLINE_MAPS_URI");
 const PASSWORD = getEnvVar("PASSWORD");
 const PLANET_API_KEY = getEnvVar("VUE_APP_PLANET_API_KEY") as string;
 const SECRET_JWT_KEY = getEnvVar("SECRET_JWT_KEY", "secret-jwt-key") as string;
+const STADIA_API_KEY = getEnvVar("VUE_APP_STADIA_API_KEY") as string;
 
 export {
   API_KEY,
@@ -82,4 +84,5 @@ export {
   PASSWORD,
   PLANET_API_KEY,
   SECRET_JWT_KEY,
+  STADIA_API_KEY,
 };

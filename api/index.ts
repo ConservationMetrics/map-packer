@@ -32,6 +32,7 @@ import {
   MAP_LONGITUDE,
   OFFLINE_MAPS_URI,
   PLANET_API_KEY,
+  STADIA_API_KEY
 } from "./config";
 
 const app = express();
@@ -197,6 +198,9 @@ app.post("/maprequest", async (req: Request, res: Response) => {
       data.apiKey = data.apiKey || MAPBOX_ACCESS_TOKEN;
     } else if (data.style && data.style === "planet") {
       data.apiKey = data.apiKey || PLANET_API_KEY;
+    } else if (data.style && (data.style === "stadia-stamen-terrain" || 
+        data.style === "stadia-alidade-satellite")) {
+      data.apiKey = data.apiKey || STADIA_API_KEY;
     }
 
     // Publish message to Azure Storage Queue
