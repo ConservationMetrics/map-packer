@@ -9,7 +9,8 @@ export type MapStyleKey =
   | "mapbox-streets"
   | "planet"
   | "stadia-stamen-terrain"
-  | "stadia-alidade-satellite";
+  | "stadia-alidade-satellite"
+  | "thunderforest-landscape";
 
 interface MapStyle {
   name: string;
@@ -191,6 +192,37 @@ export const mapStyles: Record<MapStyleKey, MapStyle> = {
           tiles: [
             `https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}.jpg?api_key=` +
               (process.env.VUE_APP_STADIA_API_KEY || "").replace(/"/g, ""),
+          ],
+          tileSize: 256,
+        },
+      },
+      layers: [
+        {
+          id: "background",
+          type: "background",
+          paint: {
+            "background-color": "#f9f9f9",
+          },
+        },
+        {
+          id: "stadia",
+          type: "raster",
+          source: "stadia",
+          paint: {},
+        },
+      ],
+    }
+  },
+  "thunderforest-landscape": {
+    name: "Thunderforest Landscape",
+    style: {
+      version: 8,
+      sources: {
+        stadia: {
+          type: "raster",
+          tiles: [
+            `https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=` +
+              (process.env.VUE_APP_THUNDERFOREST_API_KEY || "").replace(/"/g, ""),
           ],
           tileSize: 256,
         },

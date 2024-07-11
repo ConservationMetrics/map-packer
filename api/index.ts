@@ -32,7 +32,8 @@ import {
   MAP_LONGITUDE,
   OFFLINE_MAPS_URI,
   PLANET_API_KEY,
-  STADIA_API_KEY
+  STADIA_API_KEY,
+  THUNDERFOREST_API_KEY,
 } from "./config";
 
 const app = express();
@@ -201,7 +202,9 @@ app.post("/maprequest", async (req: Request, res: Response) => {
     } else if (data.style && (data.style === "stadia-stamen-terrain" || 
         data.style === "stadia-alidade-satellite")) {
       data.apiKey = data.apiKey || STADIA_API_KEY;
-    }
+    } else if (data.style && data.style === "thunderforest-landscape") {
+      data.apiKey = data.apiKey || THUNDERFOREST_API_KEY;
+    } 
 
     // Publish message to Azure Storage Queue
     if (ASQ_QUEUE_NAME) {

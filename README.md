@@ -31,7 +31,7 @@ To get started, configure your MapPacker application environmental variables as 
 
 **Map config:** Provide the default settings for the map zoom level and lat/long coordinates. You may also provide a custom Mapbox map style to be used in the application (if not, Mapbox Streets will be used as the default option).
 
-**Mapbox and Planet access token:** Provide access tokens to be used across the application for authenticating with Mapbox and Planet map assets.
+**Mapbox, Planet, Stadia, and Thunderforest access tokens:** Provide access tokens to be used across the application for authenticating with map assets. If not provided, the respective map styles will not show in the generate map view.
 
 **Offline map storage:** Provide a URI where the offline maps can be downloaded, as well as a path pointing to a volume mount directory for mapgl-tile-renderer to store the files.
 
