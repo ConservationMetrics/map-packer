@@ -78,7 +78,6 @@
         <div class="mb-2" v-if="map.bounds">
           <MiniMap
             :bounds="map.bounds"
-            :mapbox-access-token="mapboxAccessToken"
           />
         </div>
         <p class="mb-2 italic" v-if="map.description">{{ map.description }}</p>
@@ -211,7 +210,6 @@ import overlayModal from "@/components/overlay.css";
 export default {
   components: { MiniMap, QRCode },
   props: {
-    mapboxAccessToken: String,
     offlineMaps: Array,
     offlineMapsUri: String,
     nextCursor: Number,

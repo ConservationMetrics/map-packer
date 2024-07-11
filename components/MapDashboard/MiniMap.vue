@@ -6,9 +6,9 @@
 import mapboxgl from "mapbox-gl";
 
 export default {
-  props: ["mapboxAccessToken", "bounds"],
+  props: ["bounds"],
   mounted() {
-    mapboxgl.accessToken = this.mapboxAccessToken;
+    mapboxgl.accessToken = process.env.VUE_APP_MAPBOX_API_KEY;
 
     const boundsArray = this.bounds
       .split(",")

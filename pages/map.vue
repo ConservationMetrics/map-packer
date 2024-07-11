@@ -4,7 +4,6 @@
       v-if="dataFetched"
       @handleMapRequest="handleMapRequest"
       :availableMapStyles="availableMapStyles"
-      :mapboxAccessToken="mapboxAccessToken"
       :mapLatitude="mapLatitude"
       :mapLongitude="mapLongitude"
       :mapZoom="mapZoom"
@@ -30,7 +29,6 @@ export default {
         "x-api-key": this.$config.apiKey.replace(/['"]+/g, ""),
         "x-auth-strategy": this.$auth.strategy.name,
       },
-      mapboxAccessToken: "",
       mapLatitude: 0,
       mapLongitude: 0,
       mapZoom: 0,
@@ -91,7 +89,6 @@ export default {
         });
         this.dataFetched = true;
         this.availableMapStyles = availableMapStyles;
-        this.mapboxAccessToken = response.mapboxAccessToken;
         this.mapLatitude = response.mapLatitude,
         this.mapLongitude = response.mapLongitude;
         this.mapZoom = response.mapZoom;

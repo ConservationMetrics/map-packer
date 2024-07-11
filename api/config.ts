@@ -7,7 +7,6 @@ interface EnvVars {
   DB_PORT: string;
   DB_SSL: string;
   DB_TABLE: string;
-  MAPBOX_ACCESS_TOKEN: string;
   MAPBOX_STYLE: string;
   MAPBOX_STYLE_NAME: string;
   MAP_ZOOM: string;
@@ -19,6 +18,7 @@ interface EnvVars {
   PORT: string;
   SECRET_JWT_KEY: string;
   VUE_APP_API_KEY: string;
+  VUE_APP_MAPBOX_API_KEY: string;
   VUE_APP_PLANET_API_KEY: string;
   VUE_APP_STADIA_API_KEY: string;
   VUE_APP_THUNDERFOREST_API_KEY: string;
@@ -52,7 +52,7 @@ const DB_PASSWORD = getEnvVar("DB_PASSWORD");
 const DB_PORT = getEnvVar("DB_PORT", "5432") as string;
 const DB_SSL = getEnvVar("DB_SSL", "YES") as string;
 const DB_TABLE = getEnvVar("DB_TABLE") as string;
-const MAPBOX_ACCESS_TOKEN = getEnvVar("MAPBOX_ACCESS_TOKEN", "pk.ey") as string;
+const MAPBOX_ACCESS_TOKEN = getEnvVar("VUE_APP_MAPBOX_API_KEY", "pk.ey") as string;
 const MAPBOX_STYLE = getEnvVar("MAPBOX_STYLE") as string;
 const MAPBOX_STYLE_NAME = getEnvVar("MAPBOX_STYLE_NAME") as string;
 const MAP_ZOOM = getEnvVar("MAP_ZOOM") as string;

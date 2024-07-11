@@ -68,7 +68,6 @@ app.get("/data", async (req: Request, res: Response) => {
       res.json([]);
     } else {
       const response = {
-        mapboxAccessToken: MAPBOX_ACCESS_TOKEN,
         // Set nextCursor to the last id in the data array
         // If there are more rows in the database,
         // the last row's id will be used as the nextCursor
@@ -88,7 +87,6 @@ app.get("/data", async (req: Request, res: Response) => {
 // API endpoint to retrieve map configuration
 app.get("/map", async (_req: Request, res: Response) => {
   const response = {
-    mapboxAccessToken: MAPBOX_ACCESS_TOKEN,
     mapZoom: MAP_ZOOM,
     mapLatitude: MAP_LATITUDE,
     mapLongitude: MAP_LONGITUDE,
@@ -105,16 +103,33 @@ app.get("/mapstyles", (_req: Request, res: Response) => {
     url: value.url || `/api/mapstyle/${key}/`,
   }));
 
-  // append custom mapbox style to the top of the list of available styles
-  if (MAPBOX_STYLE) {
-    styles.unshift({
+  // filter out map styles for which the API key was not provided
+  const filteredStyles = styles.filter((style) => {
+    if (style.key.includes("thunderforest") && !THUNDERFOREST_API_KEY) {
+      return false;
+    }
+    if (style.key.includes( "planet") && !PLANET_API_KEY) {
+      return false;
+    }
+    if (style.key.includes("stadia") && !STADIA_API_KEY) {
+      return false;
+      }
+    if (style.key.includes("mapbox") && !MAPBOX_ACCESS_TOKEN) {
+      return false;
+    }
+    return true;
+  } );
+
+  // if provided, append custom mapbox style to the top of the list of available styles
+  if (MAPBOX_STYLE && MAPBOX_ACCESS_TOKEN) {
+    filteredStyles.unshift({
       name: MAPBOX_STYLE_NAME || "Mapbox Custom Style",
       key: "mapbox",
       url: MAPBOX_STYLE,
     });
   }
 
-  res.json(styles);
+  res.json(filteredStyles);
 });
 
 // API endpoint to retrieve a specific map style
