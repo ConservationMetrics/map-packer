@@ -29,8 +29,10 @@ export default {
         "x-api-key": this.$config.apiKey.replace(/['"]+/g, ""),
         "x-auth-strategy": this.$auth.strategy.name,
       },
+      mapboxAccessToken: "",
       nextCursor: null,
       offlineMaps: [],
+      offlineMapsUri: "",
     };
   },
   methods: {
@@ -67,31 +69,29 @@ export default {
         this.isLoading = false;
       }
     },
-  },
-  async asyncData({ $axios, app }) {
+    async fetchData() {
     // Set up the headers for the request
     let headers = {
-      "x-api-key": app.$config.apiKey.replace(/['"]+/g, ""),
-      "x-auth-strategy": app.$auth.strategy.name,
+      "x-api-key": this.$config.apiKey.replace(/['"]+/g, ""),
+      "x-auth-strategy": this.$auth.strategy.name,
     };
 
     try {
-      // Use the table name in the API request
-      const response = await $axios.$get(`/api/data`, { headers });
-      return {
-        dataFetched: true,
-        mapboxAccessToken: response.mapboxAccessToken,
-        nextCursor: response.nextCursor,
-        offlineMaps: response.offlineMaps,
-        offlineMapsUri: response.offlineMapsUri,
-      };
+      const response = await this.$axios.$get(`/api/data`, { headers });
+      this.dataFetched = true;
+      this.mapboxAccessToken = response.mapboxAccessToken;
+      this.nextCursor = response.nextCursor;
+      this.offlineMaps = response.offlineMaps;
+      this.offlineMapsUri = response.offlineMapsUri;
     } catch (error) {
       // Handle errors as appropriate
       console.error("Error fetching data:", error);
-      return {
-        dataFetched: false,
-      };
+      this.dataFetched = false;
     }
+  },
+  },
+  mounted() {
+    this.fetchData();
   },
 };
 </script>
