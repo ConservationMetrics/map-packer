@@ -24,6 +24,7 @@
     "jsonwebtoken": "^9.0.2",
     "mapbox-gl": "^3.1.2",
     "mapbox-gl-draw-rectangle-mode": "^1.0.4",
+    "maplibre-gl": "^4.5.0",
     "nuxt": "^2.17.2",
     "pg": "^8.11.3",
     "qrcode.vue": "^1.7.0",

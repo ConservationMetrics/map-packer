@@ -41,13 +41,14 @@ export default {
   components: { MapCanvas, Sidebar, MapNavigation },
   props: [
     "availableMapStyles",
+    "mapboxAccessToken",
     "mapLatitude",
     "mapLongitude",
     "mapZoom",
   ],
   data() {
     return {
-      localMapboxAccessToken: process.env.VUE_APP_MAPBOX_API_KEY,
+      localMapboxAccessToken: this.mapboxAccessToken,
       osmEnabled: false,
       selectedBounds: "",
       selectedLatitude: this.mapLatitude,

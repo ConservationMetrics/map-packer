@@ -77,6 +77,7 @@
         </h2>
         <div class="mb-2" v-if="map.bounds">
           <MiniMap
+            :mapbox-access-token="mapboxAccessToken"
             :bounds="map.bounds"
           />
         </div>
@@ -212,6 +213,7 @@ export default {
   props: {
     offlineMaps: Array,
     offlineMapsUri: String,
+    mapboxAccessToken: String,
     nextCursor: Number,
   },
   data() {
