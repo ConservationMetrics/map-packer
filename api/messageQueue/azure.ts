@@ -50,6 +50,7 @@ export async function publishToAzureStorageQueue(
           outputDir: process.env.OFFLINE_MAPS_PATH,
         }),
     ...(message.apiKey && { apiKey: message.apiKey }),
+    thumbnail: true,
   };
 
   const messageString = JSON.stringify(transformedMessage);

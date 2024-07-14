@@ -38,7 +38,7 @@
   "password": "Password",
   "passwordIncorrect": "The password you entered is incorrect",
   "pending": "Pending",
-  "pendingDelete": "Pending Deletion",
+  "pendingDeletion": "Pending Deletion",
   "planetBasemap": "Planet Visual Basemap: Month & Year",
   "pleaseGenerateANewMap": "Please generate a new map",
   "processing": "Processing",
