@@ -75,10 +75,18 @@
         <h2 class="text-2xl font-bold text-gray-800 mb-2" v-if="map.title">
           {{ map.title }}
         </h2>
-        <div class="mb-2" v-if="map.bounds">
+        <!-- MiniMap component is the fallback if there is no thumbnail image in the db -->
+        <div class="mb-2" v-if="map.thumbnail_filename">
+          <img
+            :src="`${offlineMapsUri}/${map.thumbnail_filename}`"
+            alt="Map thumbnail"
+            class="w-full"
+          />
+        </div>
+        <div class="mb-2" v-if="!map.thumbnail_filename && map.bounds">
           <MiniMap
-            :bounds="map.bounds"
             :mapbox-access-token="mapboxAccessToken"
+            :bounds="map.bounds"
           />
         </div>
         <p class="mb-2 italic" v-if="map.description">{{ map.description }}</p>
@@ -212,9 +220,9 @@ import { copyLink } from "~/utils";
 
 // Define props
 const props = defineProps({
-  mapboxAccessToken: String,
   offlineMaps: Array,
   offlineMapsUri: String,
+  mapboxAccessToken: String,
   nextCursor: Number,
 });
 

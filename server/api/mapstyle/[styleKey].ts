@@ -1,5 +1,5 @@
 import { defineEventHandler, send, sendError } from 'h3'
-import { mapStyles } from '../../styles/mapStyles'
+import { mapStyles } from '../../styles/availableMapStyles'
 
 export default defineEventHandler((event) => {
   if (!event.context.params) {
