@@ -47,10 +47,6 @@ export default defineNuxtConfig({
     strategy: "no_prefix",
   },
 
-  plugins: [
-    '~/plugins/auth0-vue'
-  ],
-
   runtimeConfig: {
     public: {
       apiKey: apiKey,

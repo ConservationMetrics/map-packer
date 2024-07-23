@@ -12,7 +12,6 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@auth0/auth0-vue": "^2.3.3",
     "@azure/storage-queue": "^12.22.0",
     "@mapbox/mapbox-gl-draw": "^1.4.3",
     "jsonwebtoken": "^9.0.2",
