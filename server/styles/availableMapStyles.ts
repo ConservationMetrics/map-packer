@@ -12,7 +12,6 @@ export type MapStyleKey =
   | "stadia-alidade-satellite"
   | "thunderforest-landscape";
 
-
 interface MapStyle {
   name: string;
   style?: unknown;
@@ -181,7 +180,7 @@ export const mapStyles: Record<MapStyleKey, MapStyle> = {
           paint: {},
         },
       ],
-    }
+    },
   },
   "stadia-alidade-satellite": {
     name: "Stadia Alidade Satellite",
@@ -212,7 +211,7 @@ export const mapStyles: Record<MapStyleKey, MapStyle> = {
           paint: {},
         },
       ],
-    }
+    },
   },
   "thunderforest-landscape": {
     name: "Thunderforest Landscape",
@@ -223,7 +222,10 @@ export const mapStyles: Record<MapStyleKey, MapStyle> = {
           type: "raster",
           tiles: [
             `https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=` +
-              (process.env.VUE_APP_THUNDERFOREST_API_KEY || "").replace(/"/g, ""),
+              (process.env.VUE_APP_THUNDERFOREST_API_KEY || "").replace(
+                /"/g,
+                "",
+              ),
           ],
           tileSize: 256,
         },
@@ -243,6 +245,6 @@ export const mapStyles: Record<MapStyleKey, MapStyle> = {
           paint: {},
         },
       ],
-    }
+    },
   },
 };

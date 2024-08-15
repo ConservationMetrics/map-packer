@@ -65,8 +65,9 @@ const PASSWORD = getEnvVar("PASSWORD");
 const PLANET_API_KEY = getEnvVar("VUE_APP_PLANET_API_KEY") as string;
 const SECRET_JWT_KEY = getEnvVar("SECRET_JWT_KEY", "secret-jwt-key") as string;
 const STADIA_API_KEY = getEnvVar("VUE_APP_STADIA_API_KEY") as string;
-const THUNDERFOREST_API_KEY = getEnvVar("VUE_APP_THUNDERFOREST_API_KEY") as string;
-
+const THUNDERFOREST_API_KEY = getEnvVar(
+  "VUE_APP_THUNDERFOREST_API_KEY",
+) as string;
 
 export {
   API_KEY,

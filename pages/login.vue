@@ -2,5 +2,4 @@
   <Auth0Login></Auth0Login>
 </template>
 
-<script setup>
-</script>
+<script setup></script>

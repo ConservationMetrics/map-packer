@@ -51,81 +51,80 @@
 </template>
 
 <script setup>
-import { ref, watch, defineEmits } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { ref, watch, defineEmits } from "vue";
+import { useI18n } from "vue-i18n";
 
 // This specific pattern of importing vue-slider-component follows the official
 // documentation for server-side rendering: https://nightcatsama.github.io/vue-slider-component/#/
-import VueSlider from 'vue-slider-component/dist-css/vue-slider-component.umd.min.js'
-import 'vue-slider-component/dist-css/vue-slider-component.css'
-import 'vue-slider-component/theme/default.css'
+import VueSlider from "vue-slider-component/dist-css/vue-slider-component.umd.min.js";
+import "vue-slider-component/dist-css/vue-slider-component.css";
+import "vue-slider-component/theme/default.css";
 
 // Define props
 const props = defineProps({
   mapLatitude: Number,
   mapLongitude: Number,
   mapZoom: Number,
-})
+});
 
 // Define emits
-const emit = defineEmits(['updateMapParams'])
+const emit = defineEmits(["updateMapParams"]);
 
 // Set up composables
-const { t } = useI18n()
+const { t } = useI18n();
 
 // Methods
 const form = ref({
   selectedLatitude: props.mapLatitude,
   selectedLongitude: props.mapLongitude,
   selectedZoom: props.mapZoom,
-})
+});
 
 // Watch
 watch(
   () => props.mapLatitude,
   (newVal) => {
-    form.value.selectedLatitude = newVal
-  }
-)
+    form.value.selectedLatitude = newVal;
+  },
+);
 
 watch(
   () => props.mapLongitude,
   (newVal) => {
-    form.value.selectedLongitude = newVal
-  }
-)
+    form.value.selectedLongitude = newVal;
+  },
+);
 
 watch(
   () => props.mapZoom,
   (newVal) => {
-    form.value.selectedZoom = newVal
-  }
-)
+    form.value.selectedZoom = newVal;
+  },
+);
 
 watch(
   () => form.value.selectedLatitude,
   (newVal) => {
-    emit('updateMapParams', { param: 'Latitude', value: newVal })
-  }
-)
+    emit("updateMapParams", { param: "Latitude", value: newVal });
+  },
+);
 
 watch(
   () => form.value.selectedLongitude,
   (newVal) => {
-    emit('updateMapParams', { param: 'Longitude', value: newVal })
-  }
-)
+    emit("updateMapParams", { param: "Longitude", value: newVal });
+  },
+);
 
 watch(
   () => form.value.selectedZoom,
   (newVal) => {
-    emit('updateMapParams', { param: 'Zoom', value: newVal })
+    emit("updateMapParams", { param: "Zoom", value: newVal });
   },
-  { deep: true }
-)
-
+  { deep: true },
+);
 </script>
 
 <style scoped>
-@import '@/components/GenerateMap/style.css';
+@import "@/components/GenerateMap/style.css";
 </style>

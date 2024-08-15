@@ -13,47 +13,48 @@
 </template>
 
 <script setup>
-import { useFetch, useHead } from '#imports'
-import { useI18n } from 'vue-i18n'
+import { useFetch, useHead } from "#imports";
+import { useI18n } from "vue-i18n";
 
 // Set up reactive state
-const dataFetched = ref(false)
-const availableMapStyles = ref([])
-const mapboxAccessToken = ref('')
-const mapLatitude = ref(0)
-const mapLongitude = ref(0)
-const mapZoom = ref(0)
+const dataFetched = ref(false);
+const availableMapStyles = ref([]);
+const mapboxAccessToken = ref("");
+const mapLatitude = ref(0);
+const mapLongitude = ref(0);
+const mapZoom = ref(0);
 
 // Set up composables
-const { t } = useI18n()
+const { t } = useI18n();
 
 // Define headers
-const config = useRuntimeConfig()
+const config = useRuntimeConfig();
 const headers = {
-  'x-api-key': config.public.apiKey.replace(/['"]+/g, "")
-}
+  "x-api-key": config.public.apiKey.replace(/['"]+/g, ""),
+};
 
 // Fetch initial data
-const { data, error } = await useFetch('/api/map', { headers })
+const { data, error } = await useFetch("/api/map", { headers });
 
 if (data.value && !error.value) {
-  let parsedData = typeof data.value === 'string' ? JSON.parse(data.value) : data.value
+  let parsedData =
+    typeof data.value === "string" ? JSON.parse(data.value) : data.value;
 
-  mapboxAccessToken.value = parsedData.mapboxAccessToken
-  mapLatitude.value = Number(parsedData.mapLatitude)
-  mapLongitude.value = Number(parsedData.mapLongitude)
-  mapZoom.value = Number(parsedData.mapZoom)
+  mapboxAccessToken.value = parsedData.mapboxAccessToken;
+  mapLatitude.value = Number(parsedData.mapLatitude);
+  mapLongitude.value = Number(parsedData.mapLongitude);
+  mapZoom.value = Number(parsedData.mapZoom);
 
-  let mapStyles = await $fetch('/api/mapstyles', { headers })
-  if (typeof mapStyles === 'string') {
-    mapStyles = mapStyles.split(',')
+  let mapStyles = await $fetch("/api/mapstyles", { headers });
+  if (typeof mapStyles === "string") {
+    mapStyles = mapStyles.split(",");
   }
-  availableMapStyles.value = mapStyles
+  availableMapStyles.value = mapStyles;
 
-  dataFetched.value = true
+  dataFetched.value = true;
 } else {
-  console.error("Error fetching data:", error.value)
-  dataFetched.value = false
+  console.error("Error fetching data:", error.value);
+  dataFetched.value = false;
 }
 
 // POST map request (emitted by component)
@@ -63,8 +64,8 @@ const handleMapRequest = async (formData) => {
     return str
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
-      .replace(/\W+/g, "_")
-  }
+      .replace(/\W+/g, "_");
+  };
 
   // Transform formData to match the expected database table schema
   const transformedMessage = {
@@ -82,25 +83,25 @@ const handleMapRequest = async (formData) => {
     openstreetmap: formData.openstreetmap ?? false,
     number_of_tiles: formData.estimatedTiles,
     created_at: new Date(),
-  }
+  };
 
   // Include mapboxAccessToken if it exists
   if (formData.mapboxAccessToken) {
-    transformedMessage.apiKey = formData.mapboxAccessToken
+    transformedMessage.apiKey = formData.mapboxAccessToken;
   }
 
   try {
-    await $fetch('/api/maprequest', {
-      method: 'POST',
+    await $fetch("/api/maprequest", {
+      method: "POST",
       body: transformedMessage,
-      headers: headers
-    })
+      headers: headers,
+    });
   } catch (error) {
-    console.error("Error submitting request data:", error)
+    console.error("Error submitting request data:", error);
   }
-}
+};
 
 useHead({
-  title: 'MapPacker: ' + t("generateOfflineMap"),
-})
+  title: "MapPacker: " + t("generateOfflineMap"),
+});
 </script>

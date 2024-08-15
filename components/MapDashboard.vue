@@ -211,8 +211,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
-import { useI18n } from 'vue-i18n';
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { useI18n } from "vue-i18n";
 
 import QRCode from "qrcode.vue";
 import MiniMap from "@/components/MapDashboard/MiniMap.vue";
@@ -227,7 +227,7 @@ const props = defineProps({
 });
 
 // Set up composables
-const emit = defineEmits(['handleMapRequest', 'loadMore']);
+const emit = defineEmits(["handleMapRequest", "loadMore"]);
 const { t, locale, locales } = useI18n();
 
 // Set up reactive state
@@ -235,7 +235,7 @@ const dropdownOpen = ref(false);
 const tooltipId = ref(null);
 const showQRCodeId = ref(null);
 const showModal = ref(false);
-const modalMessage = ref('');
+const modalMessage = ref("");
 
 // Methods
 const calculateDuration = (start, end) => {
@@ -262,24 +262,24 @@ const copyLinkToClipboard = (link, id) => {
       }, 1500);
     })
     .catch((err) => {
-      console.error('Failed to copy:', err);
+      console.error("Failed to copy:", err);
     });
 };
 
 const deleteMap = (id) => {
-  let confirmation = window.confirm(t('mapDeleteConfirmation') + '.');
+  let confirmation = window.confirm(t("mapDeleteConfirmation") + ".");
 
   if (confirmation) {
     const map = props.offlineMaps.find((m) => m.id === id);
     if (map) {
       const message = {
-        type: 'delete_request',
+        type: "delete_request",
         requestId: map.id,
         filename: map.filename,
         file_location: map.file_location,
       };
-      emit('handleMapRequest', message);
-      modalMessage.value = t('mapWithFilesDeleted') + '!';
+      emit("handleMapRequest", message);
+      modalMessage.value = t("mapWithFilesDeleted") + "!";
       showModal.value = true;
       setTimeout(() => {
         showModal.value = false;
@@ -295,31 +295,31 @@ const formatNumber = (value) => parseInt(value).toLocaleString();
 
 const formatDate = (dateString) => {
   const options = {
-    year: 'numeric',
-    month: 'long',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
+    year: "numeric",
+    month: "long",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
     hour12: false,
   };
   const date = new Date(dateString);
-  return date.toLocaleDateString('en-GB', options);
+  return date.toLocaleDateString("en-GB", options);
 };
 
 const formatStatusColor = (status) => {
   switch (status) {
-    case 'FAILED':
-      return 'font-semibold text-red-500';
-    case 'PENDING DELETION':
-      return 'font-semibold text-red-500';
-    case 'PENDING':
-      return 'font-semibold text-yellow-500';
-    case 'PROCESSING':
-      return 'font-semibold text-yellow-500';
-    case 'SUCCEEDED':
-      return 'font-semibold text-green-500';
+    case "FAILED":
+      return "font-semibold text-red-500";
+    case "PENDING DELETION":
+      return "font-semibold text-red-500";
+    case "PENDING":
+      return "font-semibold text-yellow-500";
+    case "PROCESSING":
+      return "font-semibold text-yellow-500";
+    case "SUCCEEDED":
+      return "font-semibold text-green-500";
     default:
-      return 'font-semibold text-gray-600';
+      return "font-semibold text-gray-600";
   }
 };
 
@@ -330,17 +330,17 @@ const handleScroll = () => {
 };
 
 const loadMore = () => {
-  emit('loadMore');
+  emit("loadMore");
 };
 
 const resubmitMapRequest = (id) => {
   const map = props.offlineMaps.find((m) => m.id === id);
   if (map) {
     const message = {
-      type: 'resubmit_request',
+      type: "resubmit_request",
       title: map.title,
       filename: map.filename,
-      status: 'PENDING',
+      status: "PENDING",
       error_message: null,
       description: map.description,
       min_zoom: map.min_zoom,
@@ -354,8 +354,8 @@ const resubmitMapRequest = (id) => {
       created_at: new Date(),
       requestId: map.id,
     };
-    emit('handleMapRequest', message);
-    modalMessage.value = t('mapDeleted') + '!';
+    emit("handleMapRequest", message);
+    modalMessage.value = t("mapDeleted") + "!";
     showModal.value = true;
     setTimeout(() => {
       showModal.value = false;
@@ -373,8 +373,10 @@ const toggleQRCode = (id) => {
 };
 
 const currentLocaleName = computed(() => {
-  const currentLocale = locales.value.find((lang) => lang.code === locale.value);
-  return currentLocale ? currentLocale.name : '';
+  const currentLocale = locales.value.find(
+    (lang) => lang.code === locale.value,
+  );
+  return currentLocale ? currentLocale.name : "";
 });
 
 const availableLocales = computed(() => locales.value);
@@ -383,16 +385,16 @@ const paginatedOfflineMaps = computed(() => props.offlineMaps);
 
 // On mount
 onMounted(() => {
-  window.addEventListener('scroll', handleScroll);
+  window.addEventListener("scroll", handleScroll);
 });
 
 onBeforeUnmount(() => {
-  window.removeEventListener('scroll', handleScroll);
+  window.removeEventListener("scroll", handleScroll);
 });
 </script>
 
 <style scoped>
-@import '@/components/overlay.css';
+@import "@/components/overlay.css";
 
 .card {
   position: relative;

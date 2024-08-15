@@ -1,5 +1,4 @@
-const apiKey: string =
-  process.env.VUE_APP_API_KEY?.replace(/['"]+/g, "") || "";
+const apiKey: string = process.env.VUE_APP_API_KEY?.replace(/['"]+/g, "") || "";
 const authStrategy: string =
   process.env.NUXT_ENV_AUTH_STRATEGY?.replace(/['"]+/g, "") || "none";
 const auth0domain: string =
@@ -16,17 +15,14 @@ export default defineNuxtConfig({
       charset: "utf-8",
       viewport: "width=device-width, initial-scale=1",
       link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
-    }
+    },
   },
 
   // Global CSS: https://nuxt.com/docs/api/nuxt-config#css
   css: ["mapbox-gl/dist/mapbox-gl.css"],
 
   // Modules : https://nuxt.com/docs/guide/concepts/modules
-  modules: [
-    "@nuxtjs/i18n",
-    "nuxt-windicss"
-  ],
+  modules: ["@nuxtjs/i18n", "nuxt-windicss"],
 
   i18n: {
     locales: [
@@ -53,10 +49,10 @@ export default defineNuxtConfig({
       auth0: {
         domain: auth0domain,
         clientId: auth0clientId,
-        baseUrl: auth0baseUrl
+        baseUrl: auth0baseUrl,
       },
       authStrategy,
-    }
+    },
   },
 
   // auth: {

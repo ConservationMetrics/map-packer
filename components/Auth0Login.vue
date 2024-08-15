@@ -14,50 +14,55 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useAuth0 } from '@auth0/auth0-vue'
-import { useI18n } from 'vue-i18n'
+import { ref, onMounted } from "vue";
+import { useAuth0 } from "@auth0/auth0-vue";
+import { useI18n } from "vue-i18n";
 
 // Define composables
-const errorMessage = ref('')
-const { t } = useI18n()
-const router = useRouter()
-const auth0 = !import.meta.env.SSR ? useAuth0() : undefined
-const localePath = useLocalePath()
-const { $auth0 } = useNuxtApp()
+const errorMessage = ref("");
+const { t } = useI18n();
+const router = useRouter();
+const auth0 = !import.meta.env.SSR ? useAuth0() : undefined;
+const localePath = useLocalePath();
+const { $auth0 } = useNuxtApp();
 
-const redirectPath = ref(localePath('/'))
+const redirectPath = ref(localePath("/"));
 
 // On mount
 onMounted(() => {
-  const redirect = router.currentRoute.value.query.redirect
-  redirectPath.value = redirect ? decodeURIComponent(redirect) : localePath('/map')
+  const redirect = router.currentRoute.value.query.redirect;
+  redirectPath.value = redirect
+    ? decodeURIComponent(redirect)
+    : localePath("/map");
 
-  const hashParams = new URLSearchParams(window.location.hash.substring(1))
-  const error = hashParams.get('error')
-  const errorDescription = hashParams.get('error_description')
+  const hashParams = new URLSearchParams(window.location.hash.substring(1));
+  const error = hashParams.get("error");
+  const errorDescription = hashParams.get("error_description");
 
-  if (error === 'access_denied') {
-    errorMessage.value = decodeURIComponent(errorDescription)
+  if (error === "access_denied") {
+    errorMessage.value = decodeURIComponent(errorDescription);
   }
 
-  watch(() => $auth0?.isAuthenticated.value, (newValue) => {
-    if (newValue) {
-      router.push(redirectPath.value)
-    }
-  })
-})
+  watch(
+    () => $auth0?.isAuthenticated.value,
+    (newValue) => {
+      if (newValue) {
+        router.push(redirectPath.value);
+      }
+    },
+  );
+});
 
 const login = () => {
-  $auth0?.checkSession()
+  $auth0?.checkSession();
   if (!$auth0?.isAuthenticated.value) {
     $auth0?.loginWithRedirect({
       appState: {
         target: useRoute().path,
       },
-    })
+    });
   } else {
-    router.push(redirectPath.value)
+    router.push(redirectPath.value);
   }
-}
+};
 </script>

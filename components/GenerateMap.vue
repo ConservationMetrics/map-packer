@@ -1,13 +1,13 @@
 <template>
   <div>
     <Sidebar
-     :available-map-styles="availableMapStyles"
+      :available-map-styles="availableMapStyles"
       :map-bounds="selectedBounds"
       :map-style="selectedStyle"
       :osm-enabled="osmEnabled"
       @formSubmitted="handleFormSubmit"
       @updateMapParams="updateMapParams"
-     />
+    />
     <MapNavigation
       :map-latitude="selectedLatitude"
       :map-longitude="selectedLongitude"
@@ -31,13 +31,13 @@
 </template>
 
 <script setup>
-import { ref, defineEmits } from 'vue'
-import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
+import { ref, defineEmits } from "vue";
+import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 
-import Sidebar from "@/components/GenerateMap/Sidebar.vue"
-import MapNavigation from "@/components/GenerateMap/MapNavigation.vue"
-import MapCanvas from "@/components/GenerateMap/MapCanvas.vue"
+import Sidebar from "@/components/GenerateMap/Sidebar.vue";
+import MapNavigation from "@/components/GenerateMap/MapNavigation.vue";
+import MapCanvas from "@/components/GenerateMap/MapCanvas.vue";
 
 // Define props
 const props = defineProps({
@@ -46,72 +46,72 @@ const props = defineProps({
   mapLatitude: Number,
   mapLongitude: Number,
   mapZoom: Number,
-})
+});
 
 // Define emits
-const emit = defineEmits(['updateMapParams', 'handleMapRequest'])
+const emit = defineEmits(["updateMapParams", "handleMapRequest"]);
 
 // Set up reactive state
-const localMapboxAccessToken = ref(props.mapboxAccessToken)
-const osmEnabled = ref(false)
-const selectedBounds = ref("")
-const selectedLatitude = ref(props.mapLatitude)
-const selectedLongitude = ref(props.mapLongitude)
-const selectedStyle = ref(props.availableMapStyles[0].url)
-const selectedZoom = ref(props.mapZoom)
-const showModal = ref(false)
+const localMapboxAccessToken = ref(props.mapboxAccessToken);
+const osmEnabled = ref(false);
+const selectedBounds = ref("");
+const selectedLatitude = ref(props.mapLatitude);
+const selectedLongitude = ref(props.mapLongitude);
+const selectedStyle = ref(props.availableMapStyles[0].url);
+const selectedZoom = ref(props.mapZoom);
+const showModal = ref(false);
 
 // Set up composables
-const router = useRouter()
-const { t } = useI18n()
-const localePath = useLocalePath()
+const router = useRouter();
+const { t } = useI18n();
+const localePath = useLocalePath();
 
 // Methods
 const handleFormSubmit = (formData) => {
-  emit('handleMapRequest', formData)
-  showModal.value = true
+  emit("handleMapRequest", formData);
+  showModal.value = true;
   setTimeout(() => {
-    router.push(localePath("/"))
-  }, 3000)
-}
+    router.push(localePath("/"));
+  }, 3000);
+};
 
 const updateMapParams = (updateObj) => {
-  let { param, value } = updateObj
+  let { param, value } = updateObj;
 
   if (typeof value === "number") {
-    value = parseFloat(value.toFixed(6))
+    value = parseFloat(value.toFixed(6));
   }
 
   if (param === "OsmEnabled") {
-    osmEnabled.value = value
+    osmEnabled.value = value;
   } else if (param === "AccessToken") {
-    localMapboxAccessToken.value = value
+    localMapboxAccessToken.value = value;
   } else {
     switch (param) {
       case "Bounds":
-        selectedBounds.value = value
-        break
+        selectedBounds.value = value;
+        break;
       case "Latitude":
-        selectedLatitude.value = value
-        break
+        selectedLatitude.value = value;
+        break;
       case "Longitude":
-        selectedLongitude.value = value
-        break
+        selectedLongitude.value = value;
+        break;
       case "Style":
-        selectedStyle.value = value
-        osmEnabled.value = false
-        emit("updateMapParams", { param: "OsmEnabled", value: false })
-        break
+        selectedStyle.value = value;
+        osmEnabled.value = false;
+        emit("updateMapParams", { param: "OsmEnabled", value: false });
+        break;
       case "Zoom":
-        selectedZoom.value = value
-        break
+        selectedZoom.value = value;
+        break;
     }
   }
-}
+};
 </script>
 
 <style scoped>
-@import '@/components/overlay.css';
+@import "@/components/overlay.css";
 
 body {
   margin: 0;

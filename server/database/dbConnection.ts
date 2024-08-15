@@ -1,4 +1,4 @@
-import pkg from 'pg';
+import pkg from "pg";
 const { Client } = pkg;
 
 type DatabaseConnection = typeof Client.prototype;
