@@ -76,7 +76,7 @@ const config: NuxtConfig = {
     },
   },
 
-  axios: {
+  axios: process.env.NODE_ENV === 'development' ? {} : {
     baseURL: "http://127.0.0.1:8080",
     browserBaseURL: "/",
   },
