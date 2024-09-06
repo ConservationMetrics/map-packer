@@ -9,6 +9,8 @@ const auth0baseUrl: string =
   process.env.NUXT_ENV_AUTH0_BASE_URL?.replace(/['"]+/g, "") || "";
 
 export default defineNuxtConfig({
+  compatibilityDate: "2024-09-06",
+  
   // Global page headers: https://nuxt.com/docs/getting-started/seo-meta
   app: {
     head: {
