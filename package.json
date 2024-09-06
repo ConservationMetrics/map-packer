@@ -4,12 +4,14 @@
   "type": "module",
   "description": "A Nuxt app to allow users to generate and manage offline map requests",
   "scripts": {
-    "build": "nuxt build",
-    "dev": "nuxt dev",
-    "generate": "nuxt generate",
+    "dev": "npx nuxt dev",
+    "build": "npx nuxt build",
+    "start": "npx nuxt start",
+    "generate": "npx nuxt generate",
     "lint": "prettier --write ./ --ignore-path .prettierignore",
-    "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "prepare": "husky install || echo 'Skipping husky install'",
+    "preview": "npx nuxt preview",
+    "postinstall": "npx nuxt prepare"
   },
   "dependencies": {
     "@azure/storage-queue": "^12.22.0",
@@ -33,11 +35,6 @@
     "lint-staged": "^15.2.7",
     "nuxt-windicss": "^2.6.1",
     "prettier": "^3.3.2"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json,css,vue}": [
