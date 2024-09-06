@@ -4,13 +4,13 @@
   "type": "module",
   "description": "A Nuxt app to allow users to generate and manage offline map requests",
   "scripts": {
-    "dev": "npx nuxt dev",
-    "build": "npx nuxt build",
-    "start": "npx nuxt start",
-    "generate": "npx nuxt generate",
+    "dev": "nuxi dev",
+    "build": "nuxi build",
+    "start": "nuxi start",
+    "generate": "nuxt generate",
     "lint": "prettier --write ./ --ignore-path .prettierignore",
-    "preview": "npx nuxt preview",
-    "postinstall": "npx nuxt prepare",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
     "prepare": "husky"
   },
   "dependencies": {
