@@ -16,6 +16,10 @@
 import { useFetch, useHead } from "#imports";
 import { useI18n } from "vue-i18n";
 
+definePageMeta({
+  middleware: 'auth'
+})
+
 // Set up reactive state
 const dataFetched = ref(false);
 const availableMapStyles = ref([]);

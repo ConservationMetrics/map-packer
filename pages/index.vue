@@ -17,6 +17,10 @@ import { useFetch, useHead } from "#imports";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
+definePageMeta({
+  middleware: 'auth'
+})
+
 // Set up reactive state
 const dataFetched = ref(false);
 const mapboxAccessToken = ref("");
