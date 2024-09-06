@@ -3,7 +3,7 @@
     <p class="italic">{{ $t("authMessage") }}.</p>
     <button
       class="px-4 py-2 mt-4 mb-4 bg-blue-500 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50"
-      @click="login"
+      @click="loginWithAuth0"
     >
       {{ $t("loginButton") }}
     </button>
@@ -15,16 +15,14 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useAuth0 } from "@auth0/auth0-vue";
 import { useI18n } from "vue-i18n";
 
 // Define composables
 const errorMessage = ref("");
 const { t } = useI18n();
 const router = useRouter();
-const auth0 = !import.meta.env.SSR ? useAuth0() : undefined;
 const localePath = useLocalePath();
-const { $auth0 } = useNuxtApp();
+const { loggedIn } = useUserSession();
 
 const redirectPath = ref(localePath("/"));
 
@@ -43,26 +41,12 @@ onMounted(() => {
     errorMessage.value = decodeURIComponent(errorDescription);
   }
 
-  watch(
-    () => $auth0?.isAuthenticated.value,
-    (newValue) => {
-      if (newValue) {
-        router.push(redirectPath.value);
-      }
-    },
-  );
-});
-
-const login = () => {
-  $auth0?.checkSession();
-  if (!$auth0?.isAuthenticated.value) {
-    $auth0?.loginWithRedirect({
-      appState: {
-        target: useRoute().path,
-      },
-    });
-  } else {
+  if (loggedIn.value) {
     router.push(redirectPath.value);
   }
+});
+
+const loginWithAuth0 = () => {
+  window.location.href = "/api/auth/auth0";
 };
 </script>

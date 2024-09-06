@@ -10,7 +10,7 @@ const auth0baseUrl: string =
 
 export default defineNuxtConfig({
   compatibilityDate: "2024-09-06",
-  
+
   // Global page headers: https://nuxt.com/docs/getting-started/seo-meta
   app: {
     head: {
@@ -50,11 +50,6 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiKey,
-      auth0: {
-        domain: auth0domain,
-        clientId: auth0clientId,
-        baseUrl: auth0baseUrl,
-      },
       authStrategy,
     },
   },

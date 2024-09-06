@@ -8,7 +8,10 @@ export default defineEventHandler((event: H3Event) => {
   }
 
   // Bypass middleware for specific paths
-  if (event.node.req.url?.startsWith("/api/mapstyle/")) {
+  if (
+    event.node.req.url?.startsWith("/api/mapstyle/") ||
+    event.node.req.url?.startsWith("/api/auth/auth0")
+  ) {
     return;
   }
 
