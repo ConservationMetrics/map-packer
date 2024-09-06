@@ -18,18 +18,20 @@ export default defineNuxtConfig({
     },
   },
 
+  devtools: { enabled: true },
+
   // Global CSS: https://nuxt.com/docs/api/nuxt-config#css
   css: ["mapbox-gl/dist/mapbox-gl.css"],
 
   // Modules : https://nuxt.com/docs/guide/concepts/modules
-  modules: ["@nuxtjs/i18n", "nuxt-windicss"],
+  modules: ["@nuxtjs/i18n", "nuxt-windicss", "nuxt-auth-utils"],
 
   i18n: {
     locales: [
-      { code: "en", name: "English", iso: "en-US", file: "en.json" },
-      { code: "es", name: "Español", iso: "es-ES", file: "es.json" },
-      { code: "pt", name: "Português", iso: "pt-PT", file: "pt.json" },
-      { code: "nl", name: "Nederlands", iso: "nl-NL", file: "nl.json" },
+      { code: "en", name: "English", language: "en-US", file: "en.json" },
+      { code: "es", name: "Español", language: "es-ES", file: "es.json" },
+      { code: "pt", name: "Português", language: "pt-PT", file: "pt.json" },
+      { code: "nl", name: "Nederlands", language: "nl-NL", file: "nl.json" },
     ],
     defaultLocale: "en",
     detectBrowserLanguage: {
@@ -45,7 +47,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiKey: apiKey,
+      apiKey,
       auth0: {
         domain: auth0domain,
         clientId: auth0clientId,
