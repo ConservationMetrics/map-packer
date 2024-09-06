@@ -183,7 +183,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, onMounted, defineEmits } from "vue";
+import { ref, reactive, computed, watch, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 
 // This specific pattern of importing vue-slider-component follows the official

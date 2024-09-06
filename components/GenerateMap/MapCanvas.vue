@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onBeforeUnmount, defineEmits } from "vue";
+import { ref, watch, onMounted, onBeforeUnmount } from "vue";
 import { useI18n } from "vue-i18n";
 
 import mapboxgl from "mapbox-gl";
