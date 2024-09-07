@@ -22,7 +22,7 @@ const errorMessage = ref("");
 const { t } = useI18n();
 const router = useRouter();
 const localePath = useLocalePath();
-const { loggedIn } = useUserSession();
+const { loggedIn } = useUserSession()
 
 const redirectPath = ref(localePath("/"));
 

@@ -1,3 +1,4 @@
+// Following example: https://github.com/atinux/atidone/blob/main/app/middleware/auth.ts
 export default defineNuxtRouteMiddleware((to) => {
   const { loggedIn } = useUserSession();
 
