@@ -39,10 +39,10 @@
     </div>
   </div>
 </template>
-  
+
 <script setup>
-import { ref, computed } from 'vue';
-import { useI18n } from 'vue-i18n';
+import { ref, computed } from "vue";
+import { useI18n } from "vue-i18n";
 
 // Set up composables
 const { t, locale, locales } = useI18n();

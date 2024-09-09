@@ -178,7 +178,7 @@ import { useI18n } from "vue-i18n";
 
 import QRCode from "qrcode.vue";
 import MiniMap from "@/components/MapDashboard/MiniMap.vue";
-import LanguagePicker from './shared/LanguagePicker.vue';
+import LanguagePicker from "./shared/LanguagePicker.vue";
 
 import { copyLink } from "~/utils";
 
