@@ -22,7 +22,12 @@ export default defineNuxtConfig({
   css: ["mapbox-gl/dist/mapbox-gl.css"],
 
   // Modules: https://nuxt.com/docs/guide/concepts/modules
-  modules: ["@nuxtjs/i18n", "nuxt-windicss", "nuxt-auth-utils"],
+  modules: [
+    "nuxt-auth-utils",
+    "@nuxtjs/i18n",
+    "@nuxt/test-utils/module",
+    "nuxt-windicss",
+  ],
 
   i18n: {
     locales: [

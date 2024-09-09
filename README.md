@@ -54,6 +54,9 @@ $ npm run preview
 
 # generate static project
 $ npm run generate
+
+# run tests
+$ npm run test
 ```
 
 Add `--hostname 0.0.0.0` if you want the app to be accessible across your local network.

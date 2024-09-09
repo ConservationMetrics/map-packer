@@ -28,11 +28,6 @@
       "~/*": ["./*"],
       "@/*": ["./*"]
     },
-    "types": [
-      // "@nuxt/types",
-      "@types/node",
-      // "@nuxtjs/auth-next",
-      "@nuxtjs/i18n"
-    ]
+    "types": ["@types/node", "@nuxtjs/i18n", "vitest/globals"]
   }
 }
