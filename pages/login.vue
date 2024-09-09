@@ -10,14 +10,15 @@ import { useHead } from "#imports";
 import { onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 
+// Set up reactive state
+const errorMessage = ref("");
+const redirectPath = ref(localePath("/"));
+
 // Set up composables
 const { t } = useI18n();
 const router = useRouter();
 const localePath = useLocalePath();
 const { loggedIn } = useUserSession();
-
-const errorMessage = ref("");
-const redirectPath = ref(localePath("/"));
 
 // On mount
 onMounted(async () => {
@@ -50,6 +51,7 @@ onMounted(async () => {
   }
 });
 
+// Set up page metadata
 useHead({
   title: "MapPacker: " + t("login"),
 });

@@ -44,11 +44,11 @@
 import { ref, computed } from "vue";
 import { useI18n } from "vue-i18n";
 
-// Set up composables
-const { t, locale, locales } = useI18n();
-
 // Set up reactive state
 const dropdownOpen = ref(false);
+
+// Set up composables
+const { t, locale, locales } = useI18n();
 
 // Computed properties
 const availableLocales = computed(() => locales.value);

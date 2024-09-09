@@ -16,6 +16,7 @@
 import { useFetch, useHead } from "#imports";
 import { useI18n } from "vue-i18n";
 
+// Apply middleware
 definePageMeta({
   middleware: "auth",
 });
@@ -105,6 +106,7 @@ const handleMapRequest = async (formData) => {
   }
 };
 
+// Set up page metadata
 useHead({
   title: "MapPacker: " + t("generateOfflineMap"),
 });

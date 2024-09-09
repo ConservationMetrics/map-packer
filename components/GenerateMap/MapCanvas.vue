@@ -26,9 +26,6 @@ const props = defineProps({
 // Define emits
 const emit = defineEmits(["updateMapParams"]);
 
-// Set up composables
-const { t } = useI18n();
-
 // Set up reative state
 const map = ref(null);
 const draw = ref(null);
@@ -37,6 +34,9 @@ const selectedLatitude = ref(props.mapLatitude);
 const selectedLongitude = ref(props.mapLongitude);
 const selectedStyle = ref(props.mapStyle);
 const selectedZoom = ref(props.mapZoom);
+
+// Set up composables
+const { t } = useI18n();
 
 // Methods
 const getWSENstring = (bounds) => {

@@ -26,7 +26,8 @@ import { useI18n } from "vue-i18n";
 
 import LanguagePicker from "./shared/LanguagePicker.vue";
 
-defineProps({
+// Define props
+const props = defineProps({
   errorMessage: {
     type: String,
     default: "",
@@ -36,6 +37,7 @@ defineProps({
 // Set up composables
 const { t } = useI18n();
 
+// Methods
 const loginWithAuth0 = () => {
   window.location.href = "/auth/auth0";
 };

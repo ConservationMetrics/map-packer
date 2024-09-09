@@ -206,9 +206,6 @@ const props = defineProps({
 // Define emits
 const emit = defineEmits(["updateMapParams", "formSubmitted"]);
 
-// Set up composables
-const { t } = useI18n();
-
 // Set up reactive state
 const customMapboxStyleUrl = ref("");
 const localMapboxAccessToken = ref(props.mapboxAccessToken);
@@ -222,6 +219,9 @@ const form = reactive({
   maxZoom: 8,
   estimatedTiles: 0,
 });
+
+// Set up composables
+const { t } = useI18n();
 
 // Methods
 const fetchMapStyles = () => {
@@ -375,12 +375,6 @@ watch(
 watch(
   () => form.selectedStyle,
   (newVal) => {
-    // if (newVal && newVal.includes('/api/mapstyle/planet/')) {
-    //   const [year, month] = form.planetMonthYear.split('-')
-    //   if (!year || !month) {
-    //     form.planetMonthYear = calculateMaxPlanetMonthYear()
-    //   }
-    // }
     if (newVal && newVal !== "/api/mapstyle/mapbox-custom/") {
       emit("updateMapParams", { param: "Style", value: newVal });
       emit("updateMapParams", { param: "OsmEnabled", value: false });
