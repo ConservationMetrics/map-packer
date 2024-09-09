@@ -24,8 +24,7 @@ To get started, configure your MapPacker application environmental variables as 
 
 **Authentication strategy:** Currently, MapPacker supports two different authentication strategies: auth0 or none. Set your authentication strategy in `NUXT_ENV_AUTH_STRATEGY`.
 
-- If you are using an auth0 strategy, then you need to provide a domain, client ID, client secret, audience, and base URL.
-- If you are using a password strategy, then you need to provide a password, and secret JWT key.
+- If you are using an auth0 strategy, then you need to provide a domain, client ID, client secret, and base URL.
 
 **Vue API key:** Generate an API key to add to request headers made by the Nuxt front end.
 

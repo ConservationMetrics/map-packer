@@ -7,6 +7,7 @@ interface Auth0User {
 export default oauthAuth0EventHandler({
   config: {
     emailRequired: true,
+    redirectURL: `${useRuntimeConfig().public.baseUrl}/login`,
   },
 
   async onSuccess(event: H3Event, { user }: { user: Auth0User }) {
@@ -17,7 +18,7 @@ export default oauthAuth0EventHandler({
       loggedInAt: Date.now(),
     });
 
-    return sendRedirect(event, "/");
+    return sendRedirect(event, "/login");
   },
   onError(event: H3Event, error: string) {
     console.error("OAuth error:", error);

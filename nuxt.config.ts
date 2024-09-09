@@ -1,6 +1,8 @@
 const apiKey: string = process.env.VUE_APP_API_KEY?.replace(/['"]+/g, "") || "";
 const authStrategy: string =
   process.env.NUXT_ENV_AUTH_STRATEGY?.replace(/['"]+/g, "") || "none";
+const baseUrl: string =
+  process.env.NUXT_ENV_AUTH0_BASE_URL || "http://localhost:8080";
 
 export default defineNuxtConfig({
   compatibilityDate: "2024-09-09",
@@ -45,6 +47,7 @@ export default defineNuxtConfig({
     public: {
       apiKey,
       authStrategy,
+      baseUrl,
     },
   },
 });
