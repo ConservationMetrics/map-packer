@@ -18,8 +18,9 @@ export default defineEventHandler((event: H3Event) => {
 
   const apiKey = event.node.req.headers["x-api-key"];
   if (apiKey !== API_KEY) {
-    event.node.res.statusCode = 403;
-    event.node.res.end("Forbidden");
-    return;
+    throw createError({
+      status: 403,
+      message: "Forbidden",
+    });
   }
 });
