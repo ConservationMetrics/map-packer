@@ -16,7 +16,6 @@
   "dependencies": {
     "@azure/storage-queue": "^12.22.0",
     "@mapbox/mapbox-gl-draw": "^1.4.3",
-    "jsonwebtoken": "^9.0.2",
     "mapbox-gl": "^3.4.0",
     "mapbox-gl-draw-rectangle-mode": "^1.0.4",
     "nuxt": "^3.12.2",
@@ -29,7 +28,6 @@
   },
   "devDependencies": {
     "@nuxtjs/i18n": "^8.3.1",
-    "@types/jsonwebtoken": "^9.0.6",
     "@types/mapbox-gl": "^3.1.0",
     "@types/pg": "^8.11.6",
     "husky": "^9.0.11",

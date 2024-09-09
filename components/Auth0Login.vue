@@ -22,12 +22,12 @@ const errorMessage = ref("");
 const { t } = useI18n();
 const router = useRouter();
 const localePath = useLocalePath();
-const { loggedIn } = useUserSession()
+const { loggedIn } = useUserSession();
 
 const redirectPath = ref(localePath("/"));
 
 // On mount
-onMounted(() => {
+onMounted(async () => {
   const redirect = router.currentRoute.value.query.redirect;
   redirectPath.value = redirect
     ? decodeURIComponent(redirect)
@@ -47,6 +47,6 @@ onMounted(() => {
 });
 
 const loginWithAuth0 = () => {
-  window.location.href = "/api/auth/auth0";
+  window.location.href = "/auth/auth0";
 };
 </script>
