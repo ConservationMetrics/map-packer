@@ -14,7 +14,7 @@
         {{ $t("loginButton") }}
       </button>
       <p v-if="errorMessage" class="text-red-500 text-xs italic">
-        {{ errorMessage }}
+        {{ t("yourAccessIsPending") }}
       </p>
     </div>
   </div>

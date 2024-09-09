@@ -53,6 +53,7 @@
   "useInterface": "Gebruik deze interface om een verzoek in te dienen om een offline kaart te genereren",
   "warning": "Waarschuwing",
   "withOSMLabels": "met OSM-labels",
+  "yourAccessIsPending": "U bent nog niet gemachtigd om toegang te krijgen tot deze applicatie. Neem contact op met een beheerder voor toegang.",
   "yourMapboxAccessToken": "Uw Mapbox Access Token",
   "yourMapboxStyleURL": "Uw Mapbox Style URL",
   "zoomLevel": "Zoomniveau"
