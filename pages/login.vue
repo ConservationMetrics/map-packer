@@ -26,6 +26,17 @@ onMounted(async () => {
     ? decodeURIComponent(redirect)
     : localePath("/");
 
+  // Imperfect solution to handle Auth0 redirect
+  // Get the code from the URL and redirect to the auth endpoint
+  // Which will then create a session and redirect back to /
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get("code");
+
+  if (code) {
+    window.location.href = `/auth/auth0?code=${code}`;
+  }
+
+  // Handle access denied error
   const queryParams = new URLSearchParams(window.location.search);
   const error = queryParams.get("error");
   const errorDescription = queryParams.get("error_description");
