@@ -2,7 +2,7 @@
   "name": "map-packer",
   "version": "2.0.0",
   "type": "module",
-  "description": "A Nuxt app to allow users to generate and manage offline map requests",
+  "description": "A Nuxt app to allow users to generate and manage offline map requests.",
   "scripts": {
     "dev": "nuxi dev",
     "build": "nuxi build",
