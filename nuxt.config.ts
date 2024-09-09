@@ -36,11 +36,11 @@ export default defineNuxtConfig({
       useCookie: true,
       cookieKey: "i18n_redirected",
       alwaysRedirect: true,
-      fallbackLocale: "en",
       redirectOn: "all",
     },
     langDir: "lang/",
     strategy: "no_prefix",
+    skipSettingLocaleOnNavigate: true, // persists locale when route changes
   },
 
   runtimeConfig: {
