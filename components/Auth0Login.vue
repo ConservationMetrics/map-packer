@@ -17,34 +17,9 @@
 import { ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 
-// Define composables
+// Set up composables
 const errorMessage = ref("");
 const { t } = useI18n();
-const router = useRouter();
-const localePath = useLocalePath();
-const { loggedIn } = useUserSession();
-
-const redirectPath = ref(localePath("/"));
-
-// On mount
-onMounted(async () => {
-  const redirect = router.currentRoute.value.query.redirect;
-  redirectPath.value = redirect
-    ? decodeURIComponent(redirect)
-    : localePath("/map");
-
-  const hashParams = new URLSearchParams(window.location.hash.substring(1));
-  const error = hashParams.get("error");
-  const errorDescription = hashParams.get("error_description");
-
-  if (error === "access_denied") {
-    errorMessage.value = decodeURIComponent(errorDescription);
-  }
-
-  if (loggedIn.value) {
-    router.push(redirectPath.value);
-  }
-});
 
 const loginWithAuth0 = () => {
   window.location.href = "/auth/auth0";

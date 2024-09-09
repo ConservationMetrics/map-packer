@@ -3,7 +3,7 @@ const authStrategy: string =
   process.env.NUXT_ENV_AUTH_STRATEGY?.replace(/['"]+/g, "") || "none";
 
 export default defineNuxtConfig({
-  compatibilityDate: "2024-09-06",
+  compatibilityDate: "2024-09-09",
 
   // Global page headers: https://nuxt.com/docs/getting-started/seo-meta
   app: {
