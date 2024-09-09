@@ -1,33 +1,31 @@
 # Use the official Node.js image from DockerHub
-FROM node:18.17.0
-
-RUN apt-get update && apt-get install -y iputils-ping
+FROM node:20.15.0-slim
 
 # Set the working directory
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+RUN mkdir -p /app
+WORKDIR /app
 
 # Copy package.json and package-lock.json into the container
-COPY package*.json  ./
+COPY package*.json  /app/
 
 # Install dependencies
 RUN npm install
 
 # Copy the application files into the container
-COPY . .
+COPY . /app
 
 # Build the application
 RUN npm run build
 
+# Create a .env file if it doesn't exist
 RUN touch .env
 
-# Expose port 8080
+# Expose and set port 8080
 EXPOSE 8080
+ENV NITRO_PORT=8080
 
 # Set app serving to permissive / assigned
-ENV NUXT_HOST=0.0.0.0
-# Set app port
-ENV NUXT_PORT=8080
+ENV NITRO_HOST=0.0.0.0
 
 # Run the application
-CMD ["npm", "start"]
+ENTRYPOINT ["node", ".output/server/index.mjs"]
