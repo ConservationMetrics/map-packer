@@ -26,8 +26,14 @@ import { useI18n } from "vue-i18n";
 
 import LanguagePicker from "./shared/LanguagePicker.vue";
 
+defineProps({
+  errorMessage: {
+    type: String,
+    default: "",
+  },
+});
+
 // Set up composables
-const errorMessage = ref("");
 const { t } = useI18n();
 
 const loginWithAuth0 = () => {

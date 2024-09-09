@@ -1,5 +1,8 @@
 <template>
-  <Auth0Login v-if="loggedIn === false"></Auth0Login>
+  <Auth0Login
+    v-if="loggedIn === false"
+    :errorMessage="errorMessage"
+  ></Auth0Login>
 </template>
 
 <script setup>
@@ -13,6 +16,7 @@ const router = useRouter();
 const localePath = useLocalePath();
 const { loggedIn } = useUserSession();
 
+const errorMessage = ref("");
 const redirectPath = ref(localePath("/"));
 
 // On mount
@@ -22,9 +26,9 @@ onMounted(async () => {
     ? decodeURIComponent(redirect)
     : localePath("/");
 
-  const hashParams = new URLSearchParams(window.location.hash.substring(1));
-  const error = hashParams.get("error");
-  const errorDescription = hashParams.get("error_description");
+  const queryParams = new URLSearchParams(window.location.search);
+  const error = queryParams.get("error");
+  const errorDescription = queryParams.get("error_description");
 
   if (error === "access_denied") {
     errorMessage.value = decodeURIComponent(errorDescription);
