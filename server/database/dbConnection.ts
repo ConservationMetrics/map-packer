@@ -11,7 +11,7 @@ const setupDatabaseConnection = (
   user: string | undefined,
   password: string | undefined,
   port: string,
-  ssl: string | undefined,
+  ssl: boolean | undefined,
 ): DatabaseConnection => {
   console.log("Setting up database connection...");
   const dbConnection = {
@@ -20,7 +20,7 @@ const setupDatabaseConnection = (
     host: host,
     password: password,
     port: parseInt(port, 10),
-    ssl: ssl === "true" ? { rejectUnauthorized: false } : false,
+    ssl: ssl === true ? { rejectUnauthorized: false } : false,
   };
   db = new Client(dbConnection);
 

@@ -3,4 +3,3 @@
 .git/
 node_modules/
 *.db
-.env
