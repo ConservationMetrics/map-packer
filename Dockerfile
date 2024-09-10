@@ -25,4 +25,4 @@ ENV NITRO_PORT=8080
 ENV NITRO_HOST=0.0.0.0
 
 # Run the application
-ENTRYPOINT ["sh", "entrypoint.sh"]
+ENTRYPOINT ["node", ".output/server/index.mjs"]
