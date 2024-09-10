@@ -1,5 +1,5 @@
 export default defineNuxtConfig({
-  compatibilityDate: "2024-09-09",
+  compatibilityDate: "2024-09-10",
 
   // Global page headers: https://nuxt.com/docs/getting-started/seo-meta
   app: {

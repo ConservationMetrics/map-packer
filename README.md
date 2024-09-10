@@ -34,7 +34,7 @@ To get started, configure your MapPacker application environmental variables as 
 
 **Offline map storage:** Provide a URI where the offline maps can be downloaded, as well as a path pointing to a volume mount directory for mapgl-tile-renderer to store the files.
 
-**Port:** Specify a port to serve the app. Default is 3000.
+**Port:** Specify a port to serve the app. Default is 8080.
 
 ## Build Setup
 
