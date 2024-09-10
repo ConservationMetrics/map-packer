@@ -11,9 +11,8 @@ const setupDatabaseConnection = (
   user: string | undefined,
   password: string | undefined,
   port: string,
-  ssl: boolean | undefined,
+  ssl: boolean | string | undefined,
 ): DatabaseConnection => {
-  console.log("Setting up database connection...");
   const dbConnection = {
     database: database,
     user: user,

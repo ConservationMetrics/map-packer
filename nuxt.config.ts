@@ -57,7 +57,7 @@ export default defineNuxtConfig({
     port: "8080",
     public: {
       apiKey: "",
-      baseUrl: "http://localhost:8080/",
+      baseUrl: "http://localhost:8080",
       mapboxAccessToken: "",
       mapboxStyle: "mapbox://styles/mapbox/streets-v12",
       mapboxStyleName: "Mapbox Streets",
