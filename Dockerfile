@@ -24,5 +24,8 @@ ENV NITRO_PORT=8080
 # Set app serving to permissive / assigned
 ENV NITRO_HOST=0.0.0.0
 
-# Run the application
-ENTRYPOINT ["node", ".output/server/index.mjs"]
+# Use the shell script as the entry point
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
+ENTRYPOINT ["/app/entrypoint.sh"]
