@@ -67,11 +67,11 @@ const props = defineProps({
   mapZoom: Number,
 });
 
-// Define emits
-const emit = defineEmits(["updateMapParams"]);
-
 // Set up composables
 const { t } = useI18n();
+
+// Define emits
+const emit = defineEmits(["updateMapParams"]);
 
 // Methods
 const form = ref({

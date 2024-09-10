@@ -21,12 +21,12 @@ definePageMeta({
   middleware: "auth",
 });
 
+// Set up composables
+const { t } = useI18n();
+
 // Set up reactive state
 const dataFetched = ref(false);
 const availableMapStyles = ref([]);
-
-// Set up composables
-const { t } = useI18n();
 
 // Define headers
 const config = useRuntimeConfig();

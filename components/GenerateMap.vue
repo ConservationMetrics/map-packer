@@ -48,8 +48,10 @@ const props = defineProps({
   mapZoom: Number,
 });
 
-// Define emits
-const emit = defineEmits(["updateMapParams", "handleMapRequest"]);
+// Set up composables
+const router = useRouter();
+const { t } = useI18n();
+const localePath = useLocalePath();
 
 // Set up reactive state
 const localMapboxAccessToken = ref(props.mapboxAccessToken);
@@ -61,10 +63,8 @@ const selectedStyle = ref(props.availableMapStyles[0].url);
 const selectedZoom = ref(props.mapZoom);
 const showModal = ref(false);
 
-// Set up composables
-const router = useRouter();
-const { t } = useI18n();
-const localePath = useLocalePath();
+// Define emits
+const emit = defineEmits(["updateMapParams", "handleMapRequest"]);
 
 // Methods
 const handleFormSubmit = (formData) => {

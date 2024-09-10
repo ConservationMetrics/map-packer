@@ -22,14 +22,14 @@ definePageMeta({
   middleware: "auth",
 });
 
+// Set up composables
+const { t } = useI18n();
+
 // Set up reactive state
 const dataFetched = ref(false);
 const nextCursor = ref(null);
 const offlineMaps = ref([]);
 const isLoading = ref(false);
-
-// Set up composables
-const { t } = useI18n();
 
 // Define headers
 const config = useRuntimeConfig();

@@ -190,16 +190,16 @@ const props = defineProps({
   nextCursor: Number,
 });
 
+// Set up composables
+const emit = defineEmits(["handleMapRequest", "loadMore"]);
+const { t, locale, locales } = useI18n();
+
 // Set up reactive state
 const dropdownOpen = ref(false);
 const tooltipId = ref(null);
 const showQRCodeId = ref(null);
 const showModal = ref(false);
 const modalMessage = ref("");
-
-// Set up composables
-const emit = defineEmits(["handleMapRequest", "loadMore"]);
-const { t, locale, locales } = useI18n();
 
 // Methods
 const calculateDuration = (start, end) => {

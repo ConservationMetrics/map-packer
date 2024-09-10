@@ -203,8 +203,8 @@ const props = defineProps({
   mapStyle: String,
 });
 
-// Define emits
-const emit = defineEmits(["updateMapParams", "formSubmitted"]);
+// Set up composables
+const { t } = useI18n();
 
 // Set up reactive state
 const customMapboxStyleUrl = ref("");
@@ -220,8 +220,8 @@ const form = reactive({
   estimatedTiles: 0,
 });
 
-// Set up composables
-const { t } = useI18n();
+// Define emits
+const emit = defineEmits(["updateMapParams", "formSubmitted"]);
 
 // Methods
 const fetchMapStyles = () => {
