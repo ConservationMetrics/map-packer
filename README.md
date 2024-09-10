@@ -16,7 +16,10 @@ Once submitted, MapPacker will write the request to a Postgres database table an
 
 ## Configure
 
-To get started, configure your MapPacker application environmental variables as shown in `.env.example`:
+To get started, configure your MapPacker application environmental variables as shown in `.env.example`.
+
+For local deployment, copy `.env.example` to `.env` and input the variables as shown.
+For production environments like Azure, input the environmental variables via the app service dashboard.
 
 **App API key:** This is needed to protect API routes and ensure only the application has access. API key should be in a UUID format.
 
