@@ -1,10 +1,10 @@
-# mapPacker
+# MapPacker
 
-MapPacker is a service that communities and other users can utilize to generate offline map resources (raster mbtiles) to use in field data collection applications like Mapeo and ODK/Kobo Collect. MapPacker provides a user interface to manage, access, and download offline basemaps for field mapping or monitoring, for a given area of interest.
+MapPacker is a service that communities and other users can utilize to generate offline map resources (raster MBTiles) to use in field data collection applications like Mapeo and ODK/Kobo Collect. MapPacker provides a user interface to manage, access, and download offline basemaps for field mapping or monitoring, for a given area of interest.
 
 MapPacker is a Nuxt.js 3 application with two primary views, accessible to the user once they have authenticated per the chosen authentication strategy:
 
-1. A **Map Dashboard** to manage and access existing map offline requests, where the user can see the status (succeeded / pending / failed) of the request, information and metadata about the request, and if succeeded, links to download or copy the offline map file.
+1. A **Map Dashboard** to manage and access existing map offline requests, where the user can see the status of the request, information and metadata about the request, and if succeeded, links to download, scan a QR code, or copy the offline map file.
 
 ![Map Dashboard](docs/MapDashboard.png)
 
@@ -68,14 +68,13 @@ Check out the [deployment documentation](https://nuxt.com/docs/getting-started/d
 
 ## Deployment
 
-For deployment (e.g. on Azure), the following additional env vars are needed:
+**For deployment in a production environment (e.g. on Azure):**
 
-```
-HOST: 0.0.0.0
-NODE_ENV: production
-```
+Provide the environment variables found in `.env.example` to the app service.
 
-Local deployment of Docker:
+**Local deployment of Docker:**
+
+Copy your `.env.example` file to `.env`.
 
 ```sh
 docker run --env-file=.env -it -p 8080:8080 map-packer:latest
