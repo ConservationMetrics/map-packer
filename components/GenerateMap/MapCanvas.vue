@@ -32,7 +32,6 @@ const draw = ref(null);
 const mapLoaded = ref(false);
 const selectedLatitude = ref(props.mapLatitude);
 const selectedLongitude = ref(props.mapLongitude);
-const selectedStyle = ref(props.mapStyle);
 const selectedZoom = ref(props.mapZoom);
 
 // Set up composables

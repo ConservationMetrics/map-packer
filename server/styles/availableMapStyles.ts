@@ -18,6 +18,8 @@ interface MapStyle {
   url?: string;
 }
 
+const config = useRuntimeConfig();
+
 export const mapStyles: Record<MapStyleKey, MapStyle> = {
   bing: {
     name: "Bing Satellite",
@@ -129,7 +131,7 @@ export const mapStyles: Record<MapStyleKey, MapStyle> = {
           type: "raster",
           tiles: [
             `https://tiles.planet.com/basemaps/v1/planet-tiles/planet_medres_visual_${calculateMaxPlanetMonthYear()}_mosaic/gmap/{z}/{x}/{y}?api_key=` +
-              (process.env.VUE_APP_PLANET_API_KEY || "").replace(/"/g, ""),
+              config.public.planetApiKey,
           ],
           tileSize: 256,
         },
@@ -160,7 +162,7 @@ export const mapStyles: Record<MapStyleKey, MapStyle> = {
           type: "raster",
           tiles: [
             `https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}.jpg?api_key=` +
-              (process.env.VUE_APP_STADIA_API_KEY || "").replace(/"/g, ""),
+              config.public.stadiaApiKey,
           ],
           tileSize: 256,
         },
@@ -191,7 +193,7 @@ export const mapStyles: Record<MapStyleKey, MapStyle> = {
           type: "raster",
           tiles: [
             `https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}.jpg?api_key=` +
-              (process.env.VUE_APP_STADIA_API_KEY || "").replace(/"/g, ""),
+              config.public.stadiaApiKey,
           ],
           tileSize: 256,
         },
@@ -218,14 +220,11 @@ export const mapStyles: Record<MapStyleKey, MapStyle> = {
     style: {
       version: 8,
       sources: {
-        stadia: {
+        thunderforest: {
           type: "raster",
           tiles: [
             `https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=` +
-              (process.env.VUE_APP_THUNDERFOREST_API_KEY || "").replace(
-                /"/g,
-                "",
-              ),
+              config.public.thunderforestApiKey,
           ],
           tileSize: 256,
         },
@@ -239,9 +238,9 @@ export const mapStyles: Record<MapStyleKey, MapStyle> = {
           },
         },
         {
-          id: "stadia",
+          id: "thunderforest",
           type: "raster",
-          source: "stadia",
+          source: "thunderforest",
           paint: {},
         },
       ],

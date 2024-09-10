@@ -2,10 +2,10 @@
   <div>
     <MapDashboard
       v-if="dataFetched"
-      :mapbox-access-token="mapboxAccessToken"
+      :mapbox-access-token="config.public.mapboxAccessToken"
       :next-cursor="nextCursor"
       :offline-maps="offlineMaps"
-      :offline-maps-uri="offlineMapsUri"
+      :offline-maps-uri="config.public.offlineMapsUri"
       @handleMapRequest="handleMapRequest"
       @loadMore="loadMore"
     />
@@ -24,10 +24,8 @@ definePageMeta({
 
 // Set up reactive state
 const dataFetched = ref(false);
-const mapboxAccessToken = ref("");
 const nextCursor = ref(null);
 const offlineMaps = ref([]);
-const offlineMapsUri = ref("");
 const isLoading = ref(false);
 
 // Set up composables
@@ -50,10 +48,8 @@ if (initialData.value && !initialError.value) {
       ? JSON.parse(initialData.value)
       : initialData.value;
 
-  mapboxAccessToken.value = parsedData.mapboxAccessToken;
   nextCursor.value = parsedData.nextCursor;
   offlineMaps.value = parsedData.offlineMaps;
-  offlineMapsUri.value = parsedData.offlineMapsUri;
 
   dataFetched.value = true;
 } else {

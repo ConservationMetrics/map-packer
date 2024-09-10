@@ -4,16 +4,16 @@
       v-if="dataFetched"
       @handleMapRequest="handleMapRequest"
       :available-map-styles="availableMapStyles"
-      :mapbox-access-token="mapboxAccessToken"
-      :map-latitude="mapLatitude"
-      :map-longitude="mapLongitude"
-      :map-zoom="mapZoom"
+      :mapbox-access-token="config.public.mapboxAccessToken"
+      :map-latitude="Number(config.public.mapLatitude)"
+      :map-longitude="Number(config.public.mapLongitude)"
+      :map-zoom="Number(config.public.mapZoom)"
     />
   </div>
 </template>
 
 <script setup>
-import { useFetch, useHead } from "#imports";
+import { useHead } from "#imports";
 import { useI18n } from "vue-i18n";
 
 // Apply middleware
@@ -24,10 +24,6 @@ definePageMeta({
 // Set up reactive state
 const dataFetched = ref(false);
 const availableMapStyles = ref([]);
-const mapboxAccessToken = ref("");
-const mapLatitude = ref(0);
-const mapLongitude = ref(0);
-const mapZoom = ref(0);
 
 // Set up composables
 const { t } = useI18n();
@@ -39,25 +35,15 @@ const headers = {
 };
 
 // Fetch initial data
-const { data, error } = await useFetch("/api/map", { headers });
-
-if (data.value && !error.value) {
-  let parsedData =
-    typeof data.value === "string" ? JSON.parse(data.value) : data.value;
-
-  mapboxAccessToken.value = parsedData.mapboxAccessToken;
-  mapLatitude.value = Number(parsedData.mapLatitude);
-  mapLongitude.value = Number(parsedData.mapLongitude);
-  mapZoom.value = Number(parsedData.mapZoom);
-
-  let mapStyles = await $fetch("/api/mapstyles", { headers });
+try {
+  let mapStyles = await $fetch("/api/map", { headers });
   if (typeof mapStyles === "string") {
     mapStyles = mapStyles.split(",");
   }
   availableMapStyles.value = mapStyles;
 
   dataFetched.value = true;
-} else {
+} catch {
   console.error("Error fetching data:", error.value);
   dataFetched.value = false;
 }

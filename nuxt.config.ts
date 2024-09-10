@@ -1,9 +1,3 @@
-const apiKey: string = process.env.VUE_APP_API_KEY?.replace(/['"]+/g, "") || "";
-const authStrategy: string =
-  process.env.NUXT_ENV_AUTH_STRATEGY?.replace(/['"]+/g, "") || "none";
-const baseUrl: string =
-  process.env.NUXT_ENV_AUTH0_BASE_URL || "http://localhost:8080";
-
 export default defineNuxtConfig({
   compatibilityDate: "2024-09-09",
 
@@ -49,10 +43,34 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    asqQueueName: process.env.ASQ_QUEUE_NAME,
+    azureStorageConnectionAccountName:
+      process.env.AZURE_STORAGE_CONNECTION_ACCOUNT_NAME,
+    azureStorageConnectionStorageKey:
+      process.env.AZURE_STORAGE_CONNECTION_STORAGE_KEY,
+    database: process.env.DATABASE,
+    dbHost: process.env.DB_HOST,
+    dbUser: process.env.DB_USER,
+    dbPassword: process.env.DB_PASSWORD,
+    dbPort: process.env.DB_PORT || "5432",
+    dbSsl: process.env.DB_SSL || "YES",
+    dbTable: process.env.DB_TABLE,
+    port: process.env.PORT,
     public: {
-      apiKey,
-      authStrategy,
-      baseUrl,
+      apiKey: process.env.VUE_APP_API_KEY,
+      authStrategy: process.env.NUXT_ENV_AUTH_STRATEGY || "none",
+      baseUrl: process.env.NUXT_OAUTH_AUTH0_BASE_URL,
+      mapboxAccessToken: process.env.MAPBOX_ACCESS_TOKEN,
+      mapboxStyle: process.env.MAPBOX_STYLE,
+      mapboxStyleName: process.env.MAPBOX_STYLE_NAME,
+      mapZoom: process.env.MAP_ZOOM,
+      mapLatitude: process.env.MAP_LATITUDE,
+      mapLongitude: process.env.MAP_LONGITUDE,
+      offlineMapsPath: process.env.OFFLINE_MAPS_PATH,
+      offlineMapsUri: process.env.OFFLINE_MAPS_URI,
+      planetApiKey: process.env.PLANET_API_KEY,
+      stadiaApiKey: process.env.STADIA_API_KEY,
+      thunderforestApiKey: process.env.THUNDERFOREST_API_KEY,
     },
   },
 });

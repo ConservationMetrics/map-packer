@@ -7,31 +7,21 @@ import {
   updateDatabaseWithError,
 } from "../database/dbOperations";
 import { publishToAzureStorageQueue } from "../messageQueue/azure";
-import {
-  ASQ_QUEUE_NAME,
-  DATABASE,
-  DB_HOST,
-  DB_USER,
-  DB_PASSWORD,
-  DB_PORT,
-  DB_SSL,
-  DB_TABLE,
-  MAPBOX_ACCESS_TOKEN,
-  PLANET_API_KEY,
-  STADIA_API_KEY,
-  THUNDERFOREST_API_KEY,
-} from "../../config";
+
+const { database, dbHost, dbUser, dbPassword, dbPort, dbSsl, dbTable } =
+  useRuntimeConfig();
 
 const db = setupDatabaseConnection(
-  DATABASE,
-  DB_HOST,
-  DB_USER,
-  DB_PASSWORD,
-  DB_PORT,
-  DB_SSL,
+  database,
+  dbHost,
+  dbUser,
+  dbPassword,
+  dbPort,
+  dbSsl,
 );
 
 export default defineEventHandler(async (event: H3Event) => {
+  const config = useRuntimeConfig();
   const data = await readBody(event);
   let requestId: number | void | null = data.requestId;
 
@@ -46,7 +36,7 @@ export default defineEventHandler(async (event: H3Event) => {
       const new_request = { ...data };
       delete new_request.type;
       delete new_request.apiKey;
-      requestId = await insertDataIntoTable(db, DB_TABLE, new_request);
+      requestId = await insertDataIntoTable(db, dbTable, new_request);
     }
     // If it's a resubmit request, update the data in the database
     else if (data.type === "resubmit_request") {
@@ -56,13 +46,13 @@ export default defineEventHandler(async (event: H3Event) => {
       delete resubmit_request.apiKey;
       delete resubmit_request.requestId;
       data.type = "new_request";
-      await updateDatabaseMapRequest(db, DB_TABLE, requestId, resubmit_request);
+      await updateDatabaseMapRequest(db, dbTable, requestId, resubmit_request);
     }
     // If it's a delete request, delete the row if no files are found,
     // Else set status to PENDING_DELETION and publish message for mapgl-tile-renderer
     // to handle deletion
     else if (data.type === "delete_request") {
-      const shouldPublish = await handleDeleteRequest(db, DB_TABLE, requestId);
+      const shouldPublish = await handleDeleteRequest(db, dbTable, requestId);
       if (!shouldPublish) {
         return send(
           event,
@@ -77,27 +67,27 @@ export default defineEventHandler(async (event: H3Event) => {
 
     // Add API tokens from env vars server-side
     if (data.style && data.style.includes("mapbox")) {
-      data.apiKey = data.apiKey || MAPBOX_ACCESS_TOKEN;
+      data.apiKey = data.apiKey || config.public.mapboxAccessToken;
     } else if (data.style && data.style === "planet") {
-      data.apiKey = data.apiKey || PLANET_API_KEY;
+      data.apiKey = data.apiKey || config.public.planetApiKey;
     } else if (
       data.style &&
       (data.style === "stadia-stamen-terrain" ||
         data.style === "stadia-alidade-satellite")
     ) {
-      data.apiKey = data.apiKey || STADIA_API_KEY;
+      data.apiKey = data.apiKey || config.public.stadiaApiKey;
     } else if (data.style && data.style === "thunderforest-landscape") {
-      data.apiKey = data.apiKey || THUNDERFOREST_API_KEY;
+      data.apiKey = data.apiKey || config.public.thunderforestApiKey;
     }
 
-    if (ASQ_QUEUE_NAME) {
-      console.log(`Publishing message to queue: ${ASQ_QUEUE_NAME}`);
-      await publishToAzureStorageQueue(ASQ_QUEUE_NAME, requestId, data);
+    if (config.asqQueueName) {
+      console.log(`Publishing message to queue: ${config.asqQueueName}`);
+      await publishToAzureStorageQueue(config.asqQueueName, requestId, data);
     } else {
       console.error("ASQ_QUEUE_NAME is not set.");
       await updateDatabaseWithError(
         db,
-        DB_TABLE,
+        dbTable,
         requestId,
         "InternalServerError: ASQ_QUEUE_NAME is not set",
       );
@@ -111,7 +101,7 @@ export default defineEventHandler(async (event: H3Event) => {
     console.error("Error on API side:", error.message);
     await updateDatabaseWithError(
       db,
-      DB_TABLE,
+      dbTable,
       requestId,
       `InternalServerError: ${error.message}`,
     );

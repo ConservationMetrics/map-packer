@@ -2,25 +2,16 @@ import { defineEventHandler, getQuery, send, sendError, H3Event } from "h3";
 import setupDatabaseConnection from "../database/dbConnection";
 import { fetchData } from "../database/dbOperations";
 
-import {
-  DATABASE,
-  DB_HOST,
-  DB_USER,
-  DB_PASSWORD,
-  DB_PORT,
-  DB_SSL,
-  DB_TABLE,
-  MAPBOX_ACCESS_TOKEN,
-  OFFLINE_MAPS_URI,
-} from "../../config";
+const { database, dbHost, dbUser, dbPassword, dbPort, dbSsl, dbTable } =
+  useRuntimeConfig();
 
 const db = setupDatabaseConnection(
-  DATABASE,
-  DB_HOST,
-  DB_USER,
-  DB_PASSWORD,
-  DB_PORT,
-  DB_SSL,
+  database,
+  dbHost,
+  dbUser,
+  dbPassword,
+  dbPort,
+  dbSsl,
 );
 
 export default defineEventHandler(async (event: H3Event) => {
@@ -29,15 +20,13 @@ export default defineEventHandler(async (event: H3Event) => {
   const cursor = query.cursor ? parseInt(query.cursor as string) : null;
 
   try {
-    const { data } = await fetchData(db, DB_TABLE, limit, cursor);
+    const { data } = await fetchData(db, dbTable, limit, cursor);
     if (data === null) {
       return send(event, []);
     } else {
       const response = {
-        mapboxAccessToken: MAPBOX_ACCESS_TOKEN,
         nextCursor: data.length ? data[data.length - 1].id : null,
         offlineMaps: data,
-        offlineMapsUri: OFFLINE_MAPS_URI,
       };
       return send(event, JSON.stringify(response));
     }

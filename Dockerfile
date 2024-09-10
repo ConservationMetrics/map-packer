@@ -17,9 +17,6 @@ COPY . /app
 # Build the application
 RUN npm run build
 
-# Create a .env file if it doesn't exist
-RUN touch .env
-
 # Expose and set port 8080
 EXPOSE 8080
 ENV NITRO_PORT=8080

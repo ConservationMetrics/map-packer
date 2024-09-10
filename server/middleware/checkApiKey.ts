@@ -1,5 +1,7 @@
 import { defineEventHandler, H3Event } from "h3";
-import { API_KEY } from "../../config";
+const {
+  public: { apiKey },
+} = useRuntimeConfig();
 
 export default defineEventHandler((event: H3Event) => {
   // Only apply middleware to API routes
@@ -16,8 +18,8 @@ export default defineEventHandler((event: H3Event) => {
     return;
   }
 
-  const apiKey = event.node.req.headers["x-api-key"];
-  if (apiKey !== API_KEY) {
+  const headerApiKey = event.node.req.headers["x-api-key"];
+  if (headerApiKey !== apiKey) {
     throw createError({
       status: 403,
       message: "Forbidden",
