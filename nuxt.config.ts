@@ -44,6 +44,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     asqQueueName: "",
+    authStrategy: "none",
     azureStorageConnectionAccountName: "",
     azureStorageConnectionStorageKey: "",
     database: "",
@@ -56,7 +57,6 @@ export default defineNuxtConfig({
     port: "8080",
     public: {
       apiKey: "",
-      authStrategy: "none",
       baseUrl: "http://localhost:8080/",
       mapboxAccessToken: "",
       mapboxStyle: "mapbox://styles/mapbox/streets-v12",
