@@ -3,12 +3,6 @@ import { IncomingMessage, ServerResponse } from "http";
 import { validateApiKey } from "@/server/middleware/validateApiKey";
 import { createEvent, createError, eventHandler } from "h3";
 
-vi.mock("#app", () => ({
-  useRuntimeConfig: vi.fn(() => ({
-    appApiKey: "correct-key",
-  })),
-}));
-
 vi.mock("h3", () => ({
   createEvent: vi.fn((req, res) => ({
     node: {
@@ -16,9 +10,9 @@ vi.mock("h3", () => ({
       res,
     },
   })),
-  createError: vi.fn(({ status, message }) => ({
-    status,
-    message,
+  createError: vi.fn(({ statusCode, statusMessage }) => ({
+    statusCode,
+    statusMessage,
   })),
   eventHandler: vi.fn((handler) => handler),
 }));
