@@ -3,7 +3,6 @@ import { mapStyles } from "../styles/availableMapStyles";
 
 export default defineEventHandler((event: H3Event) => {
   const {
-    appApiKey,
     public: {
       mapboxStyle,
       mapboxAccessToken,

@@ -16,11 +16,6 @@
 import { useHead } from "#imports";
 import { useI18n } from "vue-i18n";
 
-// Apply middleware
-definePageMeta({
-  middleware: "auth",
-});
-
 // Set up config
 const {
   public: { appApiKey, mapboxAccessToken, mapLatitude, mapLongitude, mapZoom },
