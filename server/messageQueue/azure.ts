@@ -17,14 +17,16 @@ export async function publishToAzureStorageQueue(
     apiKey: any;
   },
 ) {
-  const accountName = process.env.AZURE_STORAGE_CONNECTION_ACCOUNT_NAME;
-  const storageKey = process.env.AZURE_STORAGE_CONNECTION_STORAGE_KEY;
+  const config = useRuntimeConfig();
+
+  const accountName = config.azureStorageConnectionAccountName;
+  const storageKey = config.azureStorageConnectionStorageKey;
 
   if (!accountName || !storageKey) {
     throw new Error("Azure Storage Connection variables is not set");
   }
 
-  const connectionString = `DefaultEndpointsProtocol=https;AccountName=${process.env.AZURE_STORAGE_CONNECTION_ACCOUNT_NAME};AccountKey=${process.env.AZURE_STORAGE_CONNECTION_STORAGE_KEY};EndpointSuffix=core.windows.net`;
+  const connectionString = `DefaultEndpointsProtocol=https;AccountName=${accountName};AccountKey=${storageKey};EndpointSuffix=core.windows.net`;
 
   const queueServiceClient =
     QueueServiceClient.fromConnectionString(connectionString);
@@ -46,8 +48,8 @@ export async function publishToAzureStorageQueue(
     ...(message.filename && { outputFilename: message.filename }),
     ...(message.file_location
       ? { outputDir: message.file_location }
-      : process.env.OFFLINE_MAPS_PATH && {
-          outputDir: process.env.OFFLINE_MAPS_PATH,
+      : config.public.offlineMapsPath && {
+          outputDir: config.public.offlineMapsPath,
         }),
     ...(message.apiKey && { apiKey: message.apiKey }),
     thumbnail: false,

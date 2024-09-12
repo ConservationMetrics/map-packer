@@ -50,51 +50,81 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
+
 // This specific pattern of importing vue-slider-component follows the official
 // documentation for server-side rendering: https://nightcatsama.github.io/vue-slider-component/#/
 import VueSlider from "vue-slider-component/dist-css/vue-slider-component.umd.min.js";
 import "vue-slider-component/dist-css/vue-slider-component.css";
 import "vue-slider-component/theme/default.css";
 
-export default {
-  components: { VueSlider },
-  props: ["mapLatitude", "mapLongitude", "mapZoom"],
-  data() {
-    return {
-      form: {
-        selectedLatitude: this.mapLatitude,
-        selectedLongitude: this.mapLongitude,
-        selectedZoom: this.mapZoom,
-      },
-    };
-  },
-  watch: {
-    // Watch for changes to the map's latitude, longitude, and zoom
-    mapLatitude(newVal) {
-      this.form.selectedLatitude = newVal;
-    },
-    mapLongitude(newVal) {
-      this.form.selectedLongitude = newVal;
-    },
-    mapZoom(newVal) {
-      this.form.selectedZoom = newVal;
-    },
+// Define props
+const props = defineProps({
+  mapLatitude: Number,
+  mapLongitude: Number,
+  mapZoom: Number,
+});
 
-    // Track and emit changes to map parameters in the sidebar form,
-    // So that the parent component can update the map
-    "form.selectedLatitude": function (newVal) {
-      this.$emit("updateMapParams", { param: "Latitude", value: newVal });
-    },
-    "form.selectedLongitude": function (newVal) {
-      this.$emit("updateMapParams", { param: "Longitude", value: newVal });
-    },
-    "form.selectedZoom": {
-      handler(newVal) {
-        this.$emit("updateMapParams", { param: "Zoom", value: newVal });
-      },
-      deep: true,
-    },
+// Set up composables
+const { t } = useI18n();
+
+// Define emits
+const emit = defineEmits(["updateMapParams"]);
+
+// Methods
+const form = ref({
+  selectedLatitude: props.mapLatitude,
+  selectedLongitude: props.mapLongitude,
+  selectedZoom: props.mapZoom,
+});
+
+// Watch
+watch(
+  () => props.mapLatitude,
+  (newVal) => {
+    form.value.selectedLatitude = newVal;
   },
-};
+);
+
+watch(
+  () => props.mapLongitude,
+  (newVal) => {
+    form.value.selectedLongitude = newVal;
+  },
+);
+
+watch(
+  () => props.mapZoom,
+  (newVal) => {
+    form.value.selectedZoom = newVal;
+  },
+);
+
+watch(
+  () => form.value.selectedLatitude,
+  (newVal) => {
+    emit("updateMapParams", { param: "Latitude", value: newVal });
+  },
+);
+
+watch(
+  () => form.value.selectedLongitude,
+  (newVal) => {
+    emit("updateMapParams", { param: "Longitude", value: newVal });
+  },
+);
+
+watch(
+  () => form.value.selectedZoom,
+  (newVal) => {
+    emit("updateMapParams", { param: "Zoom", value: newVal });
+  },
+  { deep: true },
+);
 </script>
+
+<style scoped>
+@import "@/components/GenerateMap/style.css";
+</style>

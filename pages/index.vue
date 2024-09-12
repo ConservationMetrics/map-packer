@@ -2,96 +2,106 @@
   <div>
     <MapDashboard
       v-if="dataFetched"
-      :mapbox-access-token="mapboxAccessToken"
+      :mapbox-access-token="config.public.mapboxAccessToken"
       :next-cursor="nextCursor"
       :offline-maps="offlineMaps"
-      :offline-maps-uri="offlineMapsUri"
+      :offline-maps-uri="config.public.offlineMapsUri"
       @handleMapRequest="handleMapRequest"
       @loadMore="loadMore"
     />
   </div>
 </template>
 
-<script>
-import MapDashboard from "~/components/MapDashboard.vue";
+<script setup>
+import { useFetch, useHead } from "#imports";
+import { ref } from "vue";
+import { useI18n } from "vue-i18n";
 
-export default {
-  head() {
-    return {
-      title: "MapPacker: " + this.$t("availableOfflineMaps"),
-    };
-  },
-  components: { MapDashboard },
-  data() {
-    return {
-      dataFetched: false,
-      headers: {
-        "x-api-key": this.$config.apiKey.replace(/['"]+/g, ""),
-        "x-auth-strategy": this.$auth.strategy.name,
-      },
-      mapboxAccessToken: "",
-      nextCursor: null,
-      offlineMaps: [],
-      offlineMapsUri: "",
-    };
-  },
-  methods: {
-    async handleMapRequest(message) {
-      try {
-        await this.$axios.$post("/api/maprequest", message, {
-          headers: this.headers,
-        });
-      } catch (error) {
-        console.error("Error submitting request data:", error);
-      }
-    },
-    async loadMore() {
-      if (!this.nextCursor || this.isLoading) return;
+// Apply middleware
+definePageMeta({
+  middleware: "auth",
+});
 
-      // To avoid multiple requests at the same time
-      this.isLoading = true;
+// Set up composables
+const { t } = useI18n();
 
-      try {
-        const response = await this.$axios.$get(
-          `/api/data?cursor=${this.nextCursor}`,
-          { headers: this.headers },
-        );
+// Set up reactive state
+const dataFetched = ref(false);
+const nextCursor = ref(null);
+const offlineMaps = ref([]);
+const isLoading = ref(false);
 
-        if (response.offlineMaps.length > 0) {
-          this.offlineMaps.push(...response.offlineMaps);
-          this.nextCursor = response.nextCursor;
-        } else {
-          this.nextCursor = null;
-        }
-      } catch (error) {
-        console.error("Error fetching more data:", error);
-      } finally {
-        this.isLoading = false;
-      }
-    },
-    async fetchData() {
-    // Set up the headers for the request
-    let headers = {
-      "x-api-key": this.$config.apiKey.replace(/['"]+/g, ""),
-      "x-auth-strategy": this.$auth.strategy.name,
-    };
-
-    try {
-      const response = await this.$axios.$get(`/api/data`, { headers });
-      this.dataFetched = true;
-      this.mapboxAccessToken = response.mapboxAccessToken;
-      this.nextCursor = response.nextCursor;
-      this.offlineMaps = response.offlineMaps;
-      this.offlineMapsUri = response.offlineMapsUri;
-    } catch (error) {
-      // Handle errors as appropriate
-      console.error("Error fetching data:", error);
-      this.dataFetched = false;
-    }
-  },
-  },
-  mounted() {
-    this.fetchData();
-  },
+// Define headers
+const config = useRuntimeConfig();
+const headers = {
+  "x-api-key": config.public.apiKey.replace(/['"]+/g, ""),
 };
+
+// Fetch initial data
+const { data: initialData, error: initialError } = await useFetch("/api/data", {
+  headers,
+});
+
+if (initialData.value && !initialError.value) {
+  let parsedData =
+    typeof initialData.value === "string"
+      ? JSON.parse(initialData.value)
+      : initialData.value;
+
+  nextCursor.value = parsedData.nextCursor;
+  offlineMaps.value = parsedData.offlineMaps;
+
+  dataFetched.value = true;
+} else {
+  console.error("Error fetching data:", initialError.value);
+}
+
+// POST map request (emitted by component)
+const handleMapRequest = async (message) => {
+  try {
+    await $fetch("/api/maprequest", {
+      method: "POST",
+      body: message,
+      headers: headers,
+    });
+  } catch (error) {
+    console.error("Error submitting request data:", error);
+  }
+};
+
+// Load more data based on cursor pagination
+const loadMore = async () => {
+  if (!nextCursor.value || isLoading.value) return;
+
+  isLoading.value = true;
+
+  try {
+    const { data: moreData, error: moreError } = await useFetch(
+      `/api/data?cursor=${nextCursor.value}`,
+      {
+        headers: headers,
+      },
+    );
+
+    if (moreData.value && !moreError.value) {
+      if (moreData.value.offlineMaps.length > 0) {
+        offlineMaps.value.push(...moreData.value.offlineMaps);
+        nextCursor.value = moreData.value.nextCursor;
+      } else {
+        nextCursor.value = null;
+      }
+    } else {
+      console.error("Error fetching more data:", moreError.value);
+    }
+  } catch (error) {
+    console.error("Error fetching more data:", error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// Set up page metadata
+useHead({
+  title: "MapPacker: " + t("availableOfflineMaps"),
+});
 </script>

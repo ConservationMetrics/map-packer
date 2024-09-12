@@ -1,27 +1,27 @@
 <template>
   <div>
     <Sidebar
+      :available-map-styles="availableMapStyles"
+      :map-bounds="selectedBounds"
+      :map-style="selectedStyle"
+      :osm-enabled="osmEnabled"
       @formSubmitted="handleFormSubmit"
       @updateMapParams="updateMapParams"
-      :availableMapStyles="availableMapStyles"
-      :mapBounds="selectedBounds"
-      :mapStyle="selectedStyle"
-      :osmEnabled="osmEnabled"
     />
     <MapNavigation
+      :map-latitude="selectedLatitude"
+      :map-longitude="selectedLongitude"
+      :map-zoom="selectedZoom"
       @updateMapParams="updateMapParams"
-      :mapLatitude="selectedLatitude"
-      :mapLongitude="selectedLongitude"
-      :mapZoom="selectedZoom"
     />
     <MapCanvas
+      :mapbox-access-token="localMapboxAccessToken"
+      :map-latitude="selectedLatitude"
+      :map-longitude="selectedLongitude"
+      :map-style="selectedStyle"
+      :map-zoom="selectedZoom"
+      :osm-enabled="osmEnabled"
       @updateMapParams="updateMapParams"
-      :mapboxAccessToken="localMapboxAccessToken"
-      :mapLatitude="selectedLatitude"
-      :mapLongitude="selectedLongitude"
-      :mapStyle="selectedStyle"
-      :mapZoom="selectedZoom"
-      :osmEnabled="osmEnabled"
     />
     <div v-if="showModal" class="overlay"></div>
     <div v-if="showModal" class="modal">
@@ -30,71 +30,89 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+
 import Sidebar from "@/components/GenerateMap/Sidebar.vue";
 import MapNavigation from "@/components/GenerateMap/MapNavigation.vue";
 import MapCanvas from "@/components/GenerateMap/MapCanvas.vue";
-import style from "@/components/GenerateMap/style.css";
-import overlayModal from "@/components/overlay.css";
 
-export default {
-  components: { MapCanvas, Sidebar, MapNavigation },
-  props: [
-    "availableMapStyles",
-    "mapboxAccessToken",
-    "mapLatitude",
-    "mapLongitude",
-    "mapZoom",
-  ],
-  data() {
-    return {
-      localMapboxAccessToken: this.mapboxAccessToken,
-      osmEnabled: false,
-      selectedBounds: "",
-      selectedLatitude: this.mapLatitude,
-      selectedLongitude: this.mapLongitude,
-      selectedStyle: this.availableMapStyles[0].url,
-      selectedZoom: this.mapZoom,
-      showModal: false,
-    };
-  },
-  methods: {
-    handleFormSubmit(formData) {
-      this.$emit("handleMapRequest", formData);
-      this.showModal = true;
-      setTimeout(() => {
-        this.$router.push(this.localePath("/"));
-      }, 3000);
-    },
-    updateMapParams(updateObj) {
-      let { param, value } = updateObj;
+// Define props
+const props = defineProps({
+  availableMapStyles: Array,
+  mapboxAccessToken: String,
+  mapLatitude: Number,
+  mapLongitude: Number,
+  mapZoom: Number,
+});
 
-      if (typeof value === "number") {
-        value = parseFloat(value.toFixed(6));
-      }
+// Set up composables
+const router = useRouter();
+const { t } = useI18n();
+const localePath = useLocalePath();
 
-      if (param === "OsmEnabled") {
-        this.osmEnabled = value;
-      } else if (param === "AccessToken") {
-        this.localMapboxAccessToken = value;
-      } else {
-        this[`selected${param}`] = value;
-        if (param === "Style") {
-          this.osmEnabled = false;
-          this.$emit("updateMapParams", { param: "OsmEnabled", value: false });
-        }
-      }
-    },
-  },
-  computed: {
-    style() {
-      return { ...style, ...overlayModal };
-    },
-  },
+// Set up reactive state
+const localMapboxAccessToken = ref(props.mapboxAccessToken);
+const osmEnabled = ref(false);
+const selectedBounds = ref("");
+const selectedLatitude = ref(props.mapLatitude);
+const selectedLongitude = ref(props.mapLongitude);
+const selectedStyle = ref(props.availableMapStyles[0].url);
+const selectedZoom = ref(props.mapZoom);
+const showModal = ref(false);
+
+// Define emits
+const emit = defineEmits(["updateMapParams", "handleMapRequest"]);
+
+// Methods
+const handleFormSubmit = (formData) => {
+  emit("handleMapRequest", formData);
+  showModal.value = true;
+  setTimeout(() => {
+    router.push(localePath("/"));
+  }, 3000);
+};
+
+const updateMapParams = (updateObj) => {
+  let { param, value } = updateObj;
+
+  if (typeof value === "number") {
+    value = parseFloat(value.toFixed(6));
+  }
+
+  if (param === "OsmEnabled") {
+    osmEnabled.value = value;
+  } else if (param === "AccessToken") {
+    localMapboxAccessToken.value = value;
+  } else {
+    switch (param) {
+      case "Bounds":
+        selectedBounds.value = value;
+        break;
+      case "Latitude":
+        selectedLatitude.value = value;
+        break;
+      case "Longitude":
+        selectedLongitude.value = value;
+        break;
+      case "Style":
+        selectedStyle.value = value;
+        osmEnabled.value = false;
+        emit("updateMapParams", { param: "OsmEnabled", value: false });
+        break;
+      case "Zoom":
+        selectedZoom.value = value;
+        break;
+    }
+  }
 };
 </script>
 
 <style scoped>
+@import "@/components/overlay.css";
+
 body {
   margin: 0;
   padding: 0;

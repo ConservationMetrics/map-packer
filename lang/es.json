@@ -53,6 +53,7 @@
   "useInterface": "Usa esta interfaz para enviar una solicitud para generar un mapa offline",
   "warning": "Advertencia",
   "withOSMLabels": "con etiquetas OSM",
+  "yourAccessIsPending": "Todavía no estás autorizado para acceder a esta aplicación. Por favor, contacta a un administrador para obtener acceso.",
   "yourMapboxAccessToken": "Tu token de acceso Mapbox",
   "yourMapboxStyleURL": "Tu URL de estilo Mapbox",
   "zoomLevel": "Nivel de zoom"

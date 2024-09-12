@@ -1,8 +1,9 @@
-import { Client } from "pg";
+import pkg from "pg";
+const { Client } = pkg;
 
-type DatabaseConnection = Client | null;
+type DatabaseConnection = typeof Client.prototype;
 
-let db: DatabaseConnection = null;
+let db: DatabaseConnection | null = null;
 
 const setupDatabaseConnection = (
   database: string | undefined,
@@ -10,16 +11,15 @@ const setupDatabaseConnection = (
   user: string | undefined,
   password: string | undefined,
   port: string,
-  ssl: string | undefined,
+  ssl: boolean | string | undefined,
 ): DatabaseConnection => {
-  console.log("Setting up database connection...");
   const dbConnection = {
     database: database,
     user: user,
     host: host,
     password: password,
     port: parseInt(port, 10),
-    ssl: ssl === "true" ? { rejectUnauthorized: false } : false,
+    ssl: ssl === true ? { rejectUnauthorized: false } : false,
   };
   db = new Client(dbConnection);
 

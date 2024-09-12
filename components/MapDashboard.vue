@@ -1,59 +1,21 @@
 <template>
   <div class="mt-4 mx-auto w-full max-w-6xl px-4">
     <div class="flex justify-end space-x-4 mb-4">
-      <div class="relative inline-block text-left">
-        <div>
-          <button
-            @click="toggleDropdown"
-            class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none"
-          >
-            {{ currentLocaleName }}
-            <svg
-              class="-mr-1 ml-2 h-5 w-5"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                clip-rule="evenodd"
-              />
-            </svg>
-          </button>
-        </div>
-        <div
-          v-if="dropdownOpen"
-          class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50"
-        >
-          <div class="py-1">
-            <a
-              href="#"
-              v-for="locale in availableLocales"
-              :key="locale.code"
-              class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              @click.prevent.stop="changeLocale(locale.code)"
-            >
-              {{ locale.name }}
-            </a>
-          </div>
-        </div>
-      </div>
-      <nuxt-link
-        :to="localePath('map')"
+      <LanguagePicker></LanguagePicker>
+      <NuxtLinkLocale
+        to="/map"
         class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer transition-colors duration-200 hidden md:block"
       >
         + {{ $t("generateMap") }}
-      </nuxt-link>
+      </NuxtLinkLocale>
     </div>
     <h1 class="text-4xl font-bold text-gray-800 mb-8 text-center">
       {{ $t("availableOfflineMaps") }}
     </h1>
-    <nuxt-link
+    <NuxtLink
       to="/map/"
       class="block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer transition-colors duration-200 text-center mb-8 md:hidden"
-      >+ {{ $t("generateMap") }}</nuxt-link
+      >+ {{ $t("generateMap") }}</NuxtLink
     >
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
       <div
@@ -92,7 +54,7 @@
         <p class="mb-2 italic" v-if="map.description">{{ map.description }}</p>
         <div class="space-y-2 mb-2">
           <p v-if="map.status">
-            <span class="font-bold">{{ $t("status") }}:</span>
+            <span class="font-bold">{{ $t("status") }}: </span>
             <span :class="formatStatusColor(map.status)">
               {{
                 map.status === "FAILED"
@@ -172,7 +134,7 @@
           </div>
         </div>
         <div v-if="showQRCodeId === map.id" class="flex mb-2">
-          <QRCode :value="`${offlineMapsUri}/${map.filename}`" size="300" />
+          <QRCode :value="`${offlineMapsUri}/${map.filename}`" :size="300" />
         </div>
         <div
           class="space-y-2 flex-grow"
@@ -210,187 +172,194 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { useI18n } from "vue-i18n";
+
 import QRCode from "qrcode.vue";
 import MiniMap from "@/components/MapDashboard/MiniMap.vue";
-import { copyLink } from "@/src/utils.ts";
-import overlayModal from "@/components/overlay.css";
+import LanguagePicker from "./shared/LanguagePicker.vue";
 
-export default {
-  components: { MiniMap, QRCode },
-  props: {
-    offlineMaps: Array,
-    offlineMapsUri: String,
-    mapboxAccessToken: String,
-    nextCursor: Number,
-  },
-  data() {
-    return {
-      dropdownOpen: false,
-      refreshKey: 0,
-      tooltipId: null,
-      showQRCodeId: null,
-      showModal: false,
-      modalMessage: "",
-    };
-  },
-  methods: {
-    calculateDuration(start, end) {
-      const startDate = new Date(start);
-      const endDate = new Date(end);
-      const duration = endDate - startDate;
-      const hours = Math.floor(duration / (1000 * 60 * 60));
-      const minutes = Math.floor((duration / (1000 * 60)) % 60);
-      const seconds = Math.floor((duration / 1000) % 60);
-      return `${hours}h ${minutes}m ${seconds}s`;
-    },
-    changeLocale(localeCode) {
-      this.$i18n.setLocale(localeCode);
-      this.dropdownOpen = false;
-    },
-    copyLinkToClipboard(link, id) {
-      copyLink(link)
-        .then(() => {
-          this.tooltipId = id;
-          setTimeout(() => {
-            this.tooltipId = null;
-          }, 1500);
-        })
-        .catch((err) => {
-          console.error("Failed to copy:", err);
-        });
-    },
-    deleteMap(id) {
-      let confirmation = window.confirm(this.$t("mapDeleteConfirmation") + ".");
+import { copyLink } from "~/utils";
 
-      if (confirmation) {
-        const map = this.offlineMaps.find((m) => m.id === id);
-        if (map) {
-          const message = {
-            type: "delete_request",
-            requestId: map.id,
-            filename: map.filename,
-            file_location: map.file_location,
-          };
-          this.$emit("handleMapRequest", message);
-          (this.modalMessage = this.$t("mapWithFilesDeleted") + "!"),
-            (this.showModal = true);
-          // wait 3 seconds and refresh the page content
-          setTimeout(() => {
-            this.showModal = false;
-            location.reload();
-          }, 3000);
-        }
-      }
-    },
-    formatFilesize(size) {
-      return (size / 1024 / 1024).toFixed(2);
-    },
-    formatNumber(value) {
-      return parseInt(value).toLocaleString();
-    },
-    formatDate(dateString) {
-      const options = {
-        year: "numeric",
-        month: "long",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      };
-      const date = new Date(dateString);
-      const formattedDate = date.toLocaleDateString("en-GB", options);
-      return `${formattedDate}`;
-    },
-    formatStatusColor(status) {
-      switch (status) {
-        case "FAILED":
-          return "font-semibold text-red-500";
-        case "PENDING DELETION":
-          return "font-semibold text-red-500";
-        case "PENDING":
-          return "font-semibold text-yellow-500";
-        case "PROCESSING":
-          return "font-semibold text-yellow-500";
-        case "SUCCEEDED":
-          return "font-semibold text-green-500";
-        default:
-          return "font-semibold text-gray-600";
-      }
-    },
-    handleScroll() {
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-        this.loadMore();
-      }
-    },
-    loadMore() {
-      this.$emit("loadMore");
-    },
-    resubmitMapRequest(id) {
-      const map = this.offlineMaps.find((m) => m.id === id);
-      if (map) {
-        const message = {
-          type: "resubmit_request",
-          title: map.title,
-          filename: map.filename,
-          status: "PENDING",
-          error_message: null,
-          description: map.description,
-          min_zoom: map.min_zoom,
-          max_zoom: map.max_zoom,
-          mapbox_style: map.mapbox_style,
-          planet_monthly_visual: map.planet_monthly_visual,
-          bounds: map.bounds,
-          style: map.style,
-          openstreetmap: map.openstreetmap,
-          number_of_tiles: map.number_of_tiles,
-          created_at: new Date(),
-          requestId: map.id,
-        };
-        this.$emit("handleMapRequest", message);
-        (this.modalMessage = this.$t("mapDeleted") + "!"),
-          (this.showModal = true);
-        // wait 3 seconds and refresh the page content
-        setTimeout(() => {
-          this.showModal = false;
-          location.reload();
-        }, 3000);
-      }
-    },
-    toggleDropdown() {
-      this.dropdownOpen = !this.dropdownOpen;
-    },
-    toggleQRCode(id) {
-      this.showQRCodeId = this.showQRCodeId === id ? null : id;
-    },
-  },
-  computed: {
-    currentLocaleName() {
-      const currentLocale = this.availableLocales.find(
-        (locale) => locale.code === this.$i18n.locale,
-      );
-      return currentLocale ? currentLocale.name : "";
-    },
-    availableLocales() {
-      return this.$i18n.locales;
-    },
-    paginatedOfflineMaps() {
-      return this.offlineMaps;
-    },
-    style() {
-      return { ...overlayModal };
-    },
-  },
-  mounted() {
-    window.addEventListener("scroll", this.handleScroll);
-  },
-  beforeDestroy() {
-    window.removeEventListener("scroll", this.handleScroll);
-  },
+// Define props
+const props = defineProps({
+  offlineMaps: Array,
+  offlineMapsUri: String,
+  mapboxAccessToken: String,
+  nextCursor: Number,
+});
+
+// Set up composables
+const emit = defineEmits(["handleMapRequest", "loadMore"]);
+const { t, locale, locales } = useI18n();
+
+// Set up reactive state
+const dropdownOpen = ref(false);
+const tooltipId = ref(null);
+const showQRCodeId = ref(null);
+const showModal = ref(false);
+const modalMessage = ref("");
+
+// Methods
+const calculateDuration = (start, end) => {
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  const duration = endDate - startDate;
+  const hours = Math.floor(duration / (1000 * 60 * 60));
+  const minutes = Math.floor((duration / (1000 * 60)) % 60);
+  const seconds = Math.floor((duration / 1000) % 60);
+  return `${hours}h ${minutes}m ${seconds}s`;
 };
+
+const changeLocale = (localeCode) => {
+  locale.value = localeCode;
+  dropdownOpen.value = false;
+};
+
+const copyLinkToClipboard = (link, id) => {
+  copyLink(link)
+    .then(() => {
+      tooltipId.value = id;
+      setTimeout(() => {
+        tooltipId.value = null;
+      }, 1500);
+    })
+    .catch((err) => {
+      console.error("Failed to copy:", err);
+    });
+};
+
+const deleteMap = (id) => {
+  let confirmation = window.confirm(t("mapDeleteConfirmation") + ".");
+
+  if (confirmation) {
+    const map = props.offlineMaps.find((m) => m.id === id);
+    if (map) {
+      const message = {
+        type: "delete_request",
+        requestId: map.id,
+        filename: map.filename,
+        file_location: map.file_location,
+      };
+      emit("handleMapRequest", message);
+      modalMessage.value = t("mapWithFilesDeleted") + "!";
+      showModal.value = true;
+      setTimeout(() => {
+        showModal.value = false;
+        location.reload();
+      }, 3000);
+    }
+  }
+};
+
+const formatFilesize = (size) => (size / 1024 / 1024).toFixed(2);
+
+const formatNumber = (value) => parseInt(value).toLocaleString();
+
+const formatDate = (dateString) => {
+  const options = {
+    year: "numeric",
+    month: "long",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  };
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-GB", options);
+};
+
+const formatStatusColor = (status) => {
+  switch (status) {
+    case "FAILED":
+      return "font-semibold text-red-500";
+    case "PENDING DELETION":
+      return "font-semibold text-red-500";
+    case "PENDING":
+      return "font-semibold text-yellow-500";
+    case "PROCESSING":
+      return "font-semibold text-yellow-500";
+    case "SUCCEEDED":
+      return "font-semibold text-green-500";
+    default:
+      return "font-semibold text-gray-600";
+  }
+};
+
+const handleScroll = () => {
+  if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+    loadMore();
+  }
+};
+
+const loadMore = () => {
+  emit("loadMore");
+};
+
+const resubmitMapRequest = (id) => {
+  const map = props.offlineMaps.find((m) => m.id === id);
+  if (map) {
+    const message = {
+      type: "resubmit_request",
+      title: map.title,
+      filename: map.filename,
+      status: "PENDING",
+      error_message: null,
+      description: map.description,
+      min_zoom: map.min_zoom,
+      max_zoom: map.max_zoom,
+      mapbox_style: map.mapbox_style,
+      planet_monthly_visual: map.planet_monthly_visual,
+      bounds: map.bounds,
+      style: map.style,
+      openstreetmap: map.openstreetmap,
+      number_of_tiles: map.number_of_tiles,
+      created_at: new Date(),
+      requestId: map.id,
+    };
+    emit("handleMapRequest", message);
+    modalMessage.value = t("mapDeleted") + "!";
+    showModal.value = true;
+    setTimeout(() => {
+      showModal.value = false;
+      location.reload();
+    }, 3000);
+  }
+};
+
+const toggleDropdown = () => {
+  dropdownOpen.value = !dropdownOpen.value;
+};
+
+const toggleQRCode = (id) => {
+  showQRCodeId.value = showQRCodeId.value === id ? null : id;
+};
+
+const currentLocaleName = computed(() => {
+  const currentLocale = locales.value.find(
+    (lang) => lang.code === locale.value,
+  );
+  return currentLocale ? currentLocale.name : "";
+});
+
+const availableLocales = computed(() => locales.value);
+
+const paginatedOfflineMaps = computed(() => props.offlineMaps);
+
+// On mount
+onMounted(() => {
+  window.addEventListener("scroll", handleScroll);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("scroll", handleScroll);
+});
 </script>
 
 <style scoped>
+@import "@/components/overlay.css";
+
 .card {
   position: relative;
 }

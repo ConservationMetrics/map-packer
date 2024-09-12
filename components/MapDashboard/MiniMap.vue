@@ -1,25 +1,37 @@
 <template>
-  <div ref="map" style="width: 100%; height: 200px"></div>
+  <div ref="mapContainer" style="width: 100%; height: 200px"></div>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted, nextTick } from "vue";
 import mapboxgl from "mapbox-gl";
 
-export default {
-  props: ["mapboxAccessToken", "bounds"],
-  mounted() {
-    mapboxgl.accessToken = this.mapboxAccessToken;
+// Define props
+const props = defineProps({
+  mapboxAccessToken: String,
+  bounds: String,
+});
 
-    const boundsArray = this.bounds
-      .split(",")
-      .map(Number)
-      .reduce((result, value, index, array) => {
-        if (index % 2 === 0) result.push(array.slice(index, index + 2));
-        return result;
-      }, []);
+// Set up reactive state
+const mapContainer = ref(null);
 
+// On mount
+onMounted(async () => {
+  mapboxgl.accessToken = props.mapboxAccessToken;
+
+  const boundsArray = props.bounds
+    .split(",")
+    .map(Number)
+    .reduce((result, value, index, array) => {
+      if (index % 2 === 0) result.push(array.slice(index, index + 2));
+      return result;
+    }, []);
+
+  await nextTick();
+
+  if (mapContainer.value) {
     const map = new mapboxgl.Map({
-      container: this.$refs.map,
+      container: mapContainer.value,
       style: "mapbox://styles/mapbox/streets-v12",
       center: [
         (boundsArray[0][0] + boundsArray[1][0]) / 2,
@@ -85,6 +97,8 @@ export default {
         },
       });
     });
-  },
-};
+  } else {
+    console.error("Map container is not available.");
+  }
+});
 </script>
