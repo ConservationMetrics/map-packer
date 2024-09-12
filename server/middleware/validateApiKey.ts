@@ -1,9 +1,6 @@
 import { defineEventHandler, H3Event } from "h3";
-export default defineEventHandler((event: H3Event) => {
-  const {
-    public: { appApiKey },
-  } = useRuntimeConfig();
 
+export const validateApiKey = (event: H3Event, appApiKey: String) => {
   // Only apply middleware to API routes
   if (!event.node.req.url?.startsWith("/api/")) {
     return;
@@ -25,4 +22,10 @@ export default defineEventHandler((event: H3Event) => {
       message: "Forbidden",
     });
   }
-});
+};
+
+const {
+  public: { appApiKey },
+} = useRuntimeConfig();
+
+export default defineEventHandler((event) => validateApiKey(event, appApiKey));
