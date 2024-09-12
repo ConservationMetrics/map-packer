@@ -17,10 +17,14 @@ export async function publishToAzureStorageQueue(
     apiKey: any;
   },
 ) {
-  const config = useRuntimeConfig();
+  const {
+    azureStorageConnectionAccountName,
+    azureStorageConnectionStorageKey,
+    public: { offlineMapsPath },
+  } = useRuntimeConfig();
 
-  const accountName = config.azureStorageConnectionAccountName;
-  const storageKey = config.azureStorageConnectionStorageKey;
+  const accountName = azureStorageConnectionAccountName;
+  const storageKey = azureStorageConnectionStorageKey;
 
   if (!accountName || !storageKey) {
     throw new Error("Azure Storage Connection variables is not set");
@@ -48,8 +52,8 @@ export async function publishToAzureStorageQueue(
     ...(message.filename && { outputFilename: message.filename }),
     ...(message.file_location
       ? { outputDir: message.file_location }
-      : config.public.offlineMapsPath && {
-          outputDir: config.public.offlineMapsPath,
+      : offlineMapsPath && {
+          outputDir: offlineMapsPath,
         }),
     ...(message.apiKey && { apiKey: message.apiKey }),
     thumbnail: false,

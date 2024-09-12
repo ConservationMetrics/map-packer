@@ -4,10 +4,10 @@
       v-if="dataFetched"
       @handleMapRequest="handleMapRequest"
       :available-map-styles="availableMapStyles"
-      :mapbox-access-token="config.public.mapboxAccessToken"
-      :map-latitude="Number(config.public.mapLatitude)"
-      :map-longitude="Number(config.public.mapLongitude)"
-      :map-zoom="Number(config.public.mapZoom)"
+      :mapbox-access-token="mapboxAccessToken"
+      :map-latitude="Number(mapLatitude)"
+      :map-longitude="Number(mapLongitude)"
+      :map-zoom="Number(mapZoom)"
     />
   </div>
 </template>
@@ -21,6 +21,11 @@ definePageMeta({
   middleware: "auth",
 });
 
+// Set up config
+const {
+  public: { appApiKey, mapboxAccessToken, mapLatitude, mapLongitude, mapZoom },
+} = useRuntimeConfig();
+
 // Set up composables
 const { t } = useI18n();
 
@@ -29,9 +34,8 @@ const dataFetched = ref(false);
 const availableMapStyles = ref([]);
 
 // Define headers
-const config = useRuntimeConfig();
 const headers = {
-  "x-api-key": config.public.apiKey.replace(/['"]+/g, ""),
+  "x-api-key": appApiKey,
 };
 
 // Fetch initial data

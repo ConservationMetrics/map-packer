@@ -2,10 +2,10 @@
   <div>
     <MapDashboard
       v-if="dataFetched"
-      :mapbox-access-token="config.public.mapboxAccessToken"
+      :mapbox-access-token="mapboxAccessToken"
       :next-cursor="nextCursor"
       :offline-maps="offlineMaps"
-      :offline-maps-uri="config.public.offlineMapsUri"
+      :offline-maps-uri="offlineMapsUri"
       @handleMapRequest="handleMapRequest"
       @loadMore="loadMore"
     />
@@ -22,6 +22,11 @@ definePageMeta({
   middleware: "auth",
 });
 
+// Set up config
+const {
+  public: { appApiKey, mapboxAccessToken, offlineMapsUri },
+} = useRuntimeConfig();
+
 // Set up composables
 const { t } = useI18n();
 
@@ -32,9 +37,8 @@ const offlineMaps = ref([]);
 const isLoading = ref(false);
 
 // Define headers
-const config = useRuntimeConfig();
 const headers = {
-  "x-api-key": config.public.apiKey.replace(/['"]+/g, ""),
+  "x-api-key": appApiKey,
 };
 
 // Fetch initial data

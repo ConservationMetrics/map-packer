@@ -2,19 +2,19 @@ import { defineEventHandler, getQuery, send, sendError, H3Event } from "h3";
 import setupDatabaseConnection from "../database/dbConnection";
 import { fetchData } from "../database/dbOperations";
 
-const { database, dbHost, dbUser, dbPassword, dbPort, dbSsl, dbTable } =
-  useRuntimeConfig();
-
-const db = setupDatabaseConnection(
-  database,
-  dbHost,
-  dbUser,
-  dbPassword,
-  dbPort,
-  dbSsl,
-);
-
 export default defineEventHandler(async (event: H3Event) => {
+  const { database, dbHost, dbUser, dbPassword, dbPort, dbSsl, dbTable } =
+    useRuntimeConfig();
+
+  const db = setupDatabaseConnection(
+    database,
+    dbHost,
+    dbUser,
+    dbPassword,
+    dbPort,
+    dbSsl,
+  );
+
   const query = getQuery(event);
   const limit = parseInt(query.limit as string) || 6;
   const cursor = query.cursor ? parseInt(query.cursor as string) : null;

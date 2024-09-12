@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { mount } from "@vue/test-utils";
-import Auth0Login from "../../components/Auth0Login.vue";
+import Auth0Login from "@/components/Auth0Login.vue";
 import { createI18n } from "vue-i18n";
 
 // Create the i18n instance
