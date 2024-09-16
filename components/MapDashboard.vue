@@ -313,7 +313,7 @@ const resubmitMapRequest = (id) => {
       requestId: map.id,
     };
     emit("handleMapRequest", message);
-    modalMessage.value = t("mapDeleted") + "!";
+    modalMessage.value = t("mapRequestResubmitted") + "!";
     showModal.value = true;
     setTimeout(() => {
       showModal.value = false;

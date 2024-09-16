@@ -24,6 +24,7 @@
   "mapControls": "Kaartbediening",
   "mapDeleteConfirmation": "Weet u zeker dat u deze offline kaart wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt",
   "mapDeleted": "Offline kaartverzoek succesvol opnieuw ingediend",
+  "mapRequestResubmitted": "Offline kaartverzoek succesvol opnieuw ingediend",
   "mapWithFilesDeleted": "Offline kaartverzoek (en bijbehorende bestanden) verwijderd",
   "mapStyle": "Kaartstijl",
   "maximumZoomLevel": "Maximaal zoomniveau",

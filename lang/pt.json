@@ -25,6 +25,7 @@
   "mapDeleteConfirmation": "Tem certeza de que deseja excluir este mapa offline? Esta ação não pode ser desfeita",
   "mapDeleted": "Pedido de mapa offline reenviado com sucesso",
   "mapWithFilesDeleted": "Pedido de mapa offline (e arquivos associados) excluído",
+  "mapRequestResubmitted": "Pedido de mapa offline reenviado com sucesso",
   "mapStyle": "Estilo do mapa",
   "maximumZoomLevel": "Nível máximo de zoom",
   "metadata": "Metadados",
