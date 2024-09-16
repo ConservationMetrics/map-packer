@@ -23,8 +23,6 @@
 <script setup>
 import { useI18n } from "vue-i18n";
 
-import LanguagePicker from "./shared/LanguagePicker.vue";
-
 // Define props
 const props = defineProps({
   errorMessage: {
