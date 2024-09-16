@@ -3,6 +3,13 @@ import { mount } from "@vue/test-utils";
 import Auth0Login from "@/components/Auth0Login.vue";
 import { createI18n } from "vue-i18n";
 
+// Mock the LanguagePicker component from gc-shared-components
+vi.mock("gc-shared-components", () => ({
+  LanguagePicker: {
+    template: "<div></div>",
+  },
+}));
+
 // Create the i18n instance
 const i18n = createI18n({
   legacy: false, // Use Composition API mode
@@ -16,41 +23,34 @@ const i18n = createI18n({
   },
 });
 
-// Mock the LanguagePicker component
-vi.mock("../../components/shared/LanguagePicker.vue", () => ({
-  default: {
-    template: "<div></div>",
-  },
-}));
+// Helper function to mount the Auth0Login component
+const mountAuth0Login = (props = {}) => {
+  return mount(Auth0Login, {
+    global: {
+      plugins: [i18n],
+      components: {
+        LanguagePicker: {
+          template: "<div></div>",
+        },
+      },
+    },
+    props,
+  });
+};
 
 describe("Auth0Login", () => {
   it("renders login button", () => {
-    const wrapper = mount(Auth0Login, {
-      global: {
-        plugins: [i18n],
-      },
-    });
+    const wrapper = mountAuth0Login();
     expect(wrapper.find("button").text()).toBe("Login");
   });
 
   it("displays error message when provided", () => {
-    const wrapper = mount(Auth0Login, {
-      global: {
-        plugins: [i18n],
-      },
-      props: {
-        errorMessage: "Access pending",
-      },
-    });
+    const wrapper = mountAuth0Login({ errorMessage: "Access pending" });
     expect(wrapper.find(".text-red-500").text()).toBe("Access pending");
   });
 
   it("changes window.location.href to /auth/auth0 on button click", async () => {
-    const wrapper = mount(Auth0Login, {
-      global: {
-        plugins: [i18n],
-      },
-    });
+    const wrapper = mountAuth0Login();
 
     // Mock window.location.href
     const originalLocation = window.location;
