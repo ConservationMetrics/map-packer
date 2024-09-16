@@ -17,7 +17,7 @@ export default defineNuxtConfig({
 
   // Modules: https://nuxt.com/docs/guide/concepts/modules
   modules: [
-    "gc-shared-components",
+    "gc-shared-resources",
     "nuxt-auth-utils",
     "@nuxtjs/i18n",
     "@nuxt/test-utils/module",

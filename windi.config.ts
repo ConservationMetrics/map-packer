@@ -9,8 +9,8 @@ export default defineConfig({
   extract: {
     include: [
       "./**/*.{vue,html,jsx,tsx}",
-      // Workaround to get Windi to extract classes from gc-shared-components
-      "node_modules/gc-shared-components/**/*.{vue,html,jsx,tsx}",
+      // Workaround to get Windi to extract classes from gc-shared-resources
+      "node_modules/gc-shared-resources/**/*.{vue,html,jsx,tsx}",
     ],
   },
 });

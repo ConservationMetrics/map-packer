@@ -8,7 +8,7 @@
     "build": "nuxi build",
     "start": "nuxi start",
     "generate": "nuxt generate",
-    "link-module": "npm link gc-shared-components",
+    "link-module": "npm link ../gc-shared-components",
     "lint": "prettier --write ./ --ignore-path .prettierignore",
     "prepare": "husky",
     "preview": "nuxt preview",
@@ -18,7 +18,7 @@
   "dependencies": {
     "@azure/storage-queue": "^12.22.0",
     "@mapbox/mapbox-gl-draw": "^1.4.3",
-    "gc-shared-components": "^1.0.2",
+    "gc-shared-resources": "^1.0.3",
     "mapbox-gl": "^3.4.0",
     "mapbox-gl-draw-rectangle-mode": "^1.0.4",
     "nuxt": "^3.12.2",
