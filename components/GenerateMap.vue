@@ -111,8 +111,6 @@ const updateMapParams = (updateObj) => {
 </script>
 
 <style scoped>
-@import "@/components/overlay.css";
-
 body {
   margin: 0;
   padding: 0;

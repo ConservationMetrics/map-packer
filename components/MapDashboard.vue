@@ -339,8 +339,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-@import "@/components/overlay.css";
-
 .card {
   position: relative;
 }
