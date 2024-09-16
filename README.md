@@ -52,6 +52,9 @@ $ npm run dev
 $ npm run build
 $ npm run start
 
+# use gc-shared-modules symlink
+$ npm run link-module
+
 # locally preview production build:
 $ npm run preview
 

@@ -1,7 +1,7 @@
 <template>
   <div class="mt-4 mx-auto w-full max-w-6xl px-4">
     <div class="flex justify-end space-x-4 mb-4">
-      <LanguagePicker></LanguagePicker>
+      <LanguagePicker />
       <NuxtLinkLocale
         to="/map"
         class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer transition-colors duration-200 hidden md:block"
@@ -178,7 +178,6 @@ import { useI18n } from "vue-i18n";
 
 import QRCode from "qrcode.vue";
 import MiniMap from "@/components/MapDashboard/MiniMap.vue";
-import LanguagePicker from "./shared/LanguagePicker.vue";
 
 import { copyLink } from "~/utils";
 
@@ -210,11 +209,6 @@ const calculateDuration = (start, end) => {
   const minutes = Math.floor((duration / (1000 * 60)) % 60);
   const seconds = Math.floor((duration / 1000) % 60);
   return `${hours}h ${minutes}m ${seconds}s`;
-};
-
-const changeLocale = (localeCode) => {
-  locale.value = localeCode;
-  dropdownOpen.value = false;
 };
 
 const copyLinkToClipboard = (link, id) => {
@@ -328,22 +322,9 @@ const resubmitMapRequest = (id) => {
   }
 };
 
-const toggleDropdown = () => {
-  dropdownOpen.value = !dropdownOpen.value;
-};
-
 const toggleQRCode = (id) => {
   showQRCodeId.value = showQRCodeId.value === id ? null : id;
 };
-
-const currentLocaleName = computed(() => {
-  const currentLocale = locales.value.find(
-    (lang) => lang.code === locale.value,
-  );
-  return currentLocale ? currentLocale.name : "";
-});
-
-const availableLocales = computed(() => locales.value);
 
 const paginatedOfflineMaps = computed(() => props.offlineMaps);
 
