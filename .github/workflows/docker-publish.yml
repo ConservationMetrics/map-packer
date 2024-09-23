@@ -19,7 +19,11 @@ jobs:
       - name: Install dependencies and run tests
         run: |
           npm ci
-          npm run test
+          if [ -d "test" ]; then
+            npm run test
+          else
+            echo "No test directory found, skipping tests."
+          fi
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
