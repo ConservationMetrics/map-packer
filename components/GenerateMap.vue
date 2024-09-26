@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Sidebar
+    <MapSidebar
       :available-map-styles="availableMapStyles"
       :map-bounds="selectedBounds"
       :map-style="selectedStyle"
@@ -35,7 +35,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 
-import Sidebar from "@/components/GenerateMap/Sidebar.vue";
+import MapSidebar from "@/components/GenerateMap/MapSidebar.vue";
 import MapNavigation from "@/components/GenerateMap/MapNavigation.vue";
 import MapCanvas from "@/components/GenerateMap/MapCanvas.vue";
 

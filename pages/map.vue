@@ -42,7 +42,7 @@ try {
   availableMapStyles.value = mapStyles;
 
   dataFetched.value = true;
-} catch {
+} catch (error) {
   console.error("Error fetching data:", error.value);
   dataFetched.value = false;
 }
