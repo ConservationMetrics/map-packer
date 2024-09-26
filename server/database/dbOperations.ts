@@ -3,8 +3,7 @@ const checkTableExists = (
   table: string | undefined,
 ): Promise<boolean> => {
   return new Promise((resolve, reject) => {
-    let query: string;
-    query = `SELECT to_regclass('${table}')`;
+    const query = `SELECT to_regclass('${table}')`;
     db.query(query, (err: Error, result: { rows: any[] }) => {
       if (err) reject(err);
       resolve(result.rows[0].to_regclass !== null);
@@ -60,7 +59,7 @@ const fetchDataFromTable = async (
   cursor: number | null,
 ): Promise<any[]> => {
   let query: string;
-  let values: any[] = [limit];
+  const values: any[] = [limit];
 
   if (cursor) {
     query = `SELECT * FROM ${table} WHERE id < $2 ORDER BY id DESC LIMIT $1`;
@@ -93,7 +92,7 @@ export const fetchData = async (
   if (!databaseExists) {
     await createMapRequestTable(db, table);
   }
-  let data = await fetchDataFromTable(db, table, limit, cursor);
+  const data = await fetchDataFromTable(db, table, limit, cursor);
 
   return { data: data || null };
 };

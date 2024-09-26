@@ -191,10 +191,9 @@ const props = defineProps({
 
 // Set up composables
 const emit = defineEmits(["handleMapRequest", "loadMore"]);
-const { t, locale, locales } = useI18n();
+const { t } = useI18n();
 
 // Set up reactive state
-const dropdownOpen = ref(false);
 const tooltipId = ref(null);
 const showQRCodeId = ref(null);
 const showModal = ref(false);

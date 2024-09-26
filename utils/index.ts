@@ -1,4 +1,4 @@
-export function copyLink(link: string): Promise<void> {
+export const copyLink = (link: string): Promise<void> => {
   return new Promise((resolve, reject) => {
     if (navigator.clipboard) {
       navigator.clipboard
@@ -24,7 +24,7 @@ export function copyLink(link: string): Promise<void> {
       document.body.removeChild(textArea);
     }
   });
-}
+};
 
 export const calculateMaxPlanetMonthYear = () => {
   // If the current day is less than or equal to 15, maxMonth is two months ago.

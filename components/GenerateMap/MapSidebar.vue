@@ -269,7 +269,7 @@ const estimateNumberOfTiles = (maxZoom, boundsStr) => {
 };
 
 const renderCustomStyle = () => {
-  if (/^mapbox:\/\/styles\/[^\/]+\/[^\/]+$/.test(customMapboxStyleUrl.value)) {
+  if (/^mapbox:\/\/styles\/[^/]+\/[^/]+$/.test(customMapboxStyleUrl.value)) {
     form.selectedStyle = customMapboxStyleUrl.value;
     form.selectedStyleKey = "mapbox-custom";
     emit("updateMapParams", {
@@ -350,7 +350,7 @@ const estimatedTiles = computed(() =>
 );
 
 const isValidMapboxStyleAndToken = computed(() => {
-  const isValidStyle = /^mapbox:\/\/styles\/[^\/]+\/[^\/]+$/.test(
+  const isValidStyle = /^mapbox:\/\/styles\/[^/]+\/[^/]+$/.test(
     customMapboxStyleUrl.value,
   );
   const isValidToken = /^pk\.ey/.test(localMapboxAccessToken.value);

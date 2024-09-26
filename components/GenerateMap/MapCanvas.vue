@@ -204,7 +204,7 @@ onMounted(() => {
 
     map.value.addControl(draw.value);
 
-    map.value.on("draw.create", (e) => {
+    map.value.on("draw.create", () => {
       if (draw.value.getAll().features.length > 1) {
         draw.value.delete(draw.value.getAll().features[0].id);
       }
