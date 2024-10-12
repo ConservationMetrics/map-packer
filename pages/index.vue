@@ -1,42 +1,19 @@
-<template>
-  <div>
-    <MapDashboard
-      v-if="dataFetched"
-      :mapbox-access-token="mapboxAccessToken"
-      :next-cursor="nextCursor"
-      :offline-maps="offlineMaps"
-      :offline-maps-uri="offlineMapsUri"
-      @handleMapRequest="handleMapRequest"
-      @loadMore="loadMore"
-    />
-  </div>
-</template>
-
 <script setup>
-import { useFetch, useHead } from "#imports";
 import { ref } from "vue";
+import { useHead, useFetch, useRuntimeConfig } from "#app";
 import { useI18n } from "vue-i18n";
 
-// Set up config
-const {
-  public: { appApiKey, mapboxAccessToken, offlineMapsUri },
-} = useRuntimeConfig();
-
-// Set up composables
-const { t } = useI18n();
-
-// Set up reactive state
+// API request to fetch the data
 const dataFetched = ref(false);
 const nextCursor = ref(null);
 const offlineMaps = ref([]);
 const isLoading = ref(false);
-
-// Define headers
+const {
+  public: { appApiKey, mapboxAccessToken, offlineMapsUri },
+} = useRuntimeConfig();
 const headers = {
   "x-api-key": appApiKey,
 };
-
-// Fetch initial data
 const { data: initialData, error: initialError } = await useFetch("/api/data", {
   headers,
 });
@@ -54,19 +31,6 @@ if (initialData.value && !initialError.value) {
 } else {
   console.error("Error fetching data:", initialError.value);
 }
-
-// POST map request (emitted by component)
-const handleMapRequest = async (message) => {
-  try {
-    await $fetch("/api/maprequest", {
-      method: "POST",
-      body: message,
-      headers: headers,
-    });
-  } catch (error) {
-    console.error("Error submitting request data:", error);
-  }
-};
 
 // Load more data based on cursor pagination
 const loadMore = async () => {
@@ -99,8 +63,36 @@ const loadMore = async () => {
   }
 };
 
-// Set up page metadata
+// POST map request (emitted by component)
+const handleMapRequest = async (message) => {
+  try {
+    // eslint-disable-next-line no-undef
+    await $fetch("/api/maprequest", {
+      method: "POST",
+      body: message,
+      headers: headers,
+    });
+  } catch (error) {
+    console.error("Error submitting request data:", error);
+  }
+};
+
+const { t } = useI18n();
 useHead({
   title: "MapPacker: " + t("availableOfflineMaps"),
 });
 </script>
+
+<template>
+  <div>
+    <MapDashboard
+      v-if="dataFetched"
+      :mapbox-access-token="mapboxAccessToken"
+      :next-cursor="nextCursor"
+      :offline-maps="offlineMaps"
+      :offline-maps-uri="offlineMapsUri"
+      @handleMapRequest="handleMapRequest"
+      @loadMore="loadMore"
+    />
+  </div>
+</template>

@@ -1,7 +1,3 @@
-<template>
-  <div id="map"></div>
-</template>
-
 <script setup>
 import { ref, watch, onMounted, onBeforeUnmount } from "vue";
 import { useI18n } from "vue-i18n";
@@ -13,7 +9,8 @@ import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 
-// Define props
+const { t } = useI18n();
+
 const props = defineProps({
   mapboxAccessToken: String,
   mapLatitude: Number,
@@ -23,156 +20,15 @@ const props = defineProps({
   osmEnabled: Boolean,
 });
 
-// Set up composables
-const { t } = useI18n();
-
-// Set up reative state
 const map = ref(null);
-const draw = ref(null);
 const mapLoaded = ref(false);
+const draw = ref(null);
 const selectedLatitude = ref(props.mapLatitude);
 const selectedLongitude = ref(props.mapLongitude);
 const selectedZoom = ref(props.mapZoom);
 
-// Define emits
 const emit = defineEmits(["updateMapParams"]);
 
-// Methods
-const getWSENstring = (bounds) => {
-  if (bounds.length === 0) {
-    return t("noCoordinatesProvided");
-  }
-
-  let minLat = bounds[0].lat;
-  let maxLat = bounds[0].lat;
-  let minLng = bounds[0].lng;
-  let maxLng = bounds[0].lng;
-
-  bounds.forEach((coord) => {
-    if (coord.lat < minLat) minLat = coord.lat;
-    if (coord.lat > maxLat) maxLat = coord.lat;
-    if (coord.lng < minLng) minLng = coord.lng;
-    if (coord.lng > maxLng) maxLng = coord.lng;
-  });
-
-  const wsen = `${minLng},${minLat},${maxLng},${maxLat}`;
-
-  return wsen;
-};
-
-const addOSMLayers = () => {
-  if (!map.value.getSource("osm")) {
-    map.value.addSource("osm", {
-      type: "vector",
-      url: "mapbox://mapbox.mapbox-streets-v8",
-    });
-
-    map.value.addLayer({
-      id: "osm-waterway-lines",
-      type: "line",
-      source: "osm",
-      "source-layer": "waterway",
-      paint: {
-        "line-width": 2,
-        "line-color": "#0000ff", // blue for waterways
-      },
-    });
-
-    map.value.addLayer({
-      id: "osm-highway-lines",
-      type: "line",
-      source: "osm",
-      "source-layer": "road",
-      paint: {
-        "line-width": 2,
-        "line-color": "#a52a2a", // brown for highways
-      },
-    });
-
-    map.value.addLayer({
-      id: "osm-boundary-lines",
-      type: "line",
-      source: "osm",
-      "source-layer": "admin",
-      paint: {
-        "line-width": 2,
-        "line-color": "#ffa500", // orange for boundaries
-      },
-    });
-  }
-};
-
-const removeOSMLayers = () => {
-  if (map.value.getLayer("osm-waterway-lines")) {
-    map.value.removeLayer("osm-waterway-lines");
-  }
-  if (map.value.getLayer("osm-highway-lines")) {
-    map.value.removeLayer("osm-highway-lines");
-  }
-  if (map.value.getLayer("osm-boundary-lines")) {
-    map.value.removeLayer("osm-boundary-lines");
-  }
-  if (map.value.getSource("osm")) {
-    map.value.removeSource("osm");
-  }
-};
-
-const setMapStyle = (newVal) => {
-  if (map.value) {
-    mapboxgl.accessToken = props.mapboxAccessToken;
-    map.value.setStyle(newVal);
-  }
-};
-
-// Watch
-watch(
-  () => props.mapLatitude,
-  (newVal) => {
-    if (map.value) {
-      map.value.setCenter([selectedLongitude.value, newVal]);
-    }
-  },
-);
-
-watch(
-  () => props.mapLongitude,
-  (newVal) => {
-    if (map.value) {
-      map.value.setCenter([newVal, selectedLatitude.value]);
-    }
-  },
-);
-
-watch(
-  () => props.mapStyle,
-  (newVal) => {
-    setMapStyle(newVal);
-  },
-);
-
-watch(
-  () => props.mapZoom,
-  (newVal) => {
-    if (map.value) {
-      map.value.setZoom(newVal);
-    }
-  },
-);
-
-watch(
-  () => props.osmEnabled,
-  (newVal) => {
-    if (mapLoaded.value) {
-      if (newVal) {
-        addOSMLayers();
-      } else {
-        removeOSMLayers();
-      }
-    }
-  },
-);
-
-// On Mount
 onMounted(() => {
   mapboxgl.accessToken = props.mapboxAccessToken;
 
@@ -264,12 +120,145 @@ onMounted(() => {
   });
 });
 
+const getWSENstring = (bounds) => {
+  if (bounds.length === 0) {
+    return t("noCoordinatesProvided");
+  }
+
+  let minLat = bounds[0].lat;
+  let maxLat = bounds[0].lat;
+  let minLng = bounds[0].lng;
+  let maxLng = bounds[0].lng;
+
+  bounds.forEach((coord) => {
+    if (coord.lat < minLat) minLat = coord.lat;
+    if (coord.lat > maxLat) maxLat = coord.lat;
+    if (coord.lng < minLng) minLng = coord.lng;
+    if (coord.lng > maxLng) maxLng = coord.lng;
+  });
+
+  const wsen = `${minLng},${minLat},${maxLng},${maxLat}`;
+
+  return wsen;
+};
+
+const addOSMLayers = () => {
+  if (!map.value.getSource("osm")) {
+    map.value.addSource("osm", {
+      type: "vector",
+      url: "mapbox://mapbox.mapbox-streets-v8",
+    });
+
+    map.value.addLayer({
+      id: "osm-waterway-lines",
+      type: "line",
+      source: "osm",
+      "source-layer": "waterway",
+      paint: {
+        "line-width": 2,
+        "line-color": "#0000ff", // blue for waterways
+      },
+    });
+
+    map.value.addLayer({
+      id: "osm-highway-lines",
+      type: "line",
+      source: "osm",
+      "source-layer": "road",
+      paint: {
+        "line-width": 2,
+        "line-color": "#a52a2a", // brown for highways
+      },
+    });
+
+    map.value.addLayer({
+      id: "osm-boundary-lines",
+      type: "line",
+      source: "osm",
+      "source-layer": "admin",
+      paint: {
+        "line-width": 2,
+        "line-color": "#ffa500", // orange for boundaries
+      },
+    });
+  }
+};
+
+const removeOSMLayers = () => {
+  if (map.value.getLayer("osm-waterway-lines")) {
+    map.value.removeLayer("osm-waterway-lines");
+  }
+  if (map.value.getLayer("osm-highway-lines")) {
+    map.value.removeLayer("osm-highway-lines");
+  }
+  if (map.value.getLayer("osm-boundary-lines")) {
+    map.value.removeLayer("osm-boundary-lines");
+  }
+  if (map.value.getSource("osm")) {
+    map.value.removeSource("osm");
+  }
+};
+
+const setMapStyle = (newVal) => {
+  if (map.value) {
+    mapboxgl.accessToken = props.mapboxAccessToken;
+    map.value.setStyle(newVal);
+  }
+};
+
+watch(
+  () => props.mapLatitude,
+  (newVal) => {
+    if (map.value) {
+      map.value.setCenter([selectedLongitude.value, newVal]);
+    }
+  },
+);
+watch(
+  () => props.mapLongitude,
+  (newVal) => {
+    if (map.value) {
+      map.value.setCenter([newVal, selectedLatitude.value]);
+    }
+  },
+);
+watch(
+  () => props.mapStyle,
+  (newVal) => {
+    setMapStyle(newVal);
+  },
+);
+watch(
+  () => props.mapZoom,
+  (newVal) => {
+    if (map.value) {
+      map.value.setZoom(newVal);
+    }
+  },
+);
+watch(
+  () => props.osmEnabled,
+  (newVal) => {
+    if (mapLoaded.value) {
+      if (newVal) {
+        addOSMLayers();
+      } else {
+        removeOSMLayers();
+      }
+    }
+  },
+);
+
 onBeforeUnmount(() => {
   if (map.value) {
     map.value.remove();
   }
 });
 </script>
+
+<template>
+  <div id="map"></div>
+</template>
 
 <style scoped>
 #map {

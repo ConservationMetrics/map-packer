@@ -1,35 +1,3 @@
-<template>
-  <div>
-    <MapSidebar
-      :available-map-styles="availableMapStyles"
-      :map-bounds="selectedBounds"
-      :map-style="selectedStyle"
-      :osm-enabled="osmEnabled"
-      @formSubmitted="handleFormSubmit"
-      @updateMapParams="updateMapParams"
-    />
-    <MapNavigation
-      :map-latitude="selectedLatitude"
-      :map-longitude="selectedLongitude"
-      :map-zoom="selectedZoom"
-      @updateMapParams="updateMapParams"
-    />
-    <MapCanvas
-      :mapbox-access-token="localMapboxAccessToken"
-      :map-latitude="selectedLatitude"
-      :map-longitude="selectedLongitude"
-      :map-style="selectedStyle"
-      :map-zoom="selectedZoom"
-      :osm-enabled="osmEnabled"
-      @updateMapParams="updateMapParams"
-    />
-    <div v-if="showModal" class="overlay"></div>
-    <div v-if="showModal" class="modal">
-      {{ $t("offlineMapRequestSubmitted") }}!
-    </div>
-  </div>
-</template>
-
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
@@ -39,7 +7,9 @@ import MapSidebar from "@/components/GenerateMap/MapSidebar.vue";
 import MapNavigation from "@/components/GenerateMap/MapNavigation.vue";
 import MapCanvas from "@/components/GenerateMap/MapCanvas.vue";
 
-// Define props
+// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+const { t } = useI18n();
+
 const props = defineProps({
   availableMapStyles: Array,
   mapboxAccessToken: String,
@@ -48,12 +18,8 @@ const props = defineProps({
   mapZoom: Number,
 });
 
-// Set up composables
 const router = useRouter();
-const { t } = useI18n();
-const localePath = useLocalePath();
 
-// Set up reactive state
 const localMapboxAccessToken = ref(props.mapboxAccessToken);
 const osmEnabled = ref(false);
 const selectedBounds = ref("");
@@ -63,18 +29,7 @@ const selectedStyle = ref(props.availableMapStyles[0].url);
 const selectedZoom = ref(props.mapZoom);
 const showModal = ref(false);
 
-// Define emits
 const emit = defineEmits(["updateMapParams", "handleMapRequest"]);
-
-// Methods
-const handleFormSubmit = (formData) => {
-  emit("handleMapRequest", formData);
-  showModal.value = true;
-  setTimeout(() => {
-    router.push(localePath("/"));
-  }, 3000);
-};
-
 const updateMapParams = (updateObj) => {
   let { param, value } = updateObj;
 
@@ -108,7 +63,46 @@ const updateMapParams = (updateObj) => {
     }
   }
 };
+const handleFormSubmit = (formData) => {
+  emit("handleMapRequest", formData);
+  showModal.value = true;
+  setTimeout(() => {
+    router.push("/");
+  }, 3000);
+};
 </script>
+
+<template>
+  <div>
+    <MapSidebar
+      :available-map-styles="props.availableMapStyles"
+      :map-bounds="selectedBounds"
+      :map-style="selectedStyle"
+      :osm-enabled="osmEnabled"
+      @formSubmitted="handleFormSubmit"
+      @updateMapParams="updateMapParams"
+    />
+    <MapNavigation
+      :map-latitude="selectedLatitude"
+      :map-longitude="selectedLongitude"
+      :map-zoom="selectedZoom"
+      @updateMapParams="updateMapParams"
+    />
+    <MapCanvas
+      :mapbox-access-token="localMapboxAccessToken"
+      :map-latitude="selectedLatitude"
+      :map-longitude="selectedLongitude"
+      :map-style="selectedStyle"
+      :map-zoom="selectedZoom"
+      :osm-enabled="osmEnabled"
+      @updateMapParams="updateMapParams"
+    />
+    <div v-if="showModal" class="overlay"></div>
+    <div v-if="showModal" class="modal">
+      {{ $t("offlineMapRequestSubmitted") }}!
+    </div>
+  </div>
+</template>
 
 <style scoped>
 body {

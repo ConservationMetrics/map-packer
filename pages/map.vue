@@ -1,40 +1,19 @@
-<template>
-  <div>
-    <GenerateMap
-      v-if="dataFetched"
-      @handleMapRequest="handleMapRequest"
-      :available-map-styles="availableMapStyles"
-      :mapbox-access-token="mapboxAccessToken"
-      :map-latitude="Number(mapLatitude)"
-      :map-longitude="Number(mapLongitude)"
-      :map-zoom="Number(mapZoom)"
-    />
-  </div>
-</template>
-
 <script setup>
-import { useHead } from "#imports";
+import { ref } from "vue";
+import { useHead, useRuntimeConfig } from "#app";
 import { useI18n } from "vue-i18n";
 
-// Set up config
+// API request to fetch the data
+const dataFetched = ref(false);
+const availableMapStyles = ref([]);
 const {
   public: { appApiKey, mapboxAccessToken, mapLatitude, mapLongitude, mapZoom },
 } = useRuntimeConfig();
-
-// Set up composables
-const { t } = useI18n();
-
-// Set up reactive state
-const dataFetched = ref(false);
-const availableMapStyles = ref([]);
-
-// Define headers
 const headers = {
   "x-api-key": appApiKey,
 };
-
-// Fetch initial data
 try {
+  // eslint-disable-next-line no-undef
   let mapStyles = await $fetch("/api/map", { headers });
   if (typeof mapStyles === "string") {
     mapStyles = mapStyles.split(",");
@@ -49,7 +28,7 @@ try {
 
 // POST map request (emitted by component)
 const handleMapRequest = async (formData) => {
-  // Function to remove accents and replace non-alphanumeric characters with underscores
+  // Rmove accents and replace non-alphanumeric characters with underscores
   const normalizeFilename = (str) => {
     return str
       .normalize("NFD")
@@ -81,6 +60,7 @@ const handleMapRequest = async (formData) => {
   }
 
   try {
+    // eslint-disable-next-line no-undef
     await $fetch("/api/maprequest", {
       method: "POST",
       body: transformedMessage,
@@ -91,8 +71,22 @@ const handleMapRequest = async (formData) => {
   }
 };
 
-// Set up page metadata
+const { t } = useI18n();
 useHead({
   title: "MapPacker: " + t("generateOfflineMap"),
 });
 </script>
+
+<template>
+  <div>
+    <GenerateMap
+      v-if="dataFetched"
+      @handleMapRequest="handleMapRequest"
+      :available-map-styles="availableMapStyles"
+      :mapbox-access-token="mapboxAccessToken"
+      :map-latitude="Number(mapLatitude)"
+      :map-longitude="Number(mapLongitude)"
+      :map-zoom="Number(mapZoom)"
+    />
+  </div>
+</template>

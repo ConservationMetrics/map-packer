@@ -1,3 +1,158 @@
+<script setup>
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { useI18n } from "vue-i18n";
+
+import QRCode from "qrcode.vue";
+import MiniMap from "@/components/MapDashboard/MiniMap.vue";
+
+import { copyLink } from "~/utils";
+
+const { t } = useI18n();
+
+const props = defineProps({
+  offlineMaps: Array,
+  offlineMapsUri: String,
+  mapboxAccessToken: String,
+  nextCursor: Number,
+});
+
+const emit = defineEmits(["handleMapRequest", "loadMore"]);
+
+// Scrolling down on the page will load more maps
+onMounted(() => {
+  window.addEventListener("scroll", handleScroll);
+});
+const loadMore = () => {
+  emit("loadMore");
+};
+const handleScroll = () => {
+  if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+    loadMore();
+  }
+};
+const paginatedOfflineMaps = computed(() => props.offlineMaps);
+
+// Functions to format data
+const calculateDuration = (start, end) => {
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  const duration = endDate - startDate;
+  const hours = Math.floor(duration / (1000 * 60 * 60));
+  const minutes = Math.floor((duration / (1000 * 60)) % 60);
+  const seconds = Math.floor((duration / 1000) % 60);
+  return `${hours}h ${minutes}m ${seconds}s`;
+};
+const formatFilesize = (size) => (size / 1024 / 1024).toFixed(2);
+const formatNumber = (value) => parseInt(value).toLocaleString();
+const formatDate = (dateString) => {
+  const options = {
+    year: "numeric",
+    month: "long",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  };
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-GB", options);
+};
+const formatStatusColor = (status) => {
+  switch (status) {
+    case "FAILED":
+      return "font-semibold text-red-500";
+    case "PENDING DELETION":
+      return "font-semibold text-red-500";
+    case "PENDING":
+      return "font-semibold text-yellow-500";
+    case "PROCESSING":
+      return "font-semibold text-yellow-500";
+    case "SUCCEEDED":
+      return "font-semibold text-green-500";
+    default:
+      return "font-semibold text-gray-600";
+  }
+};
+
+// Functions to toggle map request QR code and copy link
+const showQRCodeId = ref(null);
+const toggleQRCode = (id) => {
+  showQRCodeId.value = showQRCodeId.value === id ? null : id;
+};
+const tooltipId = ref(null);
+const copyLinkToClipboard = (link, id) => {
+  copyLink(link)
+    .then(() => {
+      tooltipId.value = id;
+      setTimeout(() => {
+        tooltipId.value = null;
+      }, 1500);
+    })
+    .catch((err) => {
+      console.error("Failed to copy:", err);
+    });
+};
+
+// Functions to interact with the map requests
+const showModal = ref(false);
+const modalMessage = ref("");
+const deleteMap = (id) => {
+  let confirmation = window.confirm(t("mapDeleteConfirmation") + ".");
+
+  if (confirmation) {
+    const map = props.offlineMaps.find((m) => m.id === id);
+    if (map) {
+      const message = {
+        type: "delete_request",
+        requestId: map.id,
+        filename: map.filename,
+        file_location: map.file_location,
+      };
+      emit("handleMapRequest", message);
+      modalMessage.value = t("mapWithFilesDeleted") + "!";
+      showModal.value = true;
+      setTimeout(() => {
+        showModal.value = false;
+        location.reload();
+      }, 3000);
+    }
+  }
+};
+const resubmitMapRequest = (id) => {
+  const map = props.offlineMaps.find((m) => m.id === id);
+  if (map) {
+    const message = {
+      type: "resubmit_request",
+      title: map.title,
+      filename: map.filename,
+      status: "PENDING",
+      error_message: null,
+      description: map.description,
+      min_zoom: map.min_zoom,
+      max_zoom: map.max_zoom,
+      mapbox_style: map.mapbox_style,
+      planet_monthly_visual: map.planet_monthly_visual,
+      bounds: map.bounds,
+      style: map.style,
+      openstreetmap: map.openstreetmap,
+      number_of_tiles: map.number_of_tiles,
+      created_at: new Date(),
+      requestId: map.id,
+    };
+    emit("handleMapRequest", message);
+    modalMessage.value = t("mapRequestResubmitted") + "!";
+    showModal.value = true;
+    setTimeout(() => {
+      showModal.value = false;
+      location.reload();
+    }, 3000);
+  }
+};
+
+onBeforeUnmount(() => {
+  window.removeEventListener("scroll", handleScroll);
+});
+</script>
+
 <template>
   <div class="mt-4 mx-auto w-full max-w-6xl px-4">
     <div class="flex justify-end space-x-4 mb-4">
@@ -171,171 +326,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from "vue";
-import { useI18n } from "vue-i18n";
-
-import QRCode from "qrcode.vue";
-import MiniMap from "@/components/MapDashboard/MiniMap.vue";
-
-import { copyLink } from "~/utils";
-
-// Define props
-const props = defineProps({
-  offlineMaps: Array,
-  offlineMapsUri: String,
-  mapboxAccessToken: String,
-  nextCursor: Number,
-});
-
-// Set up composables
-const emit = defineEmits(["handleMapRequest", "loadMore"]);
-const { t } = useI18n();
-
-// Set up reactive state
-const tooltipId = ref(null);
-const showQRCodeId = ref(null);
-const showModal = ref(false);
-const modalMessage = ref("");
-
-// Methods
-const calculateDuration = (start, end) => {
-  const startDate = new Date(start);
-  const endDate = new Date(end);
-  const duration = endDate - startDate;
-  const hours = Math.floor(duration / (1000 * 60 * 60));
-  const minutes = Math.floor((duration / (1000 * 60)) % 60);
-  const seconds = Math.floor((duration / 1000) % 60);
-  return `${hours}h ${minutes}m ${seconds}s`;
-};
-
-const copyLinkToClipboard = (link, id) => {
-  copyLink(link)
-    .then(() => {
-      tooltipId.value = id;
-      setTimeout(() => {
-        tooltipId.value = null;
-      }, 1500);
-    })
-    .catch((err) => {
-      console.error("Failed to copy:", err);
-    });
-};
-
-const deleteMap = (id) => {
-  let confirmation = window.confirm(t("mapDeleteConfirmation") + ".");
-
-  if (confirmation) {
-    const map = props.offlineMaps.find((m) => m.id === id);
-    if (map) {
-      const message = {
-        type: "delete_request",
-        requestId: map.id,
-        filename: map.filename,
-        file_location: map.file_location,
-      };
-      emit("handleMapRequest", message);
-      modalMessage.value = t("mapWithFilesDeleted") + "!";
-      showModal.value = true;
-      setTimeout(() => {
-        showModal.value = false;
-        location.reload();
-      }, 3000);
-    }
-  }
-};
-
-const formatFilesize = (size) => (size / 1024 / 1024).toFixed(2);
-
-const formatNumber = (value) => parseInt(value).toLocaleString();
-
-const formatDate = (dateString) => {
-  const options = {
-    year: "numeric",
-    month: "long",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  };
-  const date = new Date(dateString);
-  return date.toLocaleDateString("en-GB", options);
-};
-
-const formatStatusColor = (status) => {
-  switch (status) {
-    case "FAILED":
-      return "font-semibold text-red-500";
-    case "PENDING DELETION":
-      return "font-semibold text-red-500";
-    case "PENDING":
-      return "font-semibold text-yellow-500";
-    case "PROCESSING":
-      return "font-semibold text-yellow-500";
-    case "SUCCEEDED":
-      return "font-semibold text-green-500";
-    default:
-      return "font-semibold text-gray-600";
-  }
-};
-
-const handleScroll = () => {
-  if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-    loadMore();
-  }
-};
-
-const loadMore = () => {
-  emit("loadMore");
-};
-
-const resubmitMapRequest = (id) => {
-  const map = props.offlineMaps.find((m) => m.id === id);
-  if (map) {
-    const message = {
-      type: "resubmit_request",
-      title: map.title,
-      filename: map.filename,
-      status: "PENDING",
-      error_message: null,
-      description: map.description,
-      min_zoom: map.min_zoom,
-      max_zoom: map.max_zoom,
-      mapbox_style: map.mapbox_style,
-      planet_monthly_visual: map.planet_monthly_visual,
-      bounds: map.bounds,
-      style: map.style,
-      openstreetmap: map.openstreetmap,
-      number_of_tiles: map.number_of_tiles,
-      created_at: new Date(),
-      requestId: map.id,
-    };
-    emit("handleMapRequest", message);
-    modalMessage.value = t("mapRequestResubmitted") + "!";
-    showModal.value = true;
-    setTimeout(() => {
-      showModal.value = false;
-      location.reload();
-    }, 3000);
-  }
-};
-
-const toggleQRCode = (id) => {
-  showQRCodeId.value = showQRCodeId.value === id ? null : id;
-};
-
-const paginatedOfflineMaps = computed(() => props.offlineMaps);
-
-// On mount
-onMounted(() => {
-  window.addEventListener("scroll", handleScroll);
-});
-
-onBeforeUnmount(() => {
-  window.removeEventListener("scroll", handleScroll);
-});
-</script>
 
 <style scoped>
 .card {
