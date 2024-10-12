@@ -9,6 +9,7 @@ import {
 import { publishToAzureStorageQueue } from "../messageQueue/azure";
 
 const { database, dbHost, dbUser, dbPassword, dbPort, dbSsl, dbTable } =
+  // eslint-disable-next-line no-undef
   useRuntimeConfig();
 
 const db = setupDatabaseConnection(
@@ -21,6 +22,7 @@ const db = setupDatabaseConnection(
 );
 
 export default defineEventHandler(async (event: H3Event) => {
+  // eslint-disable-next-line no-undef
   const config = useRuntimeConfig();
   const data = await readBody(event);
   let requestId: number | void | null = data.requestId;
@@ -97,14 +99,16 @@ export default defineEventHandler(async (event: H3Event) => {
       event,
       JSON.stringify({ message: "Request successfully published!" }),
     );
-  } catch (error: any) {
-    console.error("Error on API side:", error.message);
-    await updateDatabaseWithError(
-      db,
-      dbTable,
-      requestId,
-      `InternalServerError: ${error.message}`,
-    );
-    return sendError(event, new Error(error.message));
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error on API side:", error.message);
+      await updateDatabaseWithError(
+        db,
+        dbTable,
+        requestId,
+        `InternalServerError: ${error.message}`,
+      );
+    }
+    return sendError(event, new Error("An unknown error occurred"));
   }
 });

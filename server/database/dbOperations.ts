@@ -1,18 +1,26 @@
+import { Client } from "pg";
+
+import { type MapRequest } from "../types";
+
 const checkTableExists = (
-  db: any,
+  db: Client,
   table: string | undefined,
 ): Promise<boolean> => {
   return new Promise((resolve, reject) => {
     const query = `SELECT to_regclass('${table}')`;
-    db.query(query, (err: Error, result: { rows: any[] }) => {
-      if (err) reject(err);
-      resolve(result.rows[0].to_regclass !== null);
-    });
+    db.query<{ to_regclass: string | null }>(
+      query,
+      [],
+      (err: Error, result) => {
+        if (err) reject(err);
+        resolve(result.rows[0].to_regclass !== null);
+      },
+    );
   });
 };
 
 const createMapRequestTable = async (
-  db: any,
+  db: Client,
   table: string | undefined,
 ): Promise<void> => {
   console.log(`Table ${table} does not exist. Creating...`);
@@ -53,13 +61,13 @@ const createMapRequestTable = async (
 };
 
 const fetchDataFromTable = async (
-  db: any,
+  db: Client,
   table: string | undefined,
   limit: number,
   cursor: number | null,
-): Promise<any[]> => {
+): Promise<MapRequest[]> => {
   let query: string;
-  const values: any[] = [limit];
+  const values: (number | null)[] = [limit];
 
   if (cursor) {
     query = `SELECT * FROM ${table} WHERE id < $2 ORDER BY id DESC LIMIT $1`;
@@ -69,7 +77,7 @@ const fetchDataFromTable = async (
   }
 
   return new Promise((resolve, reject) => {
-    db.query(query, values, (err: Error, result: { rows: any[] }) => {
+    db.query(query, values, (err: Error, result: { rows: MapRequest[] }) => {
       if (err) {
         reject(err);
       } else if (!result || !result.rows) {
@@ -82,26 +90,25 @@ const fetchDataFromTable = async (
 };
 
 export const fetchData = async (
-  db: any,
+  db: Client,
   table: string | undefined,
   limit: number,
   cursor: number | null,
-): Promise<{ data: any[] | null }> => {
+): Promise<{ data: MapRequest[] | null }> => {
   console.log(`Fetching data from ${table}...`);
   const databaseExists = await checkTableExists(db, table);
   if (!databaseExists) {
     await createMapRequestTable(db, table);
   }
   const data = await fetchDataFromTable(db, table, limit, cursor);
-
   return { data: data || null };
 };
 
 export const insertDataIntoTable = async (
-  db: any,
+  db: Client,
   table: string | undefined,
-  data: any,
-): Promise<void> => {
+  data: MapRequest,
+): Promise<number> => {
   const databaseExists = await checkTableExists(db, table);
   if (!databaseExists) {
     await createMapRequestTable(db, table);
@@ -114,19 +121,23 @@ export const insertDataIntoTable = async (
   // Return id so it can be used if needed for error handling
   const query = `INSERT INTO ${table} (${columns}) VALUES (${placeholders}) RETURNING id`;
   return new Promise((resolve, reject) => {
-    db.query(query, values, (err: Error, result: { rows: any[] }) => {
-      if (err) reject(err);
-      if (result.rows.length > 0) {
-        resolve(result.rows[0].id);
-      } else {
-        reject(new Error("No rows returned after insert."));
-      }
-    });
+    db.query(
+      query,
+      values,
+      (err: Error, result: { rows: { id: number }[] }) => {
+        if (err) reject(err);
+        if (result.rows.length > 0) {
+          resolve(result.rows[0].id);
+        } else {
+          reject(new Error("No rows returned after insert."));
+        }
+      },
+    );
   });
 };
 
 export const handleDeleteRequest = async (
-  db: any,
+  db: Client,
   table: string | undefined,
   requestId: number | void | null,
 ): Promise<boolean> => {
@@ -160,10 +171,10 @@ export const handleDeleteRequest = async (
 };
 
 export async function updateDatabaseMapRequest(
-  db: any,
+  db: Client,
   tableName: string,
   id: number | void | null,
-  data: any,
+  data: Partial<MapRequest>,
 ) {
   if (id === null || id === undefined || !Number.isInteger(id)) {
     throw new Error("Invalid ID provided for updating database.");
@@ -197,7 +208,7 @@ export async function updateDatabaseMapRequest(
 }
 
 export async function updateDatabaseWithError(
-  db: any,
+  db: Client,
   tableName: string,
   id: number | void | null,
   errorMessage: string,

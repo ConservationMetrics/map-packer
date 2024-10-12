@@ -11,6 +11,7 @@ export default defineEventHandler((event: H3Event) => {
       stadiaApiKey,
       thunderforestApiKey,
     },
+    // eslint-disable-next-line no-undef
   } = useRuntimeConfig();
 
   const styles = Object.entries(mapStyles).map(([key, value]) => ({

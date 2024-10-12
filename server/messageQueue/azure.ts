@@ -1,26 +1,31 @@
 import { QueueServiceClient } from "@azure/storage-queue";
+import { Buffer } from "buffer";
 
 export async function publishToAzureStorageQueue(
   queueName: string,
   requestId: number | void | null = null,
   message: {
-    type: any;
-    bounds: any;
-    filename: any;
-    file_location: any;
-    mapbox_style: any;
-    min_zoom: any;
-    max_zoom: any;
-    openstreetmap: any;
-    planet_monthly_visual: any;
-    style: any;
-    apiKey: any;
+    type: string;
+    bounds: string;
+    filename: string;
+    file_location: string;
+    mapbox_style: string;
+    min_zoom: number;
+    max_zoom: number;
+    openstreetmap: boolean;
+    planet_monthly_visual: string;
+    style: string;
+    apiKey: string;
   },
 ) {
+  console.log(message);
+  // kill and die the script immediately
+
   const {
     azureStorageConnectionAccountName,
     azureStorageConnectionStorageKey,
     public: { offlineMapsPath },
+    // eslint-disable-next-line no-undef
   } = useRuntimeConfig();
 
   const accountName = azureStorageConnectionAccountName;

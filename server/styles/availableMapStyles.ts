@@ -1,23 +1,7 @@
-import { calculateMaxPlanetMonthYear } from "../../utils";
+import { calculateMaxPlanetMonthYear } from "@/utils";
+import { type MapStyle, type MapStyleKey } from "../types";
 
-export type MapStyleKey =
-  | "bing"
-  | "google"
-  | "esri"
-  | "mapbox-custom"
-  | "mapbox-satellite"
-  | "mapbox-streets"
-  | "planet"
-  | "stadia-stamen-terrain"
-  | "stadia-alidade-satellite"
-  | "thunderforest-landscape";
-
-interface MapStyle {
-  name: string;
-  style?: unknown;
-  url?: string;
-}
-
+// eslint-disable-next-line no-undef
 const config = useRuntimeConfig();
 
 export const mapStyles: Record<MapStyleKey, MapStyle> = {

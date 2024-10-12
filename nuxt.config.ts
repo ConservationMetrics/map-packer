@@ -1,21 +1,26 @@
-export default defineNuxtConfig({
-  compatibilityDate: "2024-09-10",
+import { defineNuxtConfig } from "nuxt/config";
 
-  // Global page headers: https://nuxt.com/docs/getting-started/seo-meta
+export default defineNuxtConfig({
+  compatibilityDate: "2024-10-08",
+
   app: {
     head: {
       charset: "utf-8",
       viewport: "width=device-width, initial-scale=1",
+      meta: [
+        { charset: "utf-8" },
+        { name: "viewport", content: "width=device-width, initial-scale=1" },
+        { hid: "description", name: "description", content: "" },
+        { name: "format-detection", content: "telephone=no" },
+      ],
       link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
     },
   },
 
   devtools: { enabled: true },
 
-  // Global CSS: https://nuxt.com/docs/api/nuxt-config#css
   css: ["mapbox-gl/dist/mapbox-gl.css"],
 
-  // Modules: https://nuxt.com/docs/guide/concepts/modules
   modules: [
     "gc-shared-resources",
     "nuxt-auth-utils",

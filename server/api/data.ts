@@ -4,6 +4,7 @@ import { fetchData } from "../database/dbOperations";
 
 export default defineEventHandler(async (event: H3Event) => {
   const { database, dbHost, dbUser, dbPassword, dbPort, dbSsl, dbTable } =
+    // eslint-disable-next-line no-undef
     useRuntimeConfig();
 
   const db = setupDatabaseConnection(
@@ -30,8 +31,10 @@ export default defineEventHandler(async (event: H3Event) => {
       };
       return send(event, JSON.stringify(response));
     }
-  } catch (error: any) {
-    console.error("Error fetching data on API side:", error.message);
-    return sendError(event, new Error(error.message));
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error fetching data on API side:", error.message);
+    }
+    return sendError(event, new Error("An unknown error occurred"));
   }
 });

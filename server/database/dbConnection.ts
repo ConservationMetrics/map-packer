@@ -1,7 +1,7 @@
 import pkg from "pg";
 const { Client } = pkg;
 
-type DatabaseConnection = typeof Client.prototype;
+import { type DatabaseConnection } from "../types";
 
 let db: DatabaseConnection | null = null;
 
