@@ -5,7 +5,7 @@ import { useI18n } from "vue-i18n";
 import VueSlider from "vue-3-slider-component";
 
 import PolygonIcon from "@/assets/polygon.svg";
-import { calculateMaxPlanetMonthYear } from "@/utils";
+import { calculateMaxPlanetMonthYear, estimateNumberOfTiles } from "@/utils";
 
 const props = defineProps({
   availableMapStyles: Array,
@@ -41,41 +41,6 @@ const fetchMapStyles = () => {
     value: style.url,
   }));
   mapStyles.value.sort((a, b) => a.name.localeCompare(b.name));
-};
-
-const estimateNumberOfTiles = (maxZoom, boundsStr) => {
-  const bounds = boundsStr.split(",").map(Number);
-
-  const degToRad = (degrees) => degrees * (Math.PI / 180);
-
-  const tilesAtZoom = (zoom, [west, south, east, north]) => {
-    const tileCount = (lat, lon, zoom) => {
-      const x = Math.floor(((lon + 180) / 360) * Math.pow(2, zoom));
-      const y = Math.floor(
-        ((1 -
-          Math.log(Math.tan(degToRad(lat)) + 1 / Math.cos(degToRad(lat))) /
-            Math.PI) /
-          2) *
-          Math.pow(2, zoom),
-      );
-      return { x, y };
-    };
-
-    const topLeft = tileCount(north, west, zoom);
-    const bottomRight = tileCount(south, east, zoom);
-
-    const tileWidth = Math.abs(bottomRight.x - topLeft.x) + 1;
-    const tileHeight = Math.abs(bottomRight.y - topLeft.y) + 1;
-
-    return tileWidth * tileHeight;
-  };
-
-  let totalTiles = 0;
-  for (let zoom = 0; zoom <= maxZoom; zoom++) {
-    totalTiles += tilesAtZoom(zoom, bounds);
-  }
-
-  return totalTiles;
 };
 
 const renderCustomStyle = () => {
