@@ -18,9 +18,6 @@ export async function publishToAzureStorageQueue(
     apiKey: string;
   },
 ) {
-  console.log(message);
-  // kill and die the script immediately
-
   const {
     azureStorageConnectionAccountName,
     azureStorageConnectionStorageKey,
