@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody, send, sendError, H3Event } from "h3";
-import setupDatabaseConnection from "../database/dbConnection";
+import { db } from "@/server/index";
 import {
   insertDataIntoTable,
   updateDatabaseMapRequest,
@@ -8,18 +8,9 @@ import {
 } from "../database/dbOperations";
 import { publishToAzureStorageQueue } from "../messageQueue/azure";
 
-const { database, dbHost, dbUser, dbPassword, dbPort, dbSsl, dbTable } =
+const { dbTable } =
   // eslint-disable-next-line no-undef
   useRuntimeConfig();
-
-const db = setupDatabaseConnection(
-  database,
-  dbHost,
-  dbUser,
-  dbPassword,
-  dbPort,
-  dbSsl,
-);
 
 export default defineEventHandler(async (event: H3Event) => {
   // eslint-disable-next-line no-undef

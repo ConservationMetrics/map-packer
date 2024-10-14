@@ -5,14 +5,14 @@ import { type DatabaseConnection } from "../types";
 
 let db: DatabaseConnection | null = null;
 
-const setupDatabaseConnection = (
+const setupDatabaseConnection = async (
   database: string | undefined,
   host: string | undefined,
   user: string | undefined,
   password: string | undefined,
   port: string,
   ssl: boolean | string | undefined,
-): DatabaseConnection => {
+): Promise<DatabaseConnection> => {
   const dbConnection = {
     database: database,
     user: user,

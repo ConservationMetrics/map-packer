@@ -19,6 +19,10 @@ export default defineNuxtConfig({
 
   devtools: { enabled: true },
 
+  nitro: {
+    plugins: ["@/server/index.ts"],
+  },
+
   css: ["mapbox-gl/dist/mapbox-gl.css"],
 
   modules: [
