@@ -51,6 +51,7 @@ const handleMapRequest = async (formData) => {
     style: formData.selectedStyle,
     openstreetmap: formData.openstreetmap ?? false,
     number_of_tiles: formData.estimatedTiles,
+    format: formData.format,
     created_at: new Date(),
   };
 

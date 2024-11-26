@@ -43,5 +43,6 @@ export interface MapRequest {
   error_message: string | null;
   work_begun: Date | null;
   work_ended: Date | null;
+  format: string | null;
   thumbnail_filename: string | null;
 }

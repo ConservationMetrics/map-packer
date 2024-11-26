@@ -15,6 +15,7 @@
   "failed": "Falhou",
   "fileSize": "Tamanho do arquivo",
   "finishedOn": "Terminado em",
+  "format": "Formato",
   "generateMap": "Gerar mapa",
   "generateOfflineMap": "Gerar mapa offline",
   "includeOSMData": "Incluir dados OSM (rótulos não mostrados)",

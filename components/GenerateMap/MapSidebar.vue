@@ -32,6 +32,7 @@ const form = reactive({
   planetMonthYear: calculateMaxPlanetMonthYear(),
   maxZoom: 8,
   estimatedTiles: 0,
+  format: "mbtiles",
 });
 
 const fetchMapStyles = () => {
@@ -332,6 +333,28 @@ watch(
           class="code-block"
           @keydown.prevent
         />
+      </div>
+
+      <div class="form-group">
+        <label for="format">
+          {{ $t("format") }}
+          <span class="text-red-600">*</span>
+        </label>
+        <div class="flex items-center space-x-6">
+          <div>
+            <input
+              type="radio"
+              id="mbtiles"
+              value="mbtiles"
+              v-model="form.format"
+            />
+            <label for="mbtiles" class="ml-1.25">MBTiles</label>
+          </div>
+          <div>
+            <input type="radio" id="smp" value="smp" v-model="form.format" />
+            <label for="smp" class="ml-1.25">Styled Map Package (SMP)</label>
+          </div>
+        </div>
       </div>
 
       <div v-if="form.maxZoom && form.selectedBounds">

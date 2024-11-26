@@ -16,6 +16,7 @@ export async function publishToAzureStorageQueue(
     planet_monthly_visual: string;
     style: string;
     apiKey: string;
+    format: string;
   },
 ) {
   const {
@@ -58,6 +59,7 @@ export async function publishToAzureStorageQueue(
           outputDir: offlineMapsPath,
         }),
     ...(message.apiKey && { apiKey: message.apiKey }),
+    ...(message.format && { format: message.format }),
     thumbnail: false,
   };
 
