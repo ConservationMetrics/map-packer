@@ -42,6 +42,16 @@ const calculateDuration = (start, end) => {
   const seconds = Math.floor((duration / 1000) % 60);
   return `${hours}h ${minutes}m ${seconds}s`;
 };
+const formatFileFormat = (format) => {
+  switch (format) {
+    case "smp":
+      return "Styled Map Package (SMP)";
+    case "mbtiles":
+      return "MBTiles";
+    default:
+      return format;
+  }
+};
 const formatFilesize = (size) => (size / 1024 / 1024).toFixed(2);
 const formatNumber = (value) => parseInt(value).toLocaleString();
 const formatDate = (dateString) => {
@@ -249,6 +259,10 @@ onBeforeUnmount(() => {
           <p v-if="map.max_zoom">
             <span class="font-bold">{{ $t("zoomLevel") }}:</span>
             {{ map.min_zoom }}-{{ map.max_zoom }}
+          </p>
+          <p v-if="map.format">
+            <span class="font-bold">{{ $t("format") }}:</span>
+            {{ formatFileFormat(map.format) }}
           </p>
         </div>
         <div v-if="map.error_message" class="flex mb-2">
