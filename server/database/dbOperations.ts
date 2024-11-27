@@ -44,6 +44,7 @@ const createMapRequestTable = async (
       filename TEXT,
       file_location TEXT,
       file_size TEXT,
+      format TEXT,
       thumbnail_filename TEXT,
       status TEXT,
       error_message TEXT,

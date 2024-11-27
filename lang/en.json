@@ -15,6 +15,7 @@
   "failed": "Failed",
   "fileSize": "File Size",
   "finishedOn": "Finished on",
+  "format": "Format",
   "generateMap": "Generate Map",
   "generateOfflineMap": "Generate Offline Map",
   "includeOSMData": "Include OSM Data (labels not shown)",

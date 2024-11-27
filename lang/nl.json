@@ -15,6 +15,7 @@
   "failed": "Mislukt",
   "fileSize": "Bestandsgrootte",
   "finishedOn": "Voltooid op",
+  "format": "Formaat",
   "generateMap": "Kaart genereren",
   "generateOfflineMap": "Offline kaart genereren",
   "includeOSMData": "OSM-gegevens opnemen (labels niet getoond)",
