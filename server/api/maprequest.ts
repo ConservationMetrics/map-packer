@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody, send, sendError, H3Event } from "h3";
-import { db } from "@/server/index";
+import { getDatabaseConnection } from "@/server/database/dbConnection";
 import {
   insertDataIntoTable,
   updateDatabaseMapRequest,
@@ -21,6 +21,8 @@ export default defineEventHandler(async (event: H3Event) => {
   if (data.style === "mapbox-custom" || data.style === "mapbox-streets") {
     data.style = "mapbox";
   }
+
+  const db = await getDatabaseConnection();
 
   try {
     // If it's a new request, insert data into the database

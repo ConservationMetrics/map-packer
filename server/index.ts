@@ -1,42 +1,13 @@
-import setupDatabaseConnection from "./database/dbConnection";
-import { type DatabaseConnection } from "./types";
-
-let db: DatabaseConnection;
-
-const {
-  database,
-  dbHost,
-  dbUser,
-  dbPassword,
-  dbPort,
-  dbSsl,
-  // eslint-disable-next-line no-undef
-} = useRuntimeConfig() as unknown as {
-  database: string;
-  dbHost: string;
-  dbUser: string;
-  dbPassword: string;
-  dbPort: string;
-  dbSsl: boolean;
-};
+import { refreshDatabaseConnection } from "./database/dbConnection";
 
 export default async () => {
   try {
-    db = await setupDatabaseConnection(
-      database,
-      dbHost,
-      dbUser,
-      dbPassword,
-      dbPort,
-      dbSsl,
-    );
+    await refreshDatabaseConnection();
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(`Failed to connect to ${database}:`, error);
+      throw new Error(`Failed to connect to database: ${error.message}`);
     } else {
       console.error("Unknown error connecting to database:", error);
     }
   }
 };
-
-export { db };
