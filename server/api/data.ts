@@ -1,5 +1,5 @@
 import { defineEventHandler, getQuery, send, sendError, H3Event } from "h3";
-import { db } from "@/server/index";
+import { getDatabaseConnection } from "@/server/database/dbConnection";
 import { fetchData } from "../database/dbOperations";
 
 export default defineEventHandler(async (event: H3Event) => {
@@ -10,6 +10,8 @@ export default defineEventHandler(async (event: H3Event) => {
   const query = getQuery(event);
   const limit = parseInt(query.limit as string) || 6;
   const cursor = query.cursor ? parseInt(query.cursor as string) : null;
+
+  const db = await getDatabaseConnection();
 
   try {
     const { data } = await fetchData(db, dbTable, limit, cursor);
