@@ -1,26 +1,18 @@
-import { Client } from "pg";
+import { Pool } from "pg";
 
 import { type MapRequest } from "../types";
 
-const checkTableExists = (
-  db: Client,
+const checkTableExists = async (
+  db: Pool,
   table: string | undefined,
 ): Promise<boolean> => {
-  return new Promise((resolve, reject) => {
-    const query = `SELECT to_regclass('${table}')`;
-    db.query<{ to_regclass: string | null }>(
-      query,
-      [],
-      (err: Error, result) => {
-        if (err) reject(err);
-        resolve(result.rows[0].to_regclass !== null);
-      },
-    );
-  });
+  const query = `SELECT to_regclass('${table}')`;
+  const result = await db.query<{ to_regclass: string | null }>(query);
+  return result.rows[0].to_regclass !== null;
 };
 
 const createMapRequestTable = async (
-  db: Client,
+  db: Pool,
   table: string | undefined,
 ): Promise<void> => {
   console.log(`Table ${table} does not exist. Creating...`);
@@ -52,17 +44,12 @@ const createMapRequestTable = async (
       work_ended TIMESTAMP(6)
     )
   `;
-  return new Promise((resolve, reject) => {
-    db.query(query, (err: Error) => {
-      if (err) reject(err);
-      console.log(`Table ${table} created successfully`);
-      resolve();
-    });
-  });
+  await db.query(query);
+  console.log(`Table ${table} created successfully`);
 };
 
 const fetchDataFromTable = async (
-  db: Client,
+  db: Pool,
   table: string | undefined,
   limit: number,
   cursor: number | null,
@@ -77,21 +64,15 @@ const fetchDataFromTable = async (
     query = `SELECT * FROM ${table} ORDER BY id DESC LIMIT $1`;
   }
 
-  return new Promise((resolve, reject) => {
-    db.query(query, values, (err: Error, result: { rows: MapRequest[] }) => {
-      if (err) {
-        reject(err);
-      } else if (!result || !result.rows) {
-        reject(new Error("No result returned from query."));
-      } else {
-        resolve(result.rows);
-      }
-    });
-  });
+  const result = await db.query(query, values);
+  if (!result || !result.rows) {
+    throw new Error("No result returned from query.");
+  }
+  return result.rows;
 };
 
 export const fetchData = async (
-  db: Client,
+  db: Pool,
   table: string | undefined,
   limit: number,
   cursor: number | null,
@@ -106,7 +87,7 @@ export const fetchData = async (
 };
 
 export const insertDataIntoTable = async (
-  db: Client,
+  db: Pool,
   table: string | undefined,
   data: MapRequest,
 ): Promise<number> => {
@@ -119,26 +100,17 @@ export const insertDataIntoTable = async (
     .map((_, i) => `$${i + 1}`)
     .join(", ");
   const values = Object.values(data);
-  // Return id so it can be used if needed for error handling
   const query = `INSERT INTO ${table} (${columns}) VALUES (${placeholders}) RETURNING id`;
-  return new Promise((resolve, reject) => {
-    db.query(
-      query,
-      values,
-      (err: Error, result: { rows: { id: number }[] }) => {
-        if (err) reject(err);
-        if (result.rows.length > 0) {
-          resolve(result.rows[0].id);
-        } else {
-          reject(new Error("No rows returned after insert."));
-        }
-      },
-    );
-  });
+  const result = await db.query(query, values);
+  if (result.rows.length > 0) {
+    return result.rows[0].id;
+  } else {
+    throw new Error("No rows returned after insert.");
+  }
 };
 
 export const handleDeleteRequest = async (
-  db: Client,
+  db: Pool,
   table: string | undefined,
   requestId: number | void | null,
 ): Promise<boolean> => {
@@ -172,7 +144,7 @@ export const handleDeleteRequest = async (
 };
 
 export async function updateDatabaseMapRequest(
-  db: Client,
+  db: Pool,
   tableName: string,
   id: number | void | null,
   data: Partial<MapRequest>,
@@ -193,23 +165,12 @@ export async function updateDatabaseMapRequest(
     WHERE id = $${values.length}
   `;
 
-  return new Promise<void>((resolve, reject) => {
-    db.query(query, values, (err: Error) => {
-      if (err) {
-        console.error(
-          `Error updating record ${id} in table ${tableName}: ${err.message}`,
-        );
-        reject(err);
-      } else {
-        console.log(`Record ${id} in table ${tableName} updated.`);
-        resolve();
-      }
-    });
-  });
+  await db.query(query, values);
+  console.log(`Record ${id} in table ${tableName} updated.`);
 }
 
 export async function updateDatabaseWithError(
-  db: Client,
+  db: Pool,
   tableName: string,
   id: number | void | null,
   errorMessage: string,
@@ -224,19 +185,6 @@ export async function updateDatabaseWithError(
     WHERE id = $2
   `;
 
-  return new Promise<void>((resolve, reject) => {
-    db.query(query, [errorMessage, id], (err: Error) => {
-      if (err) {
-        console.error(
-          `Error updating record ${id} in table ${tableName}: ${err.message}`,
-        );
-        reject(err);
-      } else {
-        console.log(
-          `Record ${id} in table ${tableName} updated with error message.`,
-        );
-        resolve();
-      }
-    });
-  });
+  await db.query(query, [errorMessage, id]);
+  console.log(`Record ${id} in table ${tableName} updated with error message.`);
 }
