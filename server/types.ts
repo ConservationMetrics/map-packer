@@ -1,7 +1,3 @@
-import { Client } from "pg";
-
-export type DatabaseConnection = typeof Client.prototype;
-
 export type MapStyleKey =
   | "bing"
   | "google"
