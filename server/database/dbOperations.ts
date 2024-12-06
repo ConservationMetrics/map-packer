@@ -7,7 +7,14 @@ const checkTableExists = async (
   table: string | undefined,
 ): Promise<boolean> => {
   const query = `SELECT to_regclass('${table}')`;
-  const result = await db.query<{ to_regclass: string | null }>(query);
+  let result;
+  try {
+    result = await db.query<{ to_regclass: string | null }>(query);
+  } catch (error) {
+    throw new Error(
+      `Failed to check if table exists: ${(error as Error).message}`,
+    );
+  }
   return result.rows[0].to_regclass !== null;
 };
 
@@ -44,8 +51,14 @@ const createMapRequestTable = async (
       work_ended TIMESTAMP(6)
     )
   `;
-  await db.query(query);
-  console.log(`Table ${table} created successfully`);
+  try {
+    await db.query(query);
+    console.log(`Table ${table} created successfully`);
+  } catch (error) {
+    throw new Error(
+      `Failed to create table ${table}: ${(error as Error).message}`,
+    );
+  }
 };
 
 const fetchDataFromTable = async (
@@ -64,7 +77,12 @@ const fetchDataFromTable = async (
     query = `SELECT * FROM ${table} ORDER BY id DESC LIMIT $1`;
   }
 
-  const result = await db.query(query, values);
+  let result;
+  try {
+    result = await db.query(query, values);
+  } catch (error) {
+    throw new Error(`Failed to fetch data from table ${table}: ${error}`);
+  }
   if (!result || !result.rows) {
     throw new Error("No result returned from query.");
   }
@@ -100,8 +118,16 @@ export const insertDataIntoTable = async (
     .map((_, i) => `$${i + 1}`)
     .join(", ");
   const values = Object.values(data);
+  // Return id so it can be used if needed for error handling
   const query = `INSERT INTO ${table} (${columns}) VALUES (${placeholders}) RETURNING id`;
-  const result = await db.query(query, values);
+  let result;
+  try {
+    result = await db.query(query, values);
+  } catch (error) {
+    throw new Error(
+      `Failed to insert data into table ${table}: ${(error as Error).message}`,
+    );
+  }
   if (result.rows.length > 0) {
     return result.rows[0].id;
   } else {
@@ -123,13 +149,24 @@ export const handleDeleteRequest = async (
   }
 
   const query = `SELECT file_location, filename FROM ${table} WHERE id = $1`;
-  const result = await db.query(query, [requestId]);
+  let result;
+  try {
+    result = await db.query(query, [requestId]);
+  } catch (error) {
+    throw new Error(
+      `Failed to fetch file location and filename: ${(error as Error).message}`,
+    );
+  }
   const { file_location, filename } = result.rows[0];
 
   if (!file_location || !filename) {
     console.log("File location or filename is NULL. Deleting row...");
     const deleteQuery = `DELETE FROM ${table} WHERE id = $1`;
-    await db.query(deleteQuery, [requestId]);
+    try {
+      await db.query(deleteQuery, [requestId]);
+    } catch (error) {
+      throw new Error(`Failed to delete row: ${error}`);
+    }
     return false;
   } else {
     if (!table) {
@@ -165,7 +202,13 @@ export async function updateDatabaseMapRequest(
     WHERE id = $${values.length}
   `;
 
-  await db.query(query, values);
+  try {
+    await db.query(query, values);
+  } catch (error) {
+    throw new Error(
+      `Error updating record ${id} in table ${tableName}: ${(error as Error).message}`,
+    );
+  }
   console.log(`Record ${id} in table ${tableName} updated.`);
 }
 
@@ -184,7 +227,12 @@ export async function updateDatabaseWithError(
     SET status = 'FAILED', error_message = $1
     WHERE id = $2
   `;
-
-  await db.query(query, [errorMessage, id]);
+  try {
+    await db.query(query, [errorMessage, id]);
+  } catch (error) {
+    throw new Error(
+      `Error updating record ${id} in table ${tableName}: ${(error as Error).message}`,
+    );
+  }
   console.log(`Record ${id} in table ${tableName} updated with error message.`);
 }
