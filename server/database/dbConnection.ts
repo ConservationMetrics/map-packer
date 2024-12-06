@@ -26,21 +26,16 @@ export const setupDatabaseConnection =
       })
       .catch((error: Error) => {
         db = null;
-        if (error.message.includes("self signed certificate")) {
-          console.error(
-            "Error connecting to the PostgreSQL database: Self-signed certificate issue.",
-          );
-        } else {
-          console.error("Error connecting to the PostgreSQL database:", error);
-        }
+        console.error("Error connecting to the PostgreSQL database:", error);
       });
 
     return db;
   };
 
 export const getDatabaseConnection = async (): Promise<DatabaseConnection> => {
-  await ensurePostgresConnection(db!);
-  if (!db) {
+  if (db) {
+    await ensurePostgresConnection(db);
+  } else {
     db = await setupDatabaseConnection();
   }
   return db;
