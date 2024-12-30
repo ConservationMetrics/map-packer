@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies and run tests
         run: |
           npm install -g pnpm
-          pnpm ci
+          pnpm install
           if [ -d "test" ]; then
             pnpm run test
           else
