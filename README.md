@@ -43,26 +43,26 @@ For production environments like Azure, input the environmental variables via th
 
 ```bash
 # install dependencies
-$ npm install
+$ pnpm install
 
 # serve with hot reload at localhost:3000
-$ npm run dev
+$ pnpm run dev
 
 # build for production and launch server
-$ npm run build
-$ npm run start
+$ pnpm run build
+$ pnpm run start
 
 # use gc-shared-modules symlink
-$ npm run link-module
+$ pnpm run link-module
 
 # locally preview production build:
-$ npm run preview
+$ pnpm run preview
 
 # generate static project
-$ npm run generate
+$ pnpm run generate
 
 # run tests
-$ npm run test
+$ pnpm run test
 ```
 
 Add `--hostname 0.0.0.0` if you want the app to be accessible across your local network.

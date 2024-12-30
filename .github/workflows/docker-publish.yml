@@ -16,11 +16,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          repository: ConservationMetrics/map-packer
       - name: Install dependencies and run tests
         run: |
-          npm ci
+          npm install -g pnpm
+          pnpm install
           if [ -d "test" ]; then
-            npm run test
+            pnpm run test
           else
             echo "No test directory found, skipping tests."
           fi
