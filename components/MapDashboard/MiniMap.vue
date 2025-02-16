@@ -1,4 +1,4 @@
-<script setup>
+<script lang="ts" setup>
 import { ref, onMounted, nextTick } from "vue";
 import mapboxgl from "mapbox-gl";
 
@@ -10,15 +10,23 @@ const props = defineProps({
 const mapContainer = ref(null);
 
 onMounted(async () => {
+  if (!props.mapboxAccessToken) {
+    console.error("Mapbox access token is required to render the map.");
+    return;
+  }
   mapboxgl.accessToken = props.mapboxAccessToken;
 
+  if (!props.bounds) {
+    console.error("Bounds are required to render the map.");
+    return;
+  }
   const boundsArray = props.bounds
     .split(",")
     .map(Number)
-    .reduce((result, value, index, array) => {
+    .reduce((result: number[][], value, index, array) => {
       if (index % 2 === 0) result.push(array.slice(index, index + 2));
       return result;
-    }, []);
+    }, [] as number[][]);
 
   await nextTick();
 
@@ -42,6 +50,7 @@ onMounted(async () => {
           type: "geojson",
           data: {
             type: "Feature",
+            properties: {},
             geometry: {
               type: "Polygon",
               coordinates: [
@@ -69,6 +78,7 @@ onMounted(async () => {
           type: "geojson",
           data: {
             type: "Feature",
+            properties: {},
             geometry: {
               type: "Polygon",
               coordinates: [

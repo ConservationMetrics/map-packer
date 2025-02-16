@@ -22,12 +22,12 @@ const emit = defineEmits(["handleMapRequest", "loadMore"]);
 onMounted(() => {
   window.addEventListener("scroll", handleScroll);
 });
-const loadMore = () => {
-  emit("loadMore");
+const loadMoreMaps = () => {
+  emit("loadMoreMaps");
 };
 const handleScroll = () => {
   if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-    loadMore();
+    loadMoreMaps();
   }
 };
 const paginatedOfflineMaps = computed(() => props.offlineMaps);

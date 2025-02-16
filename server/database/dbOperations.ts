@@ -1,6 +1,6 @@
 import { Pool } from "pg";
 
-import { type MapRequest } from "../types";
+import type { MapRequest } from "@/types/types";
 
 const checkTableExists = async (
   db: Pool,

@@ -1,4 +1,4 @@
-<script setup>
+<script lang="ts" setup>
 import { ref, watch, onMounted, onBeforeUnmount } from "vue";
 import { useI18n } from "vue-i18n";
 
@@ -8,6 +8,8 @@ import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
+
+import type { DrawEvent, Coordinate, LonLat } from "@/types/types";
 
 const { t } = useI18n();
 
@@ -20,9 +22,9 @@ const props = defineProps({
   osmEnabled: Boolean,
 });
 
-const map = ref(null);
+const map = ref();
 const mapLoaded = ref(false);
-const draw = ref(null);
+const draw = ref();
 const selectedLatitude = ref(props.mapLatitude);
 const selectedLongitude = ref(props.mapLongitude);
 const selectedZoom = ref(props.mapZoom);
@@ -30,6 +32,10 @@ const selectedZoom = ref(props.mapZoom);
 const emit = defineEmits(["updateMapParams"]);
 
 onMounted(() => {
+  if (!props.mapboxAccessToken) {
+    console.error("Mapbox access token is required to render the map.");
+    return;
+  }
   mapboxgl.accessToken = props.mapboxAccessToken;
 
   map.value = new mapboxgl.Map({
@@ -66,9 +72,9 @@ onMounted(() => {
       }
     });
 
-    map.value.on("draw.create", (e) => {
+    map.value.on("draw.create", (e: DrawEvent) => {
       const bbox = e.features[0].geometry.coordinates[0];
-      const bounds = bbox.map((coord) => {
+      const bounds = bbox.map((coord: LonLat) => {
         return {
           lat: coord[1],
           lng: coord[0],
@@ -120,7 +126,7 @@ onMounted(() => {
   });
 });
 
-const getWSENstring = (bounds) => {
+const getWSENstring = (bounds: Coordinate[]) => {
   if (bounds.length === 0) {
     return t("noCoordinatesProvided");
   }
@@ -130,7 +136,7 @@ const getWSENstring = (bounds) => {
   let minLng = bounds[0].lng;
   let maxLng = bounds[0].lng;
 
-  bounds.forEach((coord) => {
+  bounds.forEach((coord: Coordinate) => {
     if (coord.lat < minLat) minLat = coord.lat;
     if (coord.lat > maxLat) maxLat = coord.lat;
     if (coord.lng < minLng) minLng = coord.lng;
@@ -199,8 +205,8 @@ const removeOSMLayers = () => {
   }
 };
 
-const setMapStyle = (newVal) => {
-  if (map.value) {
+const setMapStyle = (newVal: string) => {
+  if (map.value && props.mapboxAccessToken) {
     mapboxgl.accessToken = props.mapboxAccessToken;
     map.value.setStyle(newVal);
   }
@@ -224,8 +230,8 @@ watch(
 );
 watch(
   () => props.mapStyle,
-  (newVal) => {
-    setMapStyle(newVal);
+  (newVal?: string) => {
+    if (newVal) setMapStyle(newVal);
   },
 );
 watch(

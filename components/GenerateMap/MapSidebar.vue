@@ -1,4 +1,4 @@
-<script setup>
+<script lang="ts" setup>
 import { ref, reactive, computed, watch, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 
@@ -7,12 +7,18 @@ import VueSlider from "vue-3-slider-component";
 import PolygonIcon from "@/assets/polygon.svg";
 import { calculateMaxPlanetMonthYear, estimateNumberOfTiles } from "@/utils";
 
-const props = defineProps({
-  availableMapStyles: Array,
-  mapboxAccessToken: String,
-  mapBounds: String,
-  mapStyle: String,
-});
+import type {
+  AvailableMapStyles,
+  FormData,
+  MapStyleWithValue,
+} from "@/types/types";
+
+const props = defineProps<{
+  availableMapStyles: AvailableMapStyles;
+  mapboxAccessToken: string;
+  mapBounds: string;
+  mapStyle: string;
+}>();
 
 // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 const { t } = useI18n();
@@ -23,16 +29,23 @@ onMounted(() => {
 
 const customMapboxStyleUrl = ref("");
 const localMapboxAccessToken = ref(props.mapboxAccessToken);
-const mapStyles = ref([]);
-const form = reactive({
+const localMapStyle = ref(props.mapStyle);
+const mapStyles = ref<MapStyleWithValue[]>([]);
+const form = reactive<FormData>({
   title: "",
-  description: "",
+  description: null,
   selectedBounds: props.mapBounds,
-  selectedStyle: props.mapStyle,
+  selectedStyle: localMapStyle.value,
+  selectedStyleKey: null,
   planetMonthYear: calculateMaxPlanetMonthYear(),
   maxZoom: 8,
-  estimatedTiles: 0,
+  estimatedTiles: null,
   format: "mbtiles",
+  mapboxAccessToken: props.mapboxAccessToken,
+  overlay: null,
+  openstreetmap: false,
+  mapboxStyle: null,
+  type: null,
 });
 
 const fetchMapStyles = () => {
@@ -108,7 +121,7 @@ const submitForm = () => {
   const formToSubmit = { ...form, selectedStyle: selectedStyleKey.value };
 
   if (selectedStyleKey.value !== "planet") {
-    delete formToSubmit.planetMonthYear;
+    formToSubmit.planetMonthYear = undefined;
   }
 
   if (selectedStyleKey.value === "mapbox") {
@@ -164,17 +177,19 @@ watch(
       form.selectedStyle &&
       form.selectedStyle.includes("/api/mapstyle/planet/")
     ) {
-      const [year, month] = newVal.split("-");
-      if (year && month) {
-        form.selectedStyle = `/api/mapstyle/planet/${year}/${month}`;
-        mapStyles.value = mapStyles.value.filter(
-          (style) => style.key !== "planet",
-        );
-        mapStyles.value.push({
-          name: "Planet Monthly Visual Basemap",
-          key: "planet",
-          value: form.selectedStyle,
-        });
+      if (newVal) {
+        const [year, month] = newVal.split("-");
+        if (year && month) {
+          form.selectedStyle = `/api/mapstyle/planet/${year}/${month}`;
+          mapStyles.value = mapStyles.value.filter(
+            (style) => style.key !== "planet",
+          );
+          mapStyles.value.push({
+            name: "Planet Monthly Visual Basemap",
+            key: "planet",
+            value: form.selectedStyle,
+          });
+        }
       }
     }
   },

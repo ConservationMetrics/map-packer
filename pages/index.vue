@@ -1,12 +1,12 @@
-<script setup>
+<script lang="ts" setup>
 import { ref } from "vue";
 import { useHead, useFetch, useRuntimeConfig } from "#app";
 import { useI18n } from "vue-i18n";
 
 // API request to fetch the data
 const dataFetched = ref(false);
-const nextCursor = ref(null);
-const offlineMaps = ref([]);
+const nextCursor = ref(undefined);
+const offlineMaps = ref<unknown[]>([]);
 const isLoading = ref(false);
 const {
   public: { appApiKey, mapboxAccessToken, offlineMapsUri },
@@ -14,47 +14,50 @@ const {
 const headers = {
   "x-api-key": appApiKey,
 };
-const { data: initialData, error: initialError } = await useFetch("/api/data", {
-  headers,
-});
+const { data: initialMapsData, error: initialMapsError } = await useFetch(
+  "/api/data",
+  {
+    headers,
+  },
+);
 
-if (initialData.value && !initialError.value) {
+if (initialMapsData.value && !initialMapsError.value) {
   let parsedData =
-    typeof initialData.value === "string"
-      ? JSON.parse(initialData.value)
-      : initialData.value;
+    typeof initialMapsData.value === "string"
+      ? JSON.parse(initialMapsData.value)
+      : initialMapsData.value;
 
   nextCursor.value = parsedData.nextCursor;
   offlineMaps.value = parsedData.offlineMaps;
 
   dataFetched.value = true;
 } else {
-  console.error("Error fetching data:", initialError.value);
+  console.error("Error fetching data:", initialMapsError.value);
 }
 
-// Load more data based on cursor pagination
-const loadMore = async () => {
+// Load more offline maps data based on cursor pagination
+const loadMoreMaps = async () => {
   if (!nextCursor.value || isLoading.value) return;
 
   isLoading.value = true;
 
   try {
-    const { data: moreData, error: moreError } = await useFetch(
+    const { data: moreMapsData, error: moreMapsError } = await useFetch(
       `/api/data?cursor=${nextCursor.value}`,
       {
         headers: headers,
       },
     );
 
-    if (moreData.value && !moreError.value) {
-      if (moreData.value.offlineMaps.length > 0) {
-        offlineMaps.value.push(...moreData.value.offlineMaps);
-        nextCursor.value = moreData.value.nextCursor;
+    if (moreMapsData.value && !moreMapsError.value) {
+      if (moreMapsData.value.offlineMaps.length > 0) {
+        offlineMaps.value.push(...moreMapsData.value.offlineMaps);
+        nextCursor.value = moreMapsData.value.nextCursor;
       } else {
-        nextCursor.value = null;
+        nextCursor.value = undefined;
       }
     } else {
-      console.error("Error fetching more data:", moreError.value);
+      console.error("Error fetching more data:", moreMapsError.value);
     }
   } catch (error) {
     console.error("Error fetching more data:", error);
@@ -64,7 +67,7 @@ const loadMore = async () => {
 };
 
 // POST map request (emitted by component)
-const handleMapRequest = async (message) => {
+const handleMapRequest = async (message: object) => {
   try {
     // eslint-disable-next-line no-undef
     await $fetch("/api/maprequest", {
@@ -92,7 +95,7 @@ useHead({
       :offline-maps="offlineMaps"
       :offline-maps-uri="offlineMapsUri"
       @handleMapRequest="handleMapRequest"
-      @loadMore="loadMore"
+      @loadMoreMaps="loadMoreMaps"
     />
   </div>
 </template>

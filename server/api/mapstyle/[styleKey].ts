@@ -1,4 +1,5 @@
 import { defineEventHandler, send, sendError, H3Event } from "h3";
+
 import { mapStyles } from "../../styles/availableMapStyles";
 
 export default defineEventHandler((event: H3Event) => {
