@@ -3,9 +3,11 @@ import { ref } from "vue";
 import { useHead, useFetch, useRuntimeConfig } from "#app";
 import { useI18n } from "vue-i18n";
 
+import type { MapResponse } from "@/types/types";
+
 // API request to fetch the data
 const dataFetched = ref(false);
-const nextCursor = ref(undefined);
+const nextCursor = ref();
 const offlineMaps = ref<unknown[]>([]);
 const isLoading = ref(false);
 const {
@@ -14,12 +16,10 @@ const {
 const headers = {
   "x-api-key": appApiKey,
 };
-const { data: initialMapsData, error: initialMapsError } = await useFetch(
-  "/api/data",
-  {
+const { data: initialMapsData, error: initialMapsError } =
+  await useFetch<MapResponse>("/api/data", {
     headers,
-  },
-);
+  });
 
 if (initialMapsData.value && !initialMapsError.value) {
   let parsedData =
@@ -42,14 +42,13 @@ const loadMoreMaps = async () => {
   isLoading.value = true;
 
   try {
-    const { data: moreMapsData, error: moreMapsError } = await useFetch(
-      `/api/data?cursor=${nextCursor.value}`,
-      {
+    const { data: moreMapsData, error: moreMapsError } =
+      await useFetch<MapResponse>(`/api/data?cursor=${nextCursor.value}`, {
         headers: headers,
-      },
-    );
+      });
 
     if (moreMapsData.value && !moreMapsError.value) {
+      console.log(moreMapsData.value);
       if (moreMapsData.value.offlineMaps.length > 0) {
         offlineMaps.value.push(...moreMapsData.value.offlineMaps);
         nextCursor.value = moreMapsData.value.nextCursor;

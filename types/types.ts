@@ -57,6 +57,10 @@ export interface MapRequest {
   thumbnail_filename: string | null;
 }
 
+export interface MapResponse {
+  nextCursor: number | undefined;
+  offlineMaps: MapRequest[];
+}
 export interface MapStyle {
   name: string;
   style?: unknown;
