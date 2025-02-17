@@ -1,11 +1,10 @@
-import { defineEventHandler, getQuery, send, sendError, H3Event } from "h3";
+import type { H3Event } from "h3";
+import { defineEventHandler, getQuery, send, sendError } from "h3";
 import { getDatabaseConnection } from "@/server/database/dbConnection";
 import { fetchData } from "../database/dbOperations";
 
 export default defineEventHandler(async (event: H3Event) => {
-  const { dbTable } =
-    // eslint-disable-next-line no-undef
-    useRuntimeConfig();
+  const { dbTable } = useRuntimeConfig();
 
   const query = getQuery(event);
   const limit = parseInt(query.limit as string) || 6;

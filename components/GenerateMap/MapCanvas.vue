@@ -15,12 +15,30 @@ import type { DrawEvent, Coordinate, LonLat } from "@/types/types";
 const { t } = useI18n();
 
 const props = defineProps({
-  mapboxAccessToken: String,
-  mapLatitude: Number,
-  mapLongitude: Number,
-  mapStyle: String,
-  mapZoom: Number,
-  osmEnabled: Boolean,
+  mapboxAccessToken: {
+    type: String,
+    default: "",
+  },
+  mapLatitude: {
+    type: Number,
+    default: -15,
+  },
+  mapLongitude: {
+    type: Number,
+    default: 0,
+  },
+  mapStyle: {
+    type: String,
+    default: "mapbox://styles/mapbox/satellite-streets-v12",
+  },
+  mapZoom: {
+    type: Number,
+    default: 2.5,
+  },
+  osmEnabled: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const map = ref();
@@ -264,7 +282,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div id="map" />
+  <div id="map"></div>
 </template>
 
 <style scoped>

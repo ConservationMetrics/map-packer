@@ -1,4 +1,4 @@
-import { Pool } from "pg";
+import type { Pool } from "pg";
 
 import type { MapRequest } from "@/types/types";
 
@@ -138,7 +138,7 @@ export const insertDataIntoTable = async (
 export const handleDeleteRequest = async (
   db: Pool,
   table: string | undefined,
-  requestId: number | void | null,
+  requestId: number | null,
 ): Promise<boolean> => {
   if (
     requestId === null ||
@@ -183,7 +183,7 @@ export const handleDeleteRequest = async (
 export async function updateDatabaseMapRequest(
   db: Pool,
   tableName: string,
-  id: number | void | null,
+  id: number | null,
   data: Partial<MapRequest>,
 ) {
   if (id === null || id === undefined || !Number.isInteger(id)) {
@@ -215,7 +215,7 @@ export async function updateDatabaseMapRequest(
 export async function updateDatabaseWithError(
   db: Pool,
   tableName: string,
-  id: number | void | null,
+  id: number | null,
   errorMessage: string,
 ) {
   if (id === null || id === undefined || !Number.isInteger(id)) {

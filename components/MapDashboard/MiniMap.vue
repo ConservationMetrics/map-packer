@@ -3,8 +3,14 @@ import { ref, onMounted, nextTick } from "vue";
 import mapboxgl from "mapbox-gl";
 
 const props = defineProps({
-  mapboxAccessToken: String,
-  bounds: String,
+  mapboxAccessToken: {
+    type: String,
+    default: "",
+  },
+  bounds: {
+    type: String,
+    default: "",
+  },
 });
 
 const mapContainer = ref(null);

@@ -1,4 +1,5 @@
-import { defineEventHandler, readBody, send, sendError, H3Event } from "h3";
+import type { H3Event } from "h3";
+import { defineEventHandler, readBody, send, sendError } from "h3";
 import { getDatabaseConnection } from "@/server/database/dbConnection";
 import {
   insertDataIntoTable,
@@ -8,15 +9,12 @@ import {
 } from "../database/dbOperations";
 import { publishToAzureStorageQueue } from "../messageQueue/azure";
 
-const { dbTable } =
-  // eslint-disable-next-line no-undef
-  useRuntimeConfig();
+const { dbTable } = useRuntimeConfig();
 
 export default defineEventHandler(async (event: H3Event) => {
-  // eslint-disable-next-line no-undef
   const config = useRuntimeConfig();
   const data = await readBody(event);
-  let requestId: number | void | null = data.requestId;
+  let requestId: number | null = data.requestId;
 
   if (data.style === "mapbox-custom" || data.style === "mapbox-streets") {
     data.style = "mapbox";

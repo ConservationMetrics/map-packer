@@ -210,9 +210,9 @@ watch(
           {{ t("title") }} <span class="text-red-600">*</span>
         </label>
         <input
-          type="text"
           id="title"
           v-model="form.title"
+          type="text"
           required
           class="input-field"
         />
@@ -245,25 +245,25 @@ watch(
       <div v-if="selectedStyleKey === 'mapbox-custom'" class="form-group">
         <label for="customMapboxStyle">{{ t("yourMapboxStyleURL") }}</label>
         <input
-          type="text"
           id="customMapboxStyle"
           v-model="customMapboxStyleUrl"
+          type="text"
           placeholder="mapbox://styles/user/styleId"
           class="input-field"
         />
         <label for="customMapboxStyle">{{ t("yourMapboxAccessToken") }}</label>
         <input
-          type="text"
           id="mapboxAccessToken"
           v-model="localMapboxAccessToken"
+          type="text"
           placeholder="pk.ey…"
           class="input-field"
         />
         <button
           type="button"
           class="render-button"
-          @click="renderCustomStyle"
           :disabled="!isValidMapboxStyleAndToken"
+          @click="renderCustomStyle"
         >
           {{ t("render") }}
         </button>
@@ -278,9 +278,9 @@ watch(
         <div class="form-group">
           <label for="planetMonthYear">{{ t("planetBasemap") }}</label>
           <input
-            type="month"
             id="planetMonthYear"
             v-model="form.planetMonthYear"
+            type="month"
             :min="minPlanetMonthYear"
             :max="maxPlanetMonthYear"
             class="input-field"
@@ -299,9 +299,9 @@ watch(
         class="form-group flex items-center"
       >
         <input
-          type="checkbox"
           id="osmLabels"
           v-model="form.openstreetmap"
+          type="checkbox"
           class="input-field osm-checkbox"
           @change="toggleOSM"
         />
@@ -321,7 +321,7 @@ watch(
           :tooltip="'always'"
           :height="6"
           class="slider"
-        ></vue-slider>
+        />
       </div>
 
       <div class="form-group">
@@ -340,13 +340,13 @@ watch(
           </em>
         </p>
         <textarea
-          type="text"
-          v-model="form.selectedBounds"
           id="bbox"
+          v-model="form.selectedBounds"
+          type="text"
           required
           class="code-block"
           @keydown.prevent
-        />
+        ></textarea>
       </div>
 
       <div class="form-group">
@@ -357,15 +357,15 @@ watch(
         <div class="flex items-center space-x-6">
           <div>
             <input
-              type="radio"
               id="mbtiles"
-              value="mbtiles"
               v-model="form.format"
+              type="radio"
+              value="mbtiles"
             />
             <label for="mbtiles" class="ml-1.25">MBTiles</label>
           </div>
           <div>
-            <input type="radio" id="smp" value="smp" v-model="form.format" />
+            <input id="smp" v-model="form.format" type="radio" value="smp" />
             <label for="smp" class="ml-1.25">Styled Map Package (SMP)</label>
           </div>
         </div>

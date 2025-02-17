@@ -3,7 +3,7 @@ import { Buffer } from "buffer";
 
 export async function publishToAzureStorageQueue(
   queueName: string,
-  requestId: number | void | null = null,
+  requestId: number | null = null,
   message: {
     type: string;
     bounds: string;
@@ -23,7 +23,6 @@ export async function publishToAzureStorageQueue(
     azureStorageConnectionAccountName,
     azureStorageConnectionStorageKey,
     public: { offlineMapsPath },
-    // eslint-disable-next-line no-undef
   } = useRuntimeConfig();
 
   const accountName = azureStorageConnectionAccountName;

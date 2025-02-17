@@ -36,7 +36,8 @@ const showModal = ref(false);
 
 const emit = defineEmits(["updateMapParams", "handleMapRequest"]);
 const updateMapParams = (updateObj: UpdateMapParams) => {
-  let { param, value } = updateObj;
+  const { param } = updateObj;
+  let { value } = updateObj;
 
   if (typeof value === "number") {
     value = parseFloat(value.toFixed(6));
@@ -85,14 +86,14 @@ const handleFormSubmit = (formData: FormData) => {
       :map-style="selectedStyle"
       :mapbox-access-token="localMapboxAccessToken"
       :osm-enabled="osmEnabled"
-      @formSubmitted="handleFormSubmit"
-      @updateMapParams="updateMapParams"
+      @form-submitted="handleFormSubmit"
+      @update-map-params="updateMapParams"
     />
     <MapNavigation
       :map-latitude="selectedLatitude"
       :map-longitude="selectedLongitude"
       :map-zoom="selectedZoom"
-      @updateMapParams="updateMapParams"
+      @update-map-params="updateMapParams"
     />
     <MapCanvas
       :mapbox-access-token="localMapboxAccessToken"
@@ -101,7 +102,7 @@ const handleFormSubmit = (formData: FormData) => {
       :map-style="selectedStyle"
       :map-zoom="selectedZoom"
       :osm-enabled="osmEnabled"
-      @updateMapParams="updateMapParams"
+      @update-map-params="updateMapParams"
     />
     <div v-if="showModal" class="overlay"></div>
     <div v-if="showModal" class="modal">

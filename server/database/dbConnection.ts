@@ -1,7 +1,8 @@
-import pkg, { Pool as PoolType } from "pg";
-const { Pool } = pkg;
+import type { Pool as PoolType } from "pg";
+import pkg from "pg";
 
 import { getConfig } from "./dbConfig";
+const { Pool } = pkg;
 
 let db: PoolType | null = null;
 

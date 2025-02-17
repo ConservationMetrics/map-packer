@@ -5,9 +5,18 @@ import { useI18n } from "vue-i18n";
 import VueSlider from "vue-3-slider-component";
 
 const props = defineProps({
-  mapLatitude: Number,
-  mapLongitude: Number,
-  mapZoom: Number,
+  mapLatitude: {
+    type: Number,
+    default: -15,
+  },
+  mapLongitude: {
+    type: Number,
+    default: 0,
+  },
+  mapZoom: {
+    type: Number,
+    default: 2.5,
+  },
 });
 
 const { t } = useI18n();
@@ -77,17 +86,17 @@ watch(
         :tooltip="'always'"
         :height="6"
         class="slider"
-      ></vue-slider>
+      />
     </div>
 
     <div class="form-group flex">
       <div class="flex-grow mr-2">
         <label for="centerLat">{{ t("centerLat") }}</label>
         <input
-          type="number"
-          step="0.000001"
           id="selectedLatitude"
           v-model.number="form.selectedLatitude"
+          type="number"
+          step="0.000001"
           required
           :min="-90"
           :max="90"
@@ -97,10 +106,10 @@ watch(
       <div class="flex-grow">
         <label for="centerLng">{{ t("centerLong") }}</label>
         <input
-          type="number"
-          step="0.000001"
           id="selectedLongitude"
           v-model.number="form.selectedLongitude"
+          type="number"
+          step="0.000001"
           required
           :min="-180"
           :max="180"

@@ -18,12 +18,16 @@ export default withNuxt(
         { ignoreRestSiblings: true, argsIgnorePattern: "^_" },
       ],
       "no-undef": "warn",
-    },
-  },
-  {
-    files: ["pages/**/*.vue"],
-    rules: {
-      "vue/multi-word-component-names": "off",
+      "vue/html-self-closing": [
+        "error",
+        {
+          html: {
+            void: "always",
+            normal: "never",
+            component: "always",
+          },
+        },
+      ],
     },
   },
   {
