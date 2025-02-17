@@ -22,7 +22,7 @@ const { data: initialMapsData, error: initialMapsError } =
   });
 
 if (initialMapsData.value && !initialMapsError.value) {
-  let parsedData =
+  const parsedData =
     typeof initialMapsData.value === "string"
       ? JSON.parse(initialMapsData.value)
       : initialMapsData.value;
@@ -68,7 +68,6 @@ const loadMoreMaps = async () => {
 // POST map request (emitted by component)
 const handleMapRequest = async (message: object) => {
   try {
-    // eslint-disable-next-line no-undef
     await $fetch("/api/maprequest", {
       method: "POST",
       body: message,
@@ -93,8 +92,8 @@ useHead({
       :next-cursor="nextCursor"
       :offline-maps="offlineMaps"
       :offline-maps-uri="offlineMapsUri"
-      @handleMapRequest="handleMapRequest"
-      @loadMoreMaps="loadMoreMaps"
+      @handle-map-request="handleMapRequest"
+      @load-more-maps="loadMoreMaps"
     />
   </div>
 </template>

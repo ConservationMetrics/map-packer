@@ -15,7 +15,6 @@ const headers = {
   "x-api-key": appApiKey,
 };
 try {
-  // eslint-disable-next-line no-undef
   let mapStyles: string | AvailableMapStyles = await $fetch("/api/map", {
     headers,
   });
@@ -65,7 +64,6 @@ const handleMapRequest = async (formData: FormData) => {
   };
 
   try {
-    // eslint-disable-next-line no-undef
     await $fetch("/api/maprequest", {
       method: "POST",
       body: transformedMessage,
@@ -86,12 +84,12 @@ useHead({
   <div>
     <GenerateMap
       v-if="dataFetched"
-      @handleMapRequest="handleMapRequest"
       :available-map-styles="availableMapStyles"
       :mapbox-access-token="mapboxAccessToken"
       :map-latitude="Number(mapLatitude)"
       :map-longitude="Number(mapLongitude)"
       :map-zoom="Number(mapZoom)"
+      @handle-map-request="handleMapRequest"
     />
   </div>
 </template>

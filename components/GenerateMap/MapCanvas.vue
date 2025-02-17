@@ -4,7 +4,7 @@ import { useI18n } from "vue-i18n";
 
 import mapboxgl from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
-// @ts-ignore; no types available
+// @ts-expect-error; no types available
 import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
 
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -264,7 +264,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div id="map"></div>
+  <div id="map" />
 </template>
 
 <style scoped>

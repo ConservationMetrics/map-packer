@@ -7,7 +7,6 @@ const { loggedIn } = useUserSession();
 const errorMessage = ref("");
 
 onMounted(() => {
-  // eslint-disable-next-line no-undef
   const authResult = useAuth(loggedIn);
   errorMessage.value = authResult !== undefined ? authResult : "";
 });
@@ -19,8 +18,5 @@ useHead({
 </script>
 
 <template>
-  <Auth0Login
-    v-if="loggedIn === false"
-    :errorMessage="errorMessage"
-  ></Auth0Login>
+  <Auth0Login v-if="loggedIn === false" :error-message="errorMessage" />
 </template>
