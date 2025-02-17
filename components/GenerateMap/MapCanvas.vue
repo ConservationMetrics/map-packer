@@ -1,9 +1,10 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref, watch, onMounted, onBeforeUnmount } from "vue";
 import { useI18n } from "vue-i18n";
 
 import mapboxgl from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
+// @ts-ignore; no types available
 import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
 
 import "mapbox-gl/dist/mapbox-gl.css";

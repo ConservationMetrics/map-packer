@@ -3,12 +3,12 @@ import { ref } from "vue";
 import { useHead, useFetch, useRuntimeConfig } from "#app";
 import { useI18n } from "vue-i18n";
 
-import type { MapResponse } from "@/types/types";
+import type { MapResponse, MapRequest } from "@/types/types";
 
 // API request to fetch the data
 const dataFetched = ref(false);
 const nextCursor = ref();
-const offlineMaps = ref<unknown[]>([]);
+const offlineMaps = ref<MapRequest[]>([]);
 const isLoading = ref(false);
 const {
   public: { appApiKey, mapboxAccessToken, offlineMapsUri },

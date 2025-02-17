@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
@@ -13,7 +13,6 @@ import type {
   UpdateMapParams,
 } from "@/types/types";
 
-// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 const { t } = useI18n();
 
 const props = defineProps<{
@@ -106,7 +105,7 @@ const handleFormSubmit = (formData: FormData) => {
     />
     <div v-if="showModal" class="overlay"></div>
     <div v-if="showModal" class="modal">
-      {{ $t("offlineMapRequestSubmitted") }}!
+      {{ t("offlineMapRequestSubmitted") }}!
     </div>
   </div>
 </template>

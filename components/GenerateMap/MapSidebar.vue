@@ -1,10 +1,11 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref, reactive, computed, watch, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 
 import VueSlider from "vue-3-slider-component";
 
-import PolygonIcon from "@/assets/polygon.svg";
+import PolygonIcon from "@/assets/icons/polygon.svg";
+
 import { calculateMaxPlanetMonthYear, estimateNumberOfTiles } from "@/utils";
 
 import type {
@@ -20,7 +21,6 @@ const props = defineProps<{
   mapStyle: string;
 }>();
 
-// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 const { t } = useI18n();
 
 onMounted(() => {
@@ -199,15 +199,15 @@ watch(
 <template>
   <div class="sidebar">
     <h1 class="text-xl font-bold text-gray-800 mb-2">
-      MapPacker: {{ $t("generateOfflineMap") }}
+      MapPacker: {{ t("generateOfflineMap") }}
     </h1>
     <p class="mb-2">
-      <em>{{ $t("useInterface") }}</em>
+      <em>{{ t("useInterface") }}</em>
     </p>
     <form @submit.prevent="submitForm">
       <div class="form-group">
         <label for="title">
-          {{ $t("title") }} <span class="text-red-600">*</span>
+          {{ t("title") }} <span class="text-red-600">*</span>
         </label>
         <input
           type="text"
@@ -219,7 +219,7 @@ watch(
       </div>
 
       <div class="form-group">
-        <label for="description">{{ $t("description") }}</label>
+        <label for="description">{{ t("description") }}</label>
         <textarea
           id="description"
           v-model="form.description"
@@ -229,7 +229,7 @@ watch(
 
       <div class="form-group">
         <label for="mapStyle">
-          {{ $t("mapStyle") }} <span class="text-red-600">*</span>
+          {{ t("mapStyle") }} <span class="text-red-600">*</span>
         </label>
         <select id="mapStyle" v-model="selectedStyleKey" class="input-field">
           <option
@@ -243,7 +243,7 @@ watch(
       </div>
 
       <div v-if="selectedStyleKey === 'mapbox-custom'" class="form-group">
-        <label for="customMapboxStyle">{{ $t("yourMapboxStyleURL") }}</label>
+        <label for="customMapboxStyle">{{ t("yourMapboxStyleURL") }}</label>
         <input
           type="text"
           id="customMapboxStyle"
@@ -251,7 +251,7 @@ watch(
           placeholder="mapbox://styles/user/styleId"
           class="input-field"
         />
-        <label for="customMapboxStyle">{{ $t("yourMapboxAccessToken") }}</label>
+        <label for="customMapboxStyle">{{ t("yourMapboxAccessToken") }}</label>
         <input
           type="text"
           id="mapboxAccessToken"
@@ -265,7 +265,7 @@ watch(
           @click="renderCustomStyle"
           :disabled="!isValidMapboxStyleAndToken"
         >
-          {{ $t("render") }}
+          {{ t("render") }}
         </button>
       </div>
 
@@ -276,7 +276,7 @@ watch(
         "
       >
         <div class="form-group">
-          <label for="planetMonthYear">{{ $t("planetBasemap") }}</label>
+          <label for="planetMonthYear">{{ t("planetBasemap") }}</label>
           <input
             type="month"
             id="planetMonthYear"
@@ -305,12 +305,12 @@ watch(
           class="input-field osm-checkbox"
           @change="toggleOSM"
         />
-        <label for="osmLabels" class="ml-2">{{ $t("includeOSMData") }}</label>
+        <label for="osmLabels" class="ml-2">{{ t("includeOSMData") }}</label>
       </div>
 
       <div class="form-group">
         <label>
-          {{ $t("maximumZoomLevel") }} (0 - 16)
+          {{ t("maximumZoomLevel") }} (0 - 16)
           <span class="text-red-600">*</span>
         </label>
         <vue-slider
@@ -326,18 +326,17 @@ watch(
 
       <div class="form-group">
         <label for="bbox">
-          {{ $t("offlineMapBoundingBox") }}
+          {{ t("offlineMapBoundingBox") }}
           <span class="text-red-600">*</span>
         </label>
         <p class="text-gray-400 mb-1">
           <em>
-            {{ $t("clickOrPressThe") }}
-            <img
-              :src="PolygonIcon"
+            {{ t("clickOrPressThe") }}
+            <PolygonIcon
               alt="Polygon Icon"
               style="display: inline-block; vertical-align: middle"
             />
-            {{ $t("buttonThenDraw") }}.
+            {{ t("buttonThenDraw") }}.
           </em>
         </p>
         <textarea
@@ -352,7 +351,7 @@ watch(
 
       <div class="form-group">
         <label for="format">
-          {{ $t("format") }}
+          {{ t("format") }}
           <span class="text-red-600">*</span>
         </label>
         <div class="flex items-center space-x-6">
@@ -374,21 +373,21 @@ watch(
 
       <div v-if="form.maxZoom && form.selectedBounds">
         <p class="italic">
-          {{ $t("estimatedNumberOfTiles") }}:
+          {{ t("estimatedNumberOfTiles") }}:
           {{ estimatedTiles.toLocaleString() }}
         </p>
         <p
           v-if="estimatedTiles > 100000 && estimatedTiles < 275000"
           class="text-red-600 mt-2"
         >
-          <span class="font-bold">{{ $t("Warning") }}:</span>
-          {{ $t("over100000Tiles") }}
+          <span class="font-bold">{{ t("Warning") }}:</span>
+          {{ t("over100000Tiles") }}
         </p>
       </div>
 
       <div v-if="estimatedTiles > 275000" class="text-red-600 mt-2">
-        <span class="font-bold">{{ $t("Warning") }}:</span>
-        {{ $t("over275000Tiles") }}
+        <span class="font-bold">{{ t("Warning") }}:</span>
+        {{ t("over275000Tiles") }}
       </div>
 
       <button
@@ -397,7 +396,7 @@ watch(
         class="submit-button"
         :class="{ 'submit-button-disabled': estimatedTiles > 275000 }"
       >
-        {{ $t("submitRequest") }}
+        {{ t("submitRequest") }}
       </button>
     </form>
   </div>

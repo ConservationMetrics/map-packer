@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
@@ -10,7 +10,6 @@ const props = defineProps({
   mapZoom: Number,
 });
 
-// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 const { t } = useI18n();
 
 const emit = defineEmits(["updateMapParams"]);
@@ -63,11 +62,11 @@ watch(
 <template>
   <div class="map-navigation">
     <h2 class="text-xl font-bold text-gray-800 mb-2">
-      {{ $t("mapControls") }}
+      {{ t("mapControls") }}
     </h2>
     <div class="form-group">
       <label
-        >{{ $t("zoomLevel") }} (0 - 16)
+        >{{ t("zoomLevel") }} (0 - 16)
         <span class="text-red-600">*</span></label
       >
       <vue-slider
@@ -83,7 +82,7 @@ watch(
 
     <div class="form-group flex">
       <div class="flex-grow mr-2">
-        <label for="centerLat">{{ $t("centerLat") }}</label>
+        <label for="centerLat">{{ t("centerLat") }}</label>
         <input
           type="number"
           step="0.000001"
@@ -96,7 +95,7 @@ watch(
         />
       </div>
       <div class="flex-grow">
-        <label for="centerLng">{{ $t("centerLong") }}</label>
+        <label for="centerLng">{{ t("centerLong") }}</label>
         <input
           type="number"
           step="0.000001"

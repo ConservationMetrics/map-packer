@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { useI18n } from "vue-i18n";
 
@@ -7,16 +7,18 @@ import MiniMap from "@/components/MapDashboard/MiniMap.vue";
 
 import { copyLink } from "~/utils";
 
+import type { MapRequest } from "@/types/types";
+
 const { t } = useI18n();
 
-const props = defineProps({
-  offlineMaps: Array,
-  offlineMapsUri: String,
-  mapboxAccessToken: String,
-  nextCursor: Number,
-});
+const props = defineProps<{
+  offlineMaps: MapRequest[];
+  offlineMapsUri: string;
+  mapboxAccessToken: string;
+  nextCursor: number;
+}>();
 
-const emit = defineEmits(["handleMapRequest", "loadMore"]);
+const emit = defineEmits(["handleMapRequest", "loadMoreMaps"]);
 
 // Scrolling down on the page will load more maps
 onMounted(() => {
@@ -30,19 +32,19 @@ const handleScroll = () => {
     loadMoreMaps();
   }
 };
-const paginatedOfflineMaps = computed(() => props.offlineMaps);
+const paginatedOfflineMaps = computed<MapRequest[]>(() => props.offlineMaps);
 
 // Functions to format data
-const calculateDuration = (start, end) => {
-  const startDate = new Date(start);
-  const endDate = new Date(end);
-  const duration = endDate - startDate;
+const calculateDuration = (start: Date, end: Date) => {
+  const startDate: Date = new Date(start);
+  const endDate: Date = new Date(end);
+  const duration: number = +endDate - +startDate;
   const hours = Math.floor(duration / (1000 * 60 * 60));
   const minutes = Math.floor((duration / (1000 * 60)) % 60);
   const seconds = Math.floor((duration / 1000) % 60);
   return `${hours}h ${minutes}m ${seconds}s`;
 };
-const formatFileFormat = (format) => {
+const formatFileFormat = (format: string) => {
   switch (format) {
     case "smp":
       return "Styled Map Package (SMP)";
@@ -52,10 +54,11 @@ const formatFileFormat = (format) => {
       return format;
   }
 };
-const formatFilesize = (size) => (size / 1024 / 1024).toFixed(2);
-const formatNumber = (value) => parseInt(value).toLocaleString();
-const formatDate = (dateString) => {
-  const options = {
+const formatFilesize = (size: string) =>
+  (Number(size) / 1024 / 1024).toFixed(2);
+const formatNumber = (value: number) => value.toLocaleString();
+const formatDate = (dateString: Date) => {
+  const options: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "long",
     day: "2-digit",
@@ -66,7 +69,7 @@ const formatDate = (dateString) => {
   const date = new Date(dateString);
   return date.toLocaleDateString("en-GB", options);
 };
-const formatStatusColor = (status) => {
+const formatStatusColor = (status: string) => {
   switch (status) {
     case "FAILED":
       return "font-semibold text-red-500";
@@ -84,12 +87,12 @@ const formatStatusColor = (status) => {
 };
 
 // Functions to toggle map request QR code and copy link
-const showQRCodeId = ref(null);
-const toggleQRCode = (id) => {
+const showQRCodeId = ref<number | null>(null);
+const toggleQRCode = (id: number) => {
   showQRCodeId.value = showQRCodeId.value === id ? null : id;
 };
-const tooltipId = ref(null);
-const copyLinkToClipboard = (link, id) => {
+const tooltipId = ref<number | null>(null);
+const copyLinkToClipboard = (link: string, id: number) => {
   copyLink(link)
     .then(() => {
       tooltipId.value = id;
@@ -105,7 +108,7 @@ const copyLinkToClipboard = (link, id) => {
 // Functions to interact with the map requests
 const showModal = ref(false);
 const modalMessage = ref("");
-const deleteMap = (id) => {
+const deleteMap = (id: number) => {
   let confirmation = window.confirm(t("mapDeleteConfirmation") + ".");
 
   if (confirmation) {
@@ -127,7 +130,7 @@ const deleteMap = (id) => {
     }
   }
 };
-const resubmitMapRequest = (id) => {
+const resubmitMapRequest = (id: number) => {
   const map = props.offlineMaps.find((m) => m.id === id);
   if (map) {
     const message = {
