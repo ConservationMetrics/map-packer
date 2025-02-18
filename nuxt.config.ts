@@ -28,8 +28,10 @@ export default defineNuxtConfig({
   modules: [
     "gc-shared-resources",
     "nuxt-auth-utils",
+    "@nuxt/eslint",
     "@nuxtjs/i18n",
     "@nuxt/test-utils/module",
+    "nuxt-svgo",
     "nuxt-windicss",
   ],
 

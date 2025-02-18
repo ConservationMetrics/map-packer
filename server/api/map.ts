@@ -1,4 +1,5 @@
-import { defineEventHandler, send, H3Event } from "h3";
+import type { H3Event } from "h3";
+import { defineEventHandler, send } from "h3";
 import { mapStyles } from "../styles/availableMapStyles";
 
 export default defineEventHandler((event: H3Event) => {
@@ -11,7 +12,6 @@ export default defineEventHandler((event: H3Event) => {
       stadiaApiKey,
       thunderforestApiKey,
     },
-    // eslint-disable-next-line no-undef
   } = useRuntimeConfig();
 
   const styles = Object.entries(mapStyles).map(([key, value]) => ({

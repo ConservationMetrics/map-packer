@@ -1,7 +1,6 @@
 import { calculateMaxPlanetMonthYear } from "@/utils";
-import { type MapStyle, type MapStyleKey } from "../types";
+import type { MapStyle, MapStyleKey } from "@/types/types";
 
-// eslint-disable-next-line no-undef
 const config = useRuntimeConfig();
 
 export const mapStyles: Record<MapStyleKey, MapStyle> = {

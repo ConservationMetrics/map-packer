@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { useI18n } from "vue-i18n";
 
@@ -7,42 +7,44 @@ import MiniMap from "@/components/MapDashboard/MiniMap.vue";
 
 import { copyLink } from "~/utils";
 
+import type { MapRequest } from "@/types/types";
+
 const { t } = useI18n();
 
-const props = defineProps({
-  offlineMaps: Array,
-  offlineMapsUri: String,
-  mapboxAccessToken: String,
-  nextCursor: Number,
-});
+const props = defineProps<{
+  offlineMaps: MapRequest[];
+  offlineMapsUri: string;
+  mapboxAccessToken: string;
+  nextCursor: number;
+}>();
 
-const emit = defineEmits(["handleMapRequest", "loadMore"]);
+const emit = defineEmits(["handleMapRequest", "loadMoreMaps"]);
 
 // Scrolling down on the page will load more maps
 onMounted(() => {
   window.addEventListener("scroll", handleScroll);
 });
-const loadMore = () => {
-  emit("loadMore");
+const loadMoreMaps = () => {
+  emit("loadMoreMaps");
 };
 const handleScroll = () => {
   if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-    loadMore();
+    loadMoreMaps();
   }
 };
-const paginatedOfflineMaps = computed(() => props.offlineMaps);
+const paginatedOfflineMaps = computed<MapRequest[]>(() => props.offlineMaps);
 
 // Functions to format data
-const calculateDuration = (start, end) => {
-  const startDate = new Date(start);
-  const endDate = new Date(end);
-  const duration = endDate - startDate;
+const calculateDuration = (start: Date, end: Date) => {
+  const startDate: Date = new Date(start);
+  const endDate: Date = new Date(end);
+  const duration: number = +endDate - +startDate;
   const hours = Math.floor(duration / (1000 * 60 * 60));
   const minutes = Math.floor((duration / (1000 * 60)) % 60);
   const seconds = Math.floor((duration / 1000) % 60);
   return `${hours}h ${minutes}m ${seconds}s`;
 };
-const formatFileFormat = (format) => {
+const formatFileFormat = (format: string) => {
   switch (format) {
     case "smp":
       return "Styled Map Package (SMP)";
@@ -52,10 +54,11 @@ const formatFileFormat = (format) => {
       return format;
   }
 };
-const formatFilesize = (size) => (size / 1024 / 1024).toFixed(2);
-const formatNumber = (value) => parseInt(value).toLocaleString();
-const formatDate = (dateString) => {
-  const options = {
+const formatFilesize = (size: string) =>
+  (Number(size) / 1024 / 1024).toFixed(2);
+const formatNumber = (value: number) => value.toLocaleString();
+const formatDate = (dateString: Date) => {
+  const options: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "long",
     day: "2-digit",
@@ -66,7 +69,7 @@ const formatDate = (dateString) => {
   const date = new Date(dateString);
   return date.toLocaleDateString("en-GB", options);
 };
-const formatStatusColor = (status) => {
+const formatStatusColor = (status: string) => {
   switch (status) {
     case "FAILED":
       return "font-semibold text-red-500";
@@ -84,12 +87,12 @@ const formatStatusColor = (status) => {
 };
 
 // Functions to toggle map request QR code and copy link
-const showQRCodeId = ref(null);
-const toggleQRCode = (id) => {
+const showQRCodeId = ref<number | null>(null);
+const toggleQRCode = (id: number) => {
   showQRCodeId.value = showQRCodeId.value === id ? null : id;
 };
-const tooltipId = ref(null);
-const copyLinkToClipboard = (link, id) => {
+const tooltipId = ref<number | null>(null);
+const copyLinkToClipboard = (link: string, id: number) => {
   copyLink(link)
     .then(() => {
       tooltipId.value = id;
@@ -105,8 +108,8 @@ const copyLinkToClipboard = (link, id) => {
 // Functions to interact with the map requests
 const showModal = ref(false);
 const modalMessage = ref("");
-const deleteMap = (id) => {
-  let confirmation = window.confirm(t("mapDeleteConfirmation") + ".");
+const deleteMap = (id: number) => {
+  const confirmation = window.confirm(t("mapDeleteConfirmation") + ".");
 
   if (confirmation) {
     const map = props.offlineMaps.find((m) => m.id === id);
@@ -127,7 +130,7 @@ const deleteMap = (id) => {
     }
   }
 };
-const resubmitMapRequest = (id) => {
+const resubmitMapRequest = (id: number) => {
   const map = props.offlineMaps.find((m) => m.id === id);
   if (map) {
     const message = {
@@ -199,24 +202,24 @@ onBeforeUnmount(() => {
         >
           X
         </button>
-        <h2 class="text-2xl font-bold text-gray-800 mb-2" v-if="map.title">
+        <h2 v-if="map.title" class="text-2xl font-bold text-gray-800 mb-2">
           {{ map.title }}
         </h2>
         <!-- MiniMap component is the fallback if there is no thumbnail image in the db -->
-        <div class="mb-2" v-if="map.thumbnail_filename">
+        <div v-if="map.thumbnail_filename" class="mb-2">
           <img
             :src="`${offlineMapsUri}/${map.thumbnail_filename}`"
             alt="Map thumbnail"
             class="w-full"
           />
         </div>
-        <div class="mb-2" v-if="!map.thumbnail_filename && map.bounds">
+        <div v-if="!map.thumbnail_filename && map.bounds" class="mb-2">
           <MiniMap
             :mapbox-access-token="mapboxAccessToken"
             :bounds="map.bounds"
           />
         </div>
-        <p class="mb-2 italic" v-if="map.description">{{ map.description }}</p>
+        <p v-if="map.description" class="mb-2 italic">{{ map.description }}</p>
         <div class="space-y-2 mb-2">
           <p v-if="map.status">
             <span class="font-bold">{{ $t("status") }}: </span>
@@ -236,7 +239,7 @@ onBeforeUnmount(() => {
               }}
             </span>
           </p>
-          <p class="text-red-600 break-words" v-if="map.error_message">
+          <p v-if="map.error_message" class="text-red-600 break-words">
             <span class="font-bold">{{ $t("errorMessage") }}:</span>
             {{ map.error_message }}
           </p>
@@ -306,8 +309,8 @@ onBeforeUnmount(() => {
           <QRCode :value="`${offlineMapsUri}/${map.filename}`" :size="300" />
         </div>
         <div
-          class="space-y-2 flex-grow"
           v-if="map.status !== 'PENDING' && map.status !== 'PROCESSING'"
+          class="space-y-2 flex-grow"
         >
           <h3 class="italic text-lg text-gray-600">{{ $t("metadata") }}</h3>
           <p v-if="map.work_begun && map.work_ended">

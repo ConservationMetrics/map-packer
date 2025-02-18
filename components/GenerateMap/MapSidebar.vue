@@ -1,20 +1,26 @@
-<script setup>
+<script setup lang="ts">
 import { ref, reactive, computed, watch, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 
 import VueSlider from "vue-3-slider-component";
 
-import PolygonIcon from "@/assets/polygon.svg";
+import PolygonIcon from "@/assets/icons/polygon.svg";
+
 import { calculateMaxPlanetMonthYear, estimateNumberOfTiles } from "@/utils";
 
-const props = defineProps({
-  availableMapStyles: Array,
-  mapboxAccessToken: String,
-  mapBounds: String,
-  mapStyle: String,
-});
+import type {
+  AvailableMapStyles,
+  FormData,
+  MapStyleWithValue,
+} from "@/types/types";
 
-// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+const props = defineProps<{
+  availableMapStyles: AvailableMapStyles;
+  mapboxAccessToken: string;
+  mapBounds: string;
+  mapStyle: string;
+}>();
+
 const { t } = useI18n();
 
 onMounted(() => {
@@ -23,16 +29,23 @@ onMounted(() => {
 
 const customMapboxStyleUrl = ref("");
 const localMapboxAccessToken = ref(props.mapboxAccessToken);
-const mapStyles = ref([]);
-const form = reactive({
+const localMapStyle = ref(props.mapStyle);
+const mapStyles = ref<MapStyleWithValue[]>([]);
+const form = reactive<FormData>({
   title: "",
-  description: "",
+  description: null,
   selectedBounds: props.mapBounds,
-  selectedStyle: props.mapStyle,
+  selectedStyle: localMapStyle.value,
+  selectedStyleKey: null,
   planetMonthYear: calculateMaxPlanetMonthYear(),
   maxZoom: 8,
-  estimatedTiles: 0,
+  estimatedTiles: null,
   format: "mbtiles",
+  mapboxAccessToken: props.mapboxAccessToken,
+  overlay: null,
+  openstreetmap: false,
+  mapboxStyle: null,
+  type: null,
 });
 
 const fetchMapStyles = () => {
@@ -108,7 +121,7 @@ const submitForm = () => {
   const formToSubmit = { ...form, selectedStyle: selectedStyleKey.value };
 
   if (selectedStyleKey.value !== "planet") {
-    delete formToSubmit.planetMonthYear;
+    formToSubmit.planetMonthYear = undefined;
   }
 
   if (selectedStyleKey.value === "mapbox") {
@@ -164,17 +177,19 @@ watch(
       form.selectedStyle &&
       form.selectedStyle.includes("/api/mapstyle/planet/")
     ) {
-      const [year, month] = newVal.split("-");
-      if (year && month) {
-        form.selectedStyle = `/api/mapstyle/planet/${year}/${month}`;
-        mapStyles.value = mapStyles.value.filter(
-          (style) => style.key !== "planet",
-        );
-        mapStyles.value.push({
-          name: "Planet Monthly Visual Basemap",
-          key: "planet",
-          value: form.selectedStyle,
-        });
+      if (newVal) {
+        const [year, month] = newVal.split("-");
+        if (year && month) {
+          form.selectedStyle = `/api/mapstyle/planet/${year}/${month}`;
+          mapStyles.value = mapStyles.value.filter(
+            (style) => style.key !== "planet",
+          );
+          mapStyles.value.push({
+            name: "Planet Monthly Visual Basemap",
+            key: "planet",
+            value: form.selectedStyle,
+          });
+        }
       }
     }
   },
@@ -184,27 +199,27 @@ watch(
 <template>
   <div class="sidebar">
     <h1 class="text-xl font-bold text-gray-800 mb-2">
-      MapPacker: {{ $t("generateOfflineMap") }}
+      MapPacker: {{ t("generateOfflineMap") }}
     </h1>
     <p class="mb-2">
-      <em>{{ $t("useInterface") }}</em>
+      <em>{{ t("useInterface") }}</em>
     </p>
     <form @submit.prevent="submitForm">
       <div class="form-group">
         <label for="title">
-          {{ $t("title") }} <span class="text-red-600">*</span>
+          {{ t("title") }} <span class="text-red-600">*</span>
         </label>
         <input
-          type="text"
           id="title"
           v-model="form.title"
+          type="text"
           required
           class="input-field"
         />
       </div>
 
       <div class="form-group">
-        <label for="description">{{ $t("description") }}</label>
+        <label for="description">{{ t("description") }}</label>
         <textarea
           id="description"
           v-model="form.description"
@@ -214,7 +229,7 @@ watch(
 
       <div class="form-group">
         <label for="mapStyle">
-          {{ $t("mapStyle") }} <span class="text-red-600">*</span>
+          {{ t("mapStyle") }} <span class="text-red-600">*</span>
         </label>
         <select id="mapStyle" v-model="selectedStyleKey" class="input-field">
           <option
@@ -228,29 +243,29 @@ watch(
       </div>
 
       <div v-if="selectedStyleKey === 'mapbox-custom'" class="form-group">
-        <label for="customMapboxStyle">{{ $t("yourMapboxStyleURL") }}</label>
+        <label for="customMapboxStyle">{{ t("yourMapboxStyleURL") }}</label>
         <input
-          type="text"
           id="customMapboxStyle"
           v-model="customMapboxStyleUrl"
+          type="text"
           placeholder="mapbox://styles/user/styleId"
           class="input-field"
         />
-        <label for="customMapboxStyle">{{ $t("yourMapboxAccessToken") }}</label>
+        <label for="customMapboxStyle">{{ t("yourMapboxAccessToken") }}</label>
         <input
-          type="text"
           id="mapboxAccessToken"
           v-model="localMapboxAccessToken"
+          type="text"
           placeholder="pk.ey…"
           class="input-field"
         />
         <button
           type="button"
           class="render-button"
-          @click="renderCustomStyle"
           :disabled="!isValidMapboxStyleAndToken"
+          @click="renderCustomStyle"
         >
-          {{ $t("render") }}
+          {{ t("render") }}
         </button>
       </div>
 
@@ -261,11 +276,11 @@ watch(
         "
       >
         <div class="form-group">
-          <label for="planetMonthYear">{{ $t("planetBasemap") }}</label>
+          <label for="planetMonthYear">{{ t("planetBasemap") }}</label>
           <input
-            type="month"
             id="planetMonthYear"
             v-model="form.planetMonthYear"
+            type="month"
             :min="minPlanetMonthYear"
             :max="maxPlanetMonthYear"
             class="input-field"
@@ -284,18 +299,18 @@ watch(
         class="form-group flex items-center"
       >
         <input
-          type="checkbox"
           id="osmLabels"
           v-model="form.openstreetmap"
+          type="checkbox"
           class="input-field osm-checkbox"
           @change="toggleOSM"
         />
-        <label for="osmLabels" class="ml-2">{{ $t("includeOSMData") }}</label>
+        <label for="osmLabels" class="ml-2">{{ t("includeOSMData") }}</label>
       </div>
 
       <div class="form-group">
         <label>
-          {{ $t("maximumZoomLevel") }} (0 - 16)
+          {{ t("maximumZoomLevel") }} (0 - 16)
           <span class="text-red-600">*</span>
         </label>
         <vue-slider
@@ -306,52 +321,51 @@ watch(
           :tooltip="'always'"
           :height="6"
           class="slider"
-        ></vue-slider>
-      </div>
-
-      <div class="form-group">
-        <label for="bbox">
-          {{ $t("offlineMapBoundingBox") }}
-          <span class="text-red-600">*</span>
-        </label>
-        <p class="text-gray-400 mb-1">
-          <em>
-            {{ $t("clickOrPressThe") }}
-            <img
-              :src="PolygonIcon"
-              alt="Polygon Icon"
-              style="display: inline-block; vertical-align: middle"
-            />
-            {{ $t("buttonThenDraw") }}.
-          </em>
-        </p>
-        <textarea
-          type="text"
-          v-model="form.selectedBounds"
-          id="bbox"
-          required
-          class="code-block"
-          @keydown.prevent
         />
       </div>
 
       <div class="form-group">
+        <label for="bbox">
+          {{ t("offlineMapBoundingBox") }}
+          <span class="text-red-600">*</span>
+        </label>
+        <p class="text-gray-400 mb-1">
+          <em>
+            {{ t("clickOrPressThe") }}
+            <PolygonIcon
+              alt="Polygon Icon"
+              style="display: inline-block; vertical-align: middle"
+            />
+            {{ t("buttonThenDraw") }}.
+          </em>
+        </p>
+        <textarea
+          id="bbox"
+          v-model="form.selectedBounds"
+          type="text"
+          required
+          class="code-block"
+          @keydown.prevent
+        ></textarea>
+      </div>
+
+      <div class="form-group">
         <label for="format">
-          {{ $t("format") }}
+          {{ t("format") }}
           <span class="text-red-600">*</span>
         </label>
         <div class="flex items-center space-x-6">
           <div>
             <input
-              type="radio"
               id="mbtiles"
-              value="mbtiles"
               v-model="form.format"
+              type="radio"
+              value="mbtiles"
             />
             <label for="mbtiles" class="ml-1.25">MBTiles</label>
           </div>
           <div>
-            <input type="radio" id="smp" value="smp" v-model="form.format" />
+            <input id="smp" v-model="form.format" type="radio" value="smp" />
             <label for="smp" class="ml-1.25">Styled Map Package (SMP)</label>
           </div>
         </div>
@@ -359,21 +373,21 @@ watch(
 
       <div v-if="form.maxZoom && form.selectedBounds">
         <p class="italic">
-          {{ $t("estimatedNumberOfTiles") }}:
+          {{ t("estimatedNumberOfTiles") }}:
           {{ estimatedTiles.toLocaleString() }}
         </p>
         <p
           v-if="estimatedTiles > 100000 && estimatedTiles < 275000"
           class="text-red-600 mt-2"
         >
-          <span class="font-bold">{{ $t("Warning") }}:</span>
-          {{ $t("over100000Tiles") }}
+          <span class="font-bold">{{ t("Warning") }}:</span>
+          {{ t("over100000Tiles") }}
         </p>
       </div>
 
       <div v-if="estimatedTiles > 275000" class="text-red-600 mt-2">
-        <span class="font-bold">{{ $t("Warning") }}:</span>
-        {{ $t("over275000Tiles") }}
+        <span class="font-bold">{{ t("Warning") }}:</span>
+        {{ t("over275000Tiles") }}
       </div>
 
       <button
@@ -382,7 +396,7 @@ watch(
         class="submit-button"
         :class="{ 'submit-button-disabled': estimatedTiles > 275000 }"
       >
-        {{ $t("submitRequest") }}
+        {{ t("submitRequest") }}
       </button>
     </form>
   </div>

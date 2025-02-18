@@ -1,11 +1,13 @@
-<script setup>
+<script lang="ts" setup>
 import { ref } from "vue";
 import { useHead, useRuntimeConfig } from "#app";
 import { useI18n } from "vue-i18n";
 
+import type { AvailableMapStyles, FormData } from "@/types/types";
+
 // API request to fetch the data
 const dataFetched = ref(false);
-const availableMapStyles = ref([]);
+const availableMapStyles = ref<AvailableMapStyles>([]);
 const {
   public: { appApiKey, mapboxAccessToken, mapLatitude, mapLongitude, mapZoom },
 } = useRuntimeConfig();
@@ -13,23 +15,28 @@ const headers = {
   "x-api-key": appApiKey,
 };
 try {
-  // eslint-disable-next-line no-undef
-  let mapStyles = await $fetch("/api/map", { headers });
+  let mapStyles: string | AvailableMapStyles = await $fetch("/api/map", {
+    headers,
+  });
   if (typeof mapStyles === "string") {
-    mapStyles = mapStyles.split(",");
+    mapStyles = JSON.parse(mapStyles) as AvailableMapStyles;
   }
   availableMapStyles.value = mapStyles;
 
   dataFetched.value = true;
 } catch (error) {
-  console.error("Error fetching data:", error.value);
+  if (error instanceof Error) {
+    console.error("Error fetching data:", error.message);
+  } else {
+    console.error("Error fetching data:", error);
+  }
   dataFetched.value = false;
 }
 
 // POST map request (emitted by component)
-const handleMapRequest = async (formData) => {
+const handleMapRequest = async (formData: FormData) => {
   // Rmove accents and replace non-alphanumeric characters with underscores
-  const normalizeFilename = (str) => {
+  const normalizeFilename = (str: string) => {
     return str
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
@@ -47,6 +54,7 @@ const handleMapRequest = async (formData) => {
     max_zoom: formData.maxZoom,
     mapbox_style: formData.mapboxStyle ?? undefined,
     planet_monthly_visual: formData.planetMonthYear ?? undefined,
+    api_key: formData.mapboxAccessToken ?? undefined,
     bounds: formData.selectedBounds,
     style: formData.selectedStyle,
     openstreetmap: formData.openstreetmap ?? false,
@@ -55,13 +63,7 @@ const handleMapRequest = async (formData) => {
     created_at: new Date(),
   };
 
-  // Include mapboxAccessToken if it exists
-  if (formData.mapboxAccessToken) {
-    transformedMessage.apiKey = formData.mapboxAccessToken;
-  }
-
   try {
-    // eslint-disable-next-line no-undef
     await $fetch("/api/maprequest", {
       method: "POST",
       body: transformedMessage,
@@ -82,12 +84,12 @@ useHead({
   <div>
     <GenerateMap
       v-if="dataFetched"
-      @handleMapRequest="handleMapRequest"
       :available-map-styles="availableMapStyles"
       :mapbox-access-token="mapboxAccessToken"
       :map-latitude="Number(mapLatitude)"
       :map-longitude="Number(mapLongitude)"
       :map-zoom="Number(mapZoom)"
+      @handle-map-request="handleMapRequest"
     />
   </div>
 </template>

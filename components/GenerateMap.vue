@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
@@ -7,16 +7,21 @@ import MapSidebar from "@/components/GenerateMap/MapSidebar.vue";
 import MapNavigation from "@/components/GenerateMap/MapNavigation.vue";
 import MapCanvas from "@/components/GenerateMap/MapCanvas.vue";
 
-// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+import type {
+  AvailableMapStyles,
+  FormData,
+  UpdateMapParams,
+} from "@/types/types";
+
 const { t } = useI18n();
 
-const props = defineProps({
-  availableMapStyles: Array,
-  mapboxAccessToken: String,
-  mapLatitude: Number,
-  mapLongitude: Number,
-  mapZoom: Number,
-});
+const props = defineProps<{
+  availableMapStyles: AvailableMapStyles;
+  mapboxAccessToken: string;
+  mapLatitude: number;
+  mapLongitude: number;
+  mapZoom: number;
+}>();
 
 const router = useRouter();
 
@@ -30,40 +35,41 @@ const selectedZoom = ref(props.mapZoom);
 const showModal = ref(false);
 
 const emit = defineEmits(["updateMapParams", "handleMapRequest"]);
-const updateMapParams = (updateObj) => {
-  let { param, value } = updateObj;
+const updateMapParams = (updateObj: UpdateMapParams) => {
+  const { param } = updateObj;
+  let { value } = updateObj;
 
   if (typeof value === "number") {
     value = parseFloat(value.toFixed(6));
   }
 
   if (param === "OsmEnabled") {
-    osmEnabled.value = value;
+    osmEnabled.value = value as boolean;
   } else if (param === "AccessToken") {
-    localMapboxAccessToken.value = value;
+    localMapboxAccessToken.value = value as string;
   } else {
     switch (param) {
       case "Bounds":
-        selectedBounds.value = value;
+        selectedBounds.value = value as string;
         break;
       case "Latitude":
-        selectedLatitude.value = value;
+        selectedLatitude.value = value as number;
         break;
       case "Longitude":
-        selectedLongitude.value = value;
+        selectedLongitude.value = value as number;
         break;
       case "Style":
-        selectedStyle.value = value;
+        selectedStyle.value = value as string;
         osmEnabled.value = false;
         emit("updateMapParams", { param: "OsmEnabled", value: false });
         break;
       case "Zoom":
-        selectedZoom.value = value;
+        selectedZoom.value = value as number;
         break;
     }
   }
 };
-const handleFormSubmit = (formData) => {
+const handleFormSubmit = (formData: FormData) => {
   emit("handleMapRequest", formData);
   showModal.value = true;
   setTimeout(() => {
@@ -78,15 +84,16 @@ const handleFormSubmit = (formData) => {
       :available-map-styles="props.availableMapStyles"
       :map-bounds="selectedBounds"
       :map-style="selectedStyle"
+      :mapbox-access-token="localMapboxAccessToken"
       :osm-enabled="osmEnabled"
-      @formSubmitted="handleFormSubmit"
-      @updateMapParams="updateMapParams"
+      @form-submitted="handleFormSubmit"
+      @update-map-params="updateMapParams"
     />
     <MapNavigation
       :map-latitude="selectedLatitude"
       :map-longitude="selectedLongitude"
       :map-zoom="selectedZoom"
-      @updateMapParams="updateMapParams"
+      @update-map-params="updateMapParams"
     />
     <MapCanvas
       :mapbox-access-token="localMapboxAccessToken"
@@ -95,11 +102,11 @@ const handleFormSubmit = (formData) => {
       :map-style="selectedStyle"
       :map-zoom="selectedZoom"
       :osm-enabled="osmEnabled"
-      @updateMapParams="updateMapParams"
+      @update-map-params="updateMapParams"
     />
     <div v-if="showModal" class="overlay"></div>
     <div v-if="showModal" class="modal">
-      {{ $t("offlineMapRequestSubmitted") }}!
+      {{ t("offlineMapRequestSubmitted") }}!
     </div>
   </div>
 </template>

@@ -1,4 +1,5 @@
-import { defineEventHandler, readBody, send, sendError, H3Event } from "h3";
+import type { H3Event } from "h3";
+import { defineEventHandler, readBody, send, sendError } from "h3";
 import { getDatabaseConnection } from "@/server/database/dbConnection";
 import {
   insertDataIntoTable,
@@ -8,15 +9,12 @@ import {
 } from "../database/dbOperations";
 import { publishToAzureStorageQueue } from "../messageQueue/azure";
 
-const { dbTable } =
-  // eslint-disable-next-line no-undef
-  useRuntimeConfig();
+const { dbTable } = useRuntimeConfig();
 
 export default defineEventHandler(async (event: H3Event) => {
-  // eslint-disable-next-line no-undef
   const config = useRuntimeConfig();
   const data = await readBody(event);
-  let requestId: number | void | null = data.requestId;
+  let requestId: number | null = data.requestId;
 
   if (data.style === "mapbox-custom" || data.style === "mapbox-streets") {
     data.style = "mapbox";
@@ -30,7 +28,7 @@ export default defineEventHandler(async (event: H3Event) => {
       console.log("Inserting data into database...");
       const new_request = { ...data };
       delete new_request.type;
-      delete new_request.apiKey;
+      delete new_request.api_key;
       requestId = await insertDataIntoTable(db, dbTable, new_request);
     }
     // If it's a resubmit request, update the data in the database
@@ -38,7 +36,7 @@ export default defineEventHandler(async (event: H3Event) => {
       console.log("Updating data in database...");
       const resubmit_request = { ...data };
       delete resubmit_request.type;
-      delete resubmit_request.apiKey;
+      delete resubmit_request.api_key;
       delete resubmit_request.requestId;
       data.type = "new_request";
       await updateDatabaseMapRequest(db, dbTable, requestId, resubmit_request);
@@ -62,17 +60,17 @@ export default defineEventHandler(async (event: H3Event) => {
 
     // Add API tokens from env vars server-side
     if (data.style && data.style.includes("mapbox")) {
-      data.apiKey = data.apiKey || config.public.mapboxAccessToken;
+      data.apiKey = data.api_key || config.public.mapboxAccessToken;
     } else if (data.style && data.style === "planet") {
-      data.apiKey = data.apiKey || config.public.planetApiKey;
+      data.apiKey = data.api_key || config.public.planetApiKey;
     } else if (
       data.style &&
       (data.style === "stadia-stamen-terrain" ||
         data.style === "stadia-alidade-satellite")
     ) {
-      data.apiKey = data.apiKey || config.public.stadiaApiKey;
+      data.apiKey = data.api_key || config.public.stadiaApiKey;
     } else if (data.style && data.style === "thunderforest-landscape") {
-      data.apiKey = data.apiKey || config.public.thunderforestApiKey;
+      data.apiKey = data.api_key || config.public.thunderforestApiKey;
     }
 
     if (config.asqQueueName) {
