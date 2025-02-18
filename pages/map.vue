@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import { ref } from "vue";
-import { useHead, useRuntimeConfig } from "#app";
 import { useI18n } from "vue-i18n";
 
 import type { AvailableMapStyles, FormData } from "@/types/types";

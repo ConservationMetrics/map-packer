@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import { ref } from "vue";
-import { useHead, useFetch, useRuntimeConfig } from "#app";
 import { useI18n } from "vue-i18n";
 
 import type { MapResponse, MapRequest } from "@/types/types";

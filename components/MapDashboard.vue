@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { useI18n } from "vue-i18n";
 
 import QRCode from "qrcode.vue";
 import MiniMap from "@/components/MapDashboard/MiniMap.vue";
 
-import { copyLink } from "~/utils";
+import { copyLink } from "@/utils";
 
 import type { MapRequest } from "@/types/types";
 

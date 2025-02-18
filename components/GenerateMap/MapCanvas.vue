@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount } from "vue";
 import { useI18n } from "vue-i18n";
 
 import mapboxgl from "mapbox-gl";

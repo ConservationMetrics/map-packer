@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from "vue";
 import mapboxgl from "mapbox-gl";
 
 const props = defineProps({

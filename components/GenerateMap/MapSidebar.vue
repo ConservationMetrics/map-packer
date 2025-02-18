@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, reactive, computed, watch, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 
 import VueSlider from "vue-3-slider-component";
