@@ -1,7 +1,7 @@
 import type { Pool } from "pg";
-
 import type { MapRequest } from "@/types/types";
 
+/** Checks if a table exists in the database. */
 const checkTableExists = async (
   db: Pool,
   table: string | undefined,
@@ -18,6 +18,7 @@ const checkTableExists = async (
   return result.rows[0].to_regclass !== null;
 };
 
+/** Creates a new map request table in the database. */
 const createMapRequestTable = async (
   db: Pool,
   table: string | undefined,
@@ -61,6 +62,7 @@ const createMapRequestTable = async (
   }
 };
 
+/** Fetches data from a specified table in the database. */
 const fetchDataFromTable = async (
   db: Pool,
   table: string | undefined,
@@ -89,6 +91,7 @@ const fetchDataFromTable = async (
   return result.rows;
 };
 
+/** Fetches data from a table, creating the table if it does not exist. */
 export const fetchData = async (
   db: Pool,
   table: string | undefined,
@@ -104,6 +107,7 @@ export const fetchData = async (
   return { data: data || null };
 };
 
+/** Inserts data into a specified table in the database. */
 export const insertDataIntoTable = async (
   db: Pool,
   table: string | undefined,
@@ -135,6 +139,7 @@ export const insertDataIntoTable = async (
   }
 };
 
+/** Handles a delete request for a specified record in the database. */
 export const handleDeleteRequest = async (
   db: Pool,
   table: string | undefined,
@@ -180,6 +185,7 @@ export const handleDeleteRequest = async (
   }
 };
 
+/** Updates a record in the database with new data. */
 export async function updateDatabaseMapRequest(
   db: Pool,
   tableName: string,
@@ -212,6 +218,7 @@ export async function updateDatabaseMapRequest(
   console.log(`Record ${id} in table ${tableName} updated.`);
 }
 
+/** Updates a record in the database with an error message. */
 export async function updateDatabaseWithError(
   db: Pool,
   tableName: string,

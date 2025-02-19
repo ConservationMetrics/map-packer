@@ -1,13 +1,13 @@
-import type { H3Event } from "h3";
-import { defineEventHandler, readBody, send, sendError } from "h3";
 import { getDatabaseConnection } from "@/server/database/dbConnection";
 import {
   insertDataIntoTable,
   updateDatabaseMapRequest,
   handleDeleteRequest,
   updateDatabaseWithError,
-} from "../database/dbOperations";
-import { publishToAzureStorageQueue } from "../messageQueue/azure";
+} from "@/server/database/dbOperations";
+import { publishToAzureStorageQueue } from "@/server/messageQueue/azure";
+
+import type { H3Event } from "h3";
 
 const { dbTable } = useRuntimeConfig();
 

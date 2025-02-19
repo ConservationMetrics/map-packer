@@ -34,6 +34,8 @@ const selectedZoom = ref(props.mapZoom);
 const showModal = ref(false);
 
 const emit = defineEmits(["updateMapParams", "handleMapRequest"]);
+
+/** Updates map parameters based on the provided update object. */
 const updateMapParams = (updateObj: UpdateMapParams) => {
   const { param } = updateObj;
   let { value } = updateObj;
@@ -68,6 +70,8 @@ const updateMapParams = (updateObj: UpdateMapParams) => {
     }
   }
 };
+
+/** Handles form submission and navigates to the home page. */
 const handleFormSubmit = (formData: FormData) => {
   emit("handleMapRequest", formData);
   showModal.value = true;

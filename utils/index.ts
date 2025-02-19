@@ -1,3 +1,9 @@
+/**
+ * Copies a given link to the clipboard.
+ *
+ * @param {string} link - The link to be copied to the clipboard.
+ * @returns {Promise<void>} A promise that resolves when the link is successfully copied, or rejects with an error.
+ */
 export const copyLink = (link: string): Promise<void> => {
   return new Promise((resolve, reject) => {
     if (navigator.clipboard) {
@@ -26,10 +32,14 @@ export const copyLink = (link: string): Promise<void> => {
   });
 };
 
-export const calculateMaxPlanetMonthYear = () => {
-  // If the current day is less than or equal to 15, maxMonth is two months ago.
-  // Otherwise, maxMonth is the previous  month.
-  // This is because Planet NICFI monthly basemaps for the previous month are published on the 15th of each month.
+/**
+ * Calculates the maximum available Planet NICFI month and year for basemaps.
+ * The maximum available month and year is available from the 15th of the next month,
+ * as Planet NICFI basemaps are available with a one-month delay.
+ *
+ * @returns {string} A string representing the year and month in the format 'YYYY-MM'.
+ */
+export const calculateMaxPlanetMonthYear = (): string => {
   const date = new Date();
   if (date.getDate() <= 15) {
     date.setMonth(date.getMonth() - 2);
@@ -42,6 +52,13 @@ export const calculateMaxPlanetMonthYear = () => {
   return `${year}-${monthStr}`;
 };
 
+/**
+ * Estimates the number of map tiles required for a given zoom level and bounding box.
+ *
+ * @param {number} maxZoom - The maximum zoom level.
+ * @param {string} boundsStr - A string representing the bounding box in the format 'west,south,east,north'.
+ * @returns {number} The estimated number of tiles.
+ */
 export const estimateNumberOfTiles = (
   maxZoom: number,
   boundsStr: string,

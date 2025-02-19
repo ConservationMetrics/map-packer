@@ -23,17 +23,19 @@ const emit = defineEmits(["handleMapRequest", "loadMoreMaps"]);
 onMounted(() => {
   window.addEventListener("scroll", handleScroll);
 });
-const loadMoreMaps = () => {
-  emit("loadMoreMaps");
-};
+/** Emits an event to load more maps. */
+const loadMoreMaps = () => emit("loadMoreMaps");
+
+/** Handles scroll event to trigger map loading when reaching the bottom. */
 const handleScroll = () => {
-  if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+  if (window.innerHeight + window.scrollY >= document.body.offsetHeight)
     loadMoreMaps();
-  }
 };
+
+/** Computes the paginated list of offline maps. */
 const paginatedOfflineMaps = computed<MapRequest[]>(() => props.offlineMaps);
 
-// Functions to format data
+/** Calculates the duration between two dates and returns it as a formatted string. */
 const calculateDuration = (start: Date, end: Date) => {
   const startDate: Date = new Date(start);
   const endDate: Date = new Date(end);
@@ -43,6 +45,8 @@ const calculateDuration = (start: Date, end: Date) => {
   const seconds = Math.floor((duration / 1000) % 60);
   return `${hours}h ${minutes}m ${seconds}s`;
 };
+
+/** Formats a file format string into a more descriptive format. */
 const formatFileFormat = (format: string) => {
   switch (format) {
     case "smp":
@@ -53,9 +57,15 @@ const formatFileFormat = (format: string) => {
       return format;
   }
 };
+
+/** Converts a file size from bytes to megabytes and formats it to two decimal places. */
 const formatFilesize = (size: string) =>
   (Number(size) / 1024 / 1024).toFixed(2);
+
+/** Formats a number with commas as thousands separators. */
 const formatNumber = (value: number) => value.toLocaleString();
+
+/** Formats a date string into a human-readable format with specific options. */
 const formatDate = (dateString: Date) => {
   const options: Intl.DateTimeFormatOptions = {
     year: "numeric",
@@ -68,6 +78,8 @@ const formatDate = (dateString: Date) => {
   const date = new Date(dateString);
   return date.toLocaleDateString("en-GB", options);
 };
+
+/** Determines the CSS class for a status string based on its value. */
 const formatStatusColor = (status: string) => {
   switch (status) {
     case "FAILED":
@@ -87,10 +99,15 @@ const formatStatusColor = (status: string) => {
 
 // Functions to toggle map request QR code and copy link
 const showQRCodeId = ref<number | null>(null);
+
+/** Toggles the visibility of a QR code for a given map request ID. */
 const toggleQRCode = (id: number) => {
   showQRCodeId.value = showQRCodeId.value === id ? null : id;
 };
+
 const tooltipId = ref<number | null>(null);
+
+/** Copies a link to the clipboard and shows a tooltip for a short duration. */
 const copyLinkToClipboard = (link: string, id: number) => {
   copyLink(link)
     .then(() => {
@@ -104,9 +121,10 @@ const copyLinkToClipboard = (link: string, id: number) => {
     });
 };
 
-// Functions to interact with the map requests
 const showModal = ref(false);
 const modalMessage = ref("");
+
+/** Deletes a map request after user confirmation and updates the UI accordingly. */
 const deleteMap = (id: number) => {
   const confirmation = window.confirm(t("mapDeleteConfirmation") + ".");
 
@@ -129,6 +147,8 @@ const deleteMap = (id: number) => {
     }
   }
 };
+
+/** Resubmits a map request and updates the UI to reflect the action. */
 const resubmitMapRequest = (id: number) => {
   const map = props.offlineMaps.find((m) => m.id === id);
   if (map) {

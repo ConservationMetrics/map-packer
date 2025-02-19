@@ -33,7 +33,7 @@ if (initialMapsData.value && !initialMapsError.value) {
   console.error("Error fetching data:", initialMapsError.value);
 }
 
-// Load more offline maps data based on cursor pagination
+/** Loads more offline maps data based on cursor pagination. */
 const loadMoreMaps = async () => {
   if (!nextCursor.value || isLoading.value) return;
 
@@ -63,7 +63,7 @@ const loadMoreMaps = async () => {
   }
 };
 
-// POST map request (emitted by component)
+/** Submits a map request emitted by a component. */
 const handleMapRequest = async (message: object) => {
   try {
     await $fetch("/api/maprequest", {

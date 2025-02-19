@@ -31,17 +31,15 @@ try {
   dataFetched.value = false;
 }
 
-// POST map request (emitted by component)
+/** Handles map request submission by transforming formData and sending a POST request. */
 const handleMapRequest = async (formData: FormData) => {
-  // Rmove accents and replace non-alphanumeric characters with underscores
-  const normalizeFilename = (str: string) => {
-    return str
+  /** Normalizes a string by removing accents and replacing non-alphanumeric characters with underscores. */
+  const normalizeFilename = (str: string) =>
+    str
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/\W+/g, "_");
-  };
 
-  // Transform formData to match the expected database table schema
   const transformedMessage = {
     type: "new_request",
     title: formData.title,

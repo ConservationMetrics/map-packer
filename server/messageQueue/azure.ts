@@ -1,6 +1,13 @@
 import { QueueServiceClient } from "@azure/storage-queue";
 import { Buffer } from "buffer";
 
+/**
+ * Publishes a message to an Azure Storage Queue.
+ *
+ * This function takes a queue name, an optional request ID, and a message object,
+ * then publishes the message to the specified Azure Storage Queue. The message
+ * is transformed to match the expected input format for the mapgl-tile-renderer.
+ */
 export async function publishToAzureStorageQueue(
   queueName: string,
   requestId: number | null = null,

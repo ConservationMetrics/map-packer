@@ -6,6 +6,7 @@ const { Pool } = pkg;
 
 let db: PoolType | null = null;
 
+/** Sets up a new PostgreSQL database connection. */
 export const setupDatabaseConnection = async (): Promise<PoolType> => {
   const { database, dbHost, dbUser, dbPassword, dbPort, dbSsl } = getConfig();
 
@@ -31,6 +32,7 @@ export const setupDatabaseConnection = async (): Promise<PoolType> => {
   return db;
 };
 
+/** Retrieves the current database connection, setting it up if necessary. */
 export const getDatabaseConnection = async (): Promise<PoolType> => {
   if (db) {
     await ensurePostgresConnection(db);
@@ -40,6 +42,7 @@ export const getDatabaseConnection = async (): Promise<PoolType> => {
   return db;
 };
 
+/** Refreshes the database connection by closing and reopening it. */
 export const refreshDatabaseConnection = async (): Promise<void> => {
   if (db) {
     await db.end();
@@ -47,6 +50,7 @@ export const refreshDatabaseConnection = async (): Promise<void> => {
   db = await setupDatabaseConnection();
 };
 
+/** Ensures the PostgreSQL connection is active, reconnecting if needed. */
 async function ensurePostgresConnection(db: PoolType): Promise<void> {
   try {
     await db.query("SELECT 1"); // Simple query to check connection

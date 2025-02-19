@@ -144,6 +144,7 @@ onMounted(() => {
   });
 });
 
+/** Converts bounds to a WSEN string format. */
 const getWSENstring = (bounds: Coordinate[]) => {
   if (bounds.length === 0) {
     return t("noCoordinatesProvided");
@@ -166,6 +167,7 @@ const getWSENstring = (bounds: Coordinate[]) => {
   return wsen;
 };
 
+/** Adds OSM layers to the map. */
 const addOSMLayers = () => {
   if (!map.value.getSource("osm")) {
     map.value.addSource("osm", {
@@ -208,6 +210,7 @@ const addOSMLayers = () => {
   }
 };
 
+/** Removes OSM layers from the map. */
 const removeOSMLayers = () => {
   if (map.value.getLayer("osm-waterway-lines")) {
     map.value.removeLayer("osm-waterway-lines");
@@ -223,6 +226,7 @@ const removeOSMLayers = () => {
   }
 };
 
+/** Sets the map style to a new value. */
 const setMapStyle = (newVal: string) => {
   if (map.value && props.mapboxAccessToken) {
     mapboxgl.accessToken = props.mapboxAccessToken;

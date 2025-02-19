@@ -1,3 +1,4 @@
+/** Retrieves database configuration from runtime configuration. */
 export const getConfig = () => {
   const { database, dbHost, dbUser, dbPassword, dbPort, dbSsl } =
     useRuntimeConfig() as unknown as {

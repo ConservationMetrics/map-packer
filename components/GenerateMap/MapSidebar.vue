@@ -47,6 +47,7 @@ const form = reactive<FormData>({
   type: null,
 });
 
+/** Fetches and sorts available map styles. */
 const fetchMapStyles = () => {
   mapStyles.value = props.availableMapStyles.map((style) => ({
     name: style.name,
@@ -56,6 +57,7 @@ const fetchMapStyles = () => {
   mapStyles.value.sort((a, b) => a.name.localeCompare(b.name));
 };
 
+/** Renders a custom Mapbox style if the URL is valid. */
 const renderCustomStyle = () => {
   if (/^mapbox:\/\/styles\/[^/]+\/[^/]+$/.test(customMapboxStyleUrl.value)) {
     form.selectedStyle = customMapboxStyleUrl.value;
@@ -73,6 +75,7 @@ const renderCustomStyle = () => {
   }
 };
 
+/** Computes the selected style key based on the current style. */
 const selectedStyleKey = computed({
   get() {
     const selectedStyle = mapStyles.value.find(
@@ -92,13 +95,18 @@ const selectedStyleKey = computed({
   },
 });
 
+/** Returns the minimum planet month-year. */
 const minPlanetMonthYear = computed(() => "2020-09");
+
+/** Returns the maximum planet month-year. */
 const maxPlanetMonthYear = computed(() => calculateMaxPlanetMonthYear());
 
+/** Estimates the number of tiles based on max zoom and selected bounds. */
 const estimatedTiles = computed(() =>
   estimateNumberOfTiles(form.maxZoom, form.selectedBounds),
 );
 
+/** Validates the Mapbox style URL and access token. */
 const isValidMapboxStyleAndToken = computed(() => {
   const isValidStyle = /^mapbox:\/\/styles\/[^/]+\/[^/]+$/.test(
     customMapboxStyleUrl.value,
@@ -109,6 +117,7 @@ const isValidMapboxStyleAndToken = computed(() => {
 
 const emit = defineEmits(["updateMapParams", "formSubmitted"]);
 
+/** Toggles the OpenStreetMap layer. */
 const toggleOSM = () => {
   emit("updateMapParams", {
     param: "OsmEnabled",
@@ -116,6 +125,7 @@ const toggleOSM = () => {
   });
 };
 
+/** Submits the form with the current map settings. */
 const submitForm = () => {
   const formToSubmit = { ...form, selectedStyle: selectedStyleKey.value };
 

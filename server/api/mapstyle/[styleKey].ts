@@ -1,7 +1,6 @@
-import type { H3Event } from "h3";
-import { defineEventHandler, send, sendError } from "h3";
+import { mapStyles } from "@/server/styles/availableMapStyles";
 
-import { mapStyles } from "../../styles/availableMapStyles";
+import type { H3Event } from "h3";
 
 export default defineEventHandler((event: H3Event) => {
   if (!event.context.params) {
