@@ -20,13 +20,17 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   nitro: {
-    plugins: ["@/server/index.ts"],
+    plugins: ["@/server/index.ts", "@/server/plugins/apiAuth.ts"],
+    routeRules: {
+      "/api/**": {
+        cors: true,
+      },
+    },
   },
 
-  css: ["mapbox-gl/dist/mapbox-gl.css"],
+  css: ["mapbox-gl/dist/mapbox-gl.css", "~/assets/overlay.css"],
 
   modules: [
-    "gc-shared-resources",
     "nuxt-auth-utils",
     "@nuxt/eslint",
     "@nuxtjs/i18n",
@@ -49,7 +53,6 @@ export default defineNuxtConfig({
       alwaysRedirect: true,
       redirectOn: "all",
     },
-    langDir: "lang/",
     strategy: "no_prefix",
     skipSettingLocaleOnNavigate: true, // persists locale when route changes
   },
@@ -66,6 +69,16 @@ export default defineNuxtConfig({
     dbSsl: "true",
     dbTable: "",
     port: "8080",
+    // Session secret for nuxt-auth-utils
+    sessionSecret: "your-session-secret-key-change-in-production",
+    // OAuth configuration for nuxt-auth-utils
+    oauth: {
+      auth0: {
+        clientId: "",
+        clientSecret: "",
+        domain: "",
+      },
+    },
     public: {
       appApiKey: "",
       authStrategy: "none",

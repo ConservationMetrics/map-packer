@@ -3,6 +3,7 @@ import { useI18n } from "vue-i18n";
 
 import QRCode from "qrcode.vue";
 import MiniMap from "@/components/MapDashboard/MiniMap.vue";
+import LanguagePicker from "@/components/shared/LanguagePicker.vue";
 
 import { copyLink } from "@/utils";
 
