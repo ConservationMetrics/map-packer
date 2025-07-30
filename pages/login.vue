@@ -1,20 +1,21 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import { useI18n } from "vue-i18n";
+import { useAuth } from "~/composables/useAuth";
 
 const { loggedIn } = useUserSession();
 const errorMessage = ref("");
 
 onMounted(() => {
-  const authResult = useAuth(loggedIn);
-  errorMessage.value = authResult !== undefined ? authResult : "";
+  const authError = useAuth(loggedIn);
+  errorMessage.value = authError || "";
 });
 
 const { t } = useI18n();
 useHead({
-  title: "MapPacker: " + t("login"),
+  title: "Map Packer: " + t("login"),
 });
 </script>
 
 <template>
-  <Auth0Login v-if="loggedIn === false" :error-message="errorMessage" />
+  <Auth0Login :error-message="errorMessage" />
 </template>
