@@ -39,6 +39,24 @@ For production environments like Azure, input the environmental variables via th
 
 **Port:** Specify a port to serve the app. Default is 8080.
 
+## How to use the outputs
+
+Once the map request is completed, the user can download the offline map file, or scan a QR code to share a link to download the file.
+
+The offline map file will be in either [MBTiles](https://wiki.openstreetmap.org/wiki/MBTiles) or [Styled Map Package](https://github.com/digidem/styled-map-package) format. 
+
+MBTiles can be used in a variety of applications to serve as a background map, including:
+
+- [ODK Collect](https://getodk.org/)
+- [Kobo Collect](https://www.kobotoolbox.org/)
+- [Locus Map](https://www.locusmap.app/)
+
+Styled Map Packages can be used in:
+
+- [CoMapeo](https://comapeo.app/)
+
+Please refer to the documentation for each application to learn how to import the offline map file.
+
 ## Build Setup
 
 ```bash
