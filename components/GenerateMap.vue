@@ -32,6 +32,8 @@ const selectedLongitude = ref(props.mapLongitude);
 const selectedStyle = ref(props.availableMapStyles[0].url);
 const selectedZoom = ref(props.mapZoom);
 const showModal = ref(false);
+const customMapboxStyleRendered = ref(false);
+const mapLoadError = ref(false);
 
 const emit = defineEmits(["updateMapParams", "handleMapRequest"]);
 
@@ -63,10 +65,38 @@ const updateMapParams = (updateObj: UpdateMapParams) => {
         selectedStyle.value = value as string;
         osmEnabled.value = false;
         emit("updateMapParams", { param: "OsmEnabled", value: false });
+        // Reset custom mapbox style rendered state if switching to non-custom style
+        if (
+          typeof value === "string" &&
+          (!value.includes("mapbox://styles/") ||
+            value.includes("mapbox://styles/mapbox/"))
+        ) {
+          customMapboxStyleRendered.value = false;
+        }
         break;
       case "Zoom":
         selectedZoom.value = value as number;
         break;
+    }
+  }
+};
+
+/** Passes map style loaded event and any errors to the map sidebar. */
+const handleMapStyleLoaded = (data: {
+  style: string;
+  success: boolean;
+  error?: string;
+}) => {
+  if (
+    data.style.includes("mapbox://styles/") &&
+    !data.style.includes("mapbox://styles/mapbox/")
+  ) {
+    if (data.success) {
+      customMapboxStyleRendered.value = true;
+      mapLoadError.value = false;
+    } else {
+      customMapboxStyleRendered.value = false;
+      mapLoadError.value = true;
     }
   }
 };
@@ -79,6 +109,24 @@ const handleFormSubmit = (formData: FormData) => {
     router.push("/");
   }, 3000);
 };
+
+const resetMapLoadError = () => {
+  mapLoadError.value = false;
+};
+
+const resetMapRendered = () => {
+  customMapboxStyleRendered.value = false;
+};
+
+watch(
+  () => localMapboxAccessToken.value,
+  (newVal) => {
+    // Reset error state when access token changes
+    if (newVal !== props.mapboxAccessToken) {
+      mapLoadError.value = false;
+    }
+  },
+);
 </script>
 
 <template>
@@ -89,8 +137,12 @@ const handleFormSubmit = (formData: FormData) => {
       :map-style="selectedStyle"
       :mapbox-access-token="localMapboxAccessToken"
       :osm-enabled="osmEnabled"
+      :custom-mapbox-style-rendered="customMapboxStyleRendered"
+      :map-load-error="mapLoadError"
       @form-submitted="handleFormSubmit"
       @update-map-params="updateMapParams"
+      @reset-map-load-error="resetMapLoadError"
+      @reset-map-rendered="resetMapRendered"
     />
     <MapNavigation
       :map-latitude="selectedLatitude"
@@ -106,6 +158,7 @@ const handleFormSubmit = (formData: FormData) => {
       :map-zoom="selectedZoom"
       :osm-enabled="osmEnabled"
       @update-map-params="updateMapParams"
+      @map-style-loaded="handleMapStyleLoaded"
     />
     <div v-if="showModal" class="overlay"></div>
     <div v-if="showModal" class="modal">

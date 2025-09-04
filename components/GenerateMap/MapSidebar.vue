@@ -18,6 +18,8 @@ const props = defineProps<{
   mapboxAccessToken: string;
   mapBounds: string;
   mapStyle: string;
+  customMapboxStyleRendered: boolean;
+  mapLoadError: boolean;
 }>();
 
 const { t } = useI18n();
@@ -30,6 +32,7 @@ const customMapboxStyleUrl = ref("");
 const localMapboxAccessToken = ref(props.mapboxAccessToken);
 const localMapStyle = ref(props.mapStyle);
 const mapStyles = ref<MapStyleWithValue[]>([]);
+const hasClickedRender = ref(false);
 const form = reactive<FormData>({
   title: "",
   description: null,
@@ -60,6 +63,13 @@ const fetchMapStyles = () => {
 /** Renders a custom Mapbox style if the URL is valid. */
 const renderCustomStyle = () => {
   if (/^mapbox:\/\/styles\/[^/]+\/[^/]+$/.test(customMapboxStyleUrl.value)) {
+    // Reset ALL validation states on each render attempt
+    hasClickedRender.value = true;
+
+    // Reset error state and rendered state to force fresh validation
+    emit("resetMapLoadError");
+    emit("resetMapRendered");
+
     form.selectedStyle = customMapboxStyleUrl.value;
     form.selectedStyleKey = "mapbox-custom";
     emit("updateMapParams", {
@@ -115,7 +125,25 @@ const isValidMapboxStyleAndToken = computed(() => {
   return isValidStyle && isValidToken;
 });
 
-const emit = defineEmits(["updateMapParams", "formSubmitted"]);
+/** Computes whether the form can be submitted for mapbox-custom style. */
+const canSubmitMapboxCustom = computed(() => {
+  if (selectedStyleKey.value !== "mapbox-custom") {
+    return true;
+  }
+  return hasClickedRender.value && props.customMapboxStyleRendered;
+});
+
+/** Computes whether the submit button should be disabled. */
+const isSubmitDisabled = computed(() => {
+  return estimatedTiles.value > 275000 || !canSubmitMapboxCustom.value;
+});
+
+const emit = defineEmits([
+  "updateMapParams",
+  "formSubmitted",
+  "resetMapLoadError",
+  "resetMapRendered",
+]);
 
 /** Toggles the OpenStreetMap layer. */
 const toggleOSM = () => {
@@ -203,6 +231,16 @@ watch(
     }
   },
 );
+
+watch(
+  () => selectedStyleKey.value,
+  (newVal) => {
+    // Reset validation state when switching away from mapbox-custom
+    if (newVal !== "mapbox-custom") {
+      hasClickedRender.value = false;
+    }
+  },
+);
 </script>
 
 <template>
@@ -276,6 +314,34 @@ watch(
         >
           {{ t("render") }}
         </button>
+
+        <div v-if="selectedStyleKey === 'mapbox-custom'" class="mt-2">
+          <div v-if="!hasClickedRender" class="text-yellow-600 text-sm">
+            {{ t("clickRenderToValidate") }}
+          </div>
+          <div
+            v-else-if="
+              hasClickedRender &&
+              !props.customMapboxStyleRendered &&
+              !props.mapLoadError
+            "
+            class="text-blue-600 text-sm"
+          >
+            {{ t("renderingMap") }}
+          </div>
+          <div
+            v-else-if="hasClickedRender && props.mapLoadError"
+            class="text-red-600 text-sm"
+          >
+            {{ t("mapLoadError") }}
+          </div>
+          <div
+            v-else-if="hasClickedRender && props.customMapboxStyleRendered"
+            class="text-green-600 text-sm"
+          >
+            {{ t("mapRenderedSuccessfully") }}
+          </div>
+        </div>
       </div>
 
       <div
@@ -401,9 +467,9 @@ watch(
 
       <button
         type="submit"
-        :disabled="estimatedTiles > 275000"
+        :disabled="isSubmitDisabled"
         class="submit-button"
-        :class="{ 'submit-button-disabled': estimatedTiles > 275000 }"
+        :class="{ 'submit-button-disabled': isSubmitDisabled }"
       >
         {{ t("submitRequest") }}
       </button>
