@@ -81,13 +81,12 @@ const updateMapParams = (updateObj: UpdateMapParams) => {
   }
 };
 
-/** Handles map style loaded event. */
+/** Passes map style loaded event and any errors to the map sidebar. */
 const handleMapStyleLoaded = (data: {
   style: string;
   success: boolean;
   error?: string;
 }) => {
-  // Check if this is a custom mapbox style
   if (
     data.style.includes("mapbox://styles/") &&
     !data.style.includes("mapbox://styles/mapbox/")
@@ -111,17 +110,14 @@ const handleFormSubmit = (formData: FormData) => {
   }, 3000);
 };
 
-/** Resets the map load error state. */
 const resetMapLoadError = () => {
   mapLoadError.value = false;
 };
 
-/** Resets the map rendered state. */
 const resetMapRendered = () => {
   customMapboxStyleRendered.value = false;
 };
 
-// Watch for access token changes to reset error state
 watch(
   () => localMapboxAccessToken.value,
   (newVal) => {
