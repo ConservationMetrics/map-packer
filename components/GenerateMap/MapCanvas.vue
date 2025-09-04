@@ -47,7 +47,7 @@ const selectedLatitude = ref(props.mapLatitude);
 const selectedLongitude = ref(props.mapLongitude);
 const selectedZoom = ref(props.mapZoom);
 
-const emit = defineEmits(["updateMapParams"]);
+const emit = defineEmits(["updateMapParams", "mapStyleLoaded"]);
 
 onMounted(() => {
   if (!props.mapboxAccessToken) {
@@ -231,6 +231,17 @@ const setMapStyle = (newVal: string) => {
   if (map.value && props.mapboxAccessToken) {
     mapboxgl.accessToken = props.mapboxAccessToken;
     map.value.setStyle(newVal);
+
+    // Listen for the style to load and emit the event
+    map.value.once("styledata", () => {
+      emit("mapStyleLoaded", { style: newVal, success: true });
+    });
+
+    // Listen for style loading errors
+    map.value.once("error", (e) => {
+      console.error("Map style loading error:", e);
+      emit("mapStyleLoaded", { style: newVal, success: false, error: e.error });
+    });
   }
 };
 
@@ -254,6 +265,15 @@ watch(
   () => props.mapStyle,
   (newVal?: string) => {
     if (newVal) setMapStyle(newVal);
+  },
+);
+watch(
+  () => props.mapboxAccessToken,
+  (newVal?: string) => {
+    if (newVal && map.value && props.mapStyle) {
+      // Reload the current style with the new token
+      setMapStyle(props.mapStyle);
+    }
   },
 );
 watch(
