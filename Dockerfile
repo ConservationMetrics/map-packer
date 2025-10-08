@@ -5,6 +5,13 @@ FROM node:20.15.0-slim
 RUN mkdir -p /app
 WORKDIR /app
 
+# Install system dependencies for building native modules
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+ && rm -rf /var/lib/apt/lists/*
+
 # Install pnpm
 RUN npm install -g pnpm
 
