@@ -10,16 +10,22 @@ RUN apt-get update && apt-get install -y \
     python3 \
     make \
     g++ \
+    git \
+    libc-dev \
+    libssl-dev \
  && rm -rf /var/lib/apt/lists/*
 
 # Install pnpm
 RUN npm install -g pnpm
 
-# Copy package.json and package-lock.json into the container
-COPY package*.json  /app/
+# Copy package.json and pnpm-lock.yaml into the container
+COPY package*.json pnpm-lock.yaml* /app/
 
-# Install dependencies
-RUN pnpm install
+# Install dependencies (with rebuild fallback for native modules)
+RUN pnpm install --frozen-lockfile || pnpm rebuild
+
+# Explicitly rebuild oxc-transform to fix native binding issue
+RUN pnpm rebuild oxc-transform || true
 
 # Copy the application files into the container
 COPY . /app
