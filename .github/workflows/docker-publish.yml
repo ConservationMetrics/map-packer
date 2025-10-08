@@ -2,45 +2,60 @@ name: Publish to DockerHub
 
 on:
   push:
-    branches:
-      - 'main'
+    branches: [ main ]
   pull_request:
-    branches:
-      - 'main'
+    branches: [ main ]
   release:
-    types: [created]
+    types: [ created ]
 
 jobs:
   docker:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
-          repository: ConservationMetrics/map-packer
+          node-version: 20
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+          run_install: false
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3 make g++
+
       - name: Install dependencies and run tests
         run: |
-          npm install -g pnpm
           pnpm install
           if [ -d "test" ]; then
             pnpm run test
           else
             echo "No test directory found, skipping tests."
           fi
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Login to Docker Hub
+
+      - name: Log in to DockerHub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Extract metadata (tags, labels) for Docker
+
+      - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: communityfirst/map-packer
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
@@ -50,9 +65,10 @@ jobs:
           push: true
           tags: |
             ${{ steps.meta.outputs.tags }}
-            ${{ github.ref == 'refs/heads/main' && 'communityfirst/map-packer:latest' || '' }}
+            communityfirst/map-packer:latest
           labels: ${{ steps.meta.outputs.labels }}
-      - name: Docker Hub Description
+
+      - name: Update DockerHub description
         if: github.event_name == 'release'
         uses: peter-evans/dockerhub-description@v4
         with:
@@ -60,36 +76,3 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: communityfirst/map-packer
           short-description: 'A Nuxt app to allow users to generate and manage offline map requests.'
-    #   - name: Test run of Docker image
-    #     run: |
-    #       docker run --rm \
-    #         -e NUXT_PUBLIC_API_KEY= \
-    #         -e NUXT_DATABASE=your_db_location \
-    #         -e NUXT_DB_HOST=localhost \
-    #         -e NUXT_DB_USER=your_db_user \
-    #         -e NUXT_DB_PASSWORD=your_db_password \
-    #         -e NUXT_DB_PORT=5432 \
-    #         -e NUXT_DB_SSL=true \
-    #         -e NUXT_DB_TABLE=offline_maps \
-    #         -e NUXT_AUTH_STRATEGY=auth0 \
-    #         -e NUXT_OAUTH_AUTH0_DOMAIN="domain.us.auth0.com \
-    #         -e NUXT_OAUTH_AUTH0_CLIENT_ID= \
-    #         -e NUXT_OAUTH_AUTH0_CLIENT_SECRET= \
-    #         -e NUXT_PUBLIC_BASE_URL=http://localhost:8080 \
-    #         -e NUXT_SESSION_SECRET=your_super_long_secret_for_session_encryption \
-    #         -e NUXT_PUBLIC_MAPBOX_ACCESS_TOKEN=your_mapbox_token \
-    #         -e NUXT_PUBLIC_MAP_ZOOM=9 \
-    #         -e NUXT_PUBLIC_MAP_LATITUDE=40.7128 \
-    #         -e NUXT_PUBLIC_MAP_LONGITUDE=-74.0060 \
-    #         -e NUXT_PUBLIC_MAPBOX_STYLE=mapbox://styles/mapbox/streets-v12 \
-    #         -e NUXT_PUBLIC_MAPBOX_STYLE_NAME="Satellite Streets" \
-    #         -e NUXT_PUBLIC_PLANET_API_KEY=your_planet_api_key \
-    #         -e NUXT_PUBLIC_STADIA_API_KEY=your_stadia_api_key \
-    #         -e NUXT_PUBLIC_THUNDERFOREST_API_KEY=your_thunderforest_api_key \
-    #         -e NUXT_ASQ_QUEUE_NAME=mappacker-requests \
-    #         -e NUXT_AZURE_STORAGE_CONNECTION_ACCOUNT_NAME= \
-    #         -e NUXT_AZURE_STORAGE_CONNECTION_STORAGE_KEY= \
-    #         -e NUXT_PUBLIC_OFFLINE_MAPS_URI=https://your-offline-maps-uri.com/api/public/dl/your-offline-maps-folder \
-    #         -e NUXT_PUBLIC_OFFLINE_MAPS_PATH=/offline-maps \
-    #         -e NUXT_PORT="8080" \
-    #         ${{ steps.meta.outputs.tags }}
