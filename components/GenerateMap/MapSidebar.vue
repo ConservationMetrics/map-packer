@@ -22,6 +22,8 @@ const props = defineProps<{
   mapLoadError: boolean;
 }>();
 
+const maxTiles = useRuntimeConfig().public.maxTiles as number;
+
 const { t } = useI18n();
 
 onMounted(() => {
@@ -135,7 +137,7 @@ const canSubmitMapboxCustom = computed(() => {
 
 /** Computes whether the submit button should be disabled. */
 const isSubmitDisabled = computed(() => {
-  return estimatedTiles.value > 275000 || !canSubmitMapboxCustom.value;
+  return estimatedTiles.value > maxTiles || !canSubmitMapboxCustom.value;
 });
 
 const emit = defineEmits([
@@ -451,18 +453,10 @@ watch(
           {{ t("estimatedNumberOfTiles") }}:
           {{ estimatedTiles.toLocaleString() }}
         </p>
-        <p
-          v-if="estimatedTiles > 100000 && estimatedTiles < 275000"
-          class="text-red-600 mt-2"
-        >
+        <p v-if="estimatedTiles > maxTiles" class="text-red-600 mt-2">
           <span class="font-bold">{{ t("Warning") }}:</span>
-          {{ t("over100000Tiles") }}
+          {{ t("overMaxTilesWarning", { maxTiles }) }}
         </p>
-      </div>
-
-      <div v-if="estimatedTiles > 275000" class="text-red-600 mt-2">
-        <span class="font-bold">{{ t("Warning") }}:</span>
-        {{ t("over275000Tiles") }}
       </div>
 
       <button

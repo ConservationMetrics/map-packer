@@ -89,6 +89,7 @@ export default defineNuxtConfig({
       mapZoom: "0",
       mapLatitude: "15",
       mapLongitude: "40",
+      maxTiles: 100000,
       offlineMapsPath: "",
       offlineMapsUri: "",
       planetApiKey: "",
