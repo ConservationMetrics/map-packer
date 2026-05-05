@@ -455,7 +455,7 @@ watch(
         </p>
         <p v-if="estimatedTiles > maxTiles" class="text-red-600 mt-2">
           <span class="font-bold">{{ t("Warning") }}:</span>
-          {{ t("overMaxTilesWarning") }}
+          {{ t("overMaxTilesWarning", { maxTiles }) }}
         </p>
       </div>
 
