@@ -33,6 +33,8 @@ For production environments like Azure, input the environmental variables via th
 
 **Mapbox, Planet, Stadia, and Thunderforest API keys and access tokens:** Provide API keys and access tokens to be used across the application for authenticating with map assets. If not provided, the respective map styles will not show in the generate map view.
 
+**Maximum number of tiles:** Provide the maximum number of tiles that can be requested. Default is 100,000. It is recommended to use a sane default that will ensure that your users will not exceed any API free tier limits. (For example, Mapbox currently has a limit of 200,000 tile requests for the [Mapbox Static API](https://www.mapbox.com/pricing#static-tiles-api).)
+
 **Message Queue:** Provide your message queue variables to publish your map request to a storage queue service, where it can be picked up by a [mapgl-tile-renderer](http://github.com/conservationMetrics/mapgl-tile-renderer/) task worker. For Azure, you need a queue name, a storage account name, and a storage account key.
 
 **Offline map storage:** Provide a URI where the offline maps can be downloaded, as well as a path pointing to a volume mount directory for mapgl-tile-renderer to store the files.
